@@ -36,10 +36,10 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 endpoint = "http://sds.api.xiaomi.com"
-# Set yout AppID and AppSecret
-appId = ""
+# Set yout AppKey and AppSecret
+appKey = ""
 appSecret = ""
-credential = Credential(UserType.APP_SECRET, appId, appSecret)
+credential = Credential(UserType.APP_SECRET, appKey, appSecret)
 client_factory = ClientFactory(credential, True)
 # Clients are not thread-safe
 admin_client = client_factory.new_admin_client(endpoint + ADMIN_SERVICE_PATH,
