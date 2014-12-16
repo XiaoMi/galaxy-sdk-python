@@ -6,6 +6,8 @@ from sds.table.ttypes import Value
 
 
 def datum(datavalue, datatype=None):
+    if datavalue is None:
+        raise Exception("Datum must not be null")
     if datatype is None:
         if isinstance(datavalue, bool):
             return Datum(value=Value(boolValue=datavalue), type=DataType.BOOL)
