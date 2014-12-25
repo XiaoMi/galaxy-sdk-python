@@ -69,16 +69,15 @@ class Client(Iface):
     self._oprot.trans.flush()
 
   def recv_getServerVersion(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = getServerVersion_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -104,16 +103,15 @@ class Client(Iface):
     self._oprot.trans.flush()
 
   def recv_validateClientVersion(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = validateClientVersion_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -133,16 +131,15 @@ class Client(Iface):
     self._oprot.trans.flush()
 
   def recv_getServerTime(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = getServerTime_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getServerTime failed: unknown result");
@@ -244,10 +241,6 @@ class getServerVersion_args(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -321,12 +314,6 @@ class getServerVersion_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -387,11 +374,6 @@ class validateClientVersion_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.clientVersion)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -454,11 +436,6 @@ class validateClientVersion_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -500,10 +477,6 @@ class getServerTime_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -563,11 +536,6 @@ class getServerTime_result(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

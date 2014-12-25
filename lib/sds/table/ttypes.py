@@ -251,6 +251,7 @@ class Value(object):
    - doubleSetValue: 用于FLOAT/DOUBLE类型集合
    - stringSetValue
    - binarySetValue
+   - nullValue: null，只用于RC_BASIC存储格式
   """
 
   thrift_spec = (
@@ -271,9 +272,13 @@ class Value(object):
     (14, TType.LIST, 'doubleSetValue', (TType.DOUBLE,None), None, ), # 14
     (15, TType.LIST, 'stringSetValue', (TType.STRING,None), None, ), # 15
     (16, TType.LIST, 'binarySetValue', (TType.STRING,None), None, ), # 16
+    None, # 17
+    None, # 18
+    None, # 19
+    (20, TType.BOOL, 'nullValue', None, None, ), # 20
   )
 
-  def __init__(self, boolValue=None, int8Value=None, int16Value=None, int32Value=None, int64Value=None, doubleValue=None, stringValue=None, binaryValue=None, boolSetValue=None, int8SetValue=None, int16SetValue=None, int32SetValue=None, int64SetValue=None, doubleSetValue=None, stringSetValue=None, binarySetValue=None,):
+  def __init__(self, boolValue=None, int8Value=None, int16Value=None, int32Value=None, int64Value=None, doubleValue=None, stringValue=None, binaryValue=None, boolSetValue=None, int8SetValue=None, int16SetValue=None, int32SetValue=None, int64SetValue=None, doubleSetValue=None, stringSetValue=None, binarySetValue=None, nullValue=None,):
     self.boolValue = boolValue
     self.int8Value = int8Value
     self.int16Value = int16Value
@@ -290,6 +295,7 @@ class Value(object):
     self.doubleSetValue = doubleSetValue
     self.stringSetValue = stringSetValue
     self.binarySetValue = binarySetValue
+    self.nullValue = nullValue
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -420,6 +426,11 @@ class Value(object):
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 20:
+        if ftype == TType.BOOL:
+          self.nullValue = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -518,32 +529,16 @@ class Value(object):
         oprot.writeString(iter55)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.nullValue is not None:
+      oprot.writeFieldBegin('nullValue', TType.BOOL, 20)
+      oprot.writeBool(self.nullValue)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.boolValue)
-    value = (value * 31) ^ hash(self.int8Value)
-    value = (value * 31) ^ hash(self.int16Value)
-    value = (value * 31) ^ hash(self.int32Value)
-    value = (value * 31) ^ hash(self.int64Value)
-    value = (value * 31) ^ hash(self.doubleValue)
-    value = (value * 31) ^ hash(self.stringValue)
-    value = (value * 31) ^ hash(self.binaryValue)
-    value = (value * 31) ^ hash(self.boolSetValue)
-    value = (value * 31) ^ hash(self.int8SetValue)
-    value = (value * 31) ^ hash(self.int16SetValue)
-    value = (value * 31) ^ hash(self.int32SetValue)
-    value = (value * 31) ^ hash(self.int64SetValue)
-    value = (value * 31) ^ hash(self.doubleSetValue)
-    value = (value * 31) ^ hash(self.stringSetValue)
-    value = (value * 31) ^ hash(self.binarySetValue)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -617,18 +612,8 @@ class Datum(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.type is None:
-      raise TProtocol.TProtocolException(message='Required field type is unset!')
-    if self.value is None:
-      raise TProtocol.TProtocolException(message='Required field value is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.type)
-    value = (value * 31) ^ hash(self.value)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -646,19 +631,19 @@ class ProvisionThroughput(object):
   吞吐量配额
 
   Attributes:
-   - readQps
-   - writeQps
+   - readCapacity
+   - writeCapacity
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.I64, 'readQps', None, None, ), # 1
-    (2, TType.I64, 'writeQps', None, None, ), # 2
+    (1, TType.I64, 'readCapacity', None, None, ), # 1
+    (2, TType.I64, 'writeCapacity', None, None, ), # 2
   )
 
-  def __init__(self, readQps=None, writeQps=None,):
-    self.readQps = readQps
-    self.writeQps = writeQps
+  def __init__(self, readCapacity=None, writeCapacity=None,):
+    self.readCapacity = readCapacity
+    self.writeCapacity = writeCapacity
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -671,12 +656,12 @@ class ProvisionThroughput(object):
         break
       if fid == 1:
         if ftype == TType.I64:
-          self.readQps = iprot.readI64();
+          self.readCapacity = iprot.readI64();
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.I64:
-          self.writeQps = iprot.readI64();
+          self.writeCapacity = iprot.readI64();
         else:
           iprot.skip(ftype)
       else:
@@ -689,30 +674,20 @@ class ProvisionThroughput(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('ProvisionThroughput')
-    if self.readQps is not None:
-      oprot.writeFieldBegin('readQps', TType.I64, 1)
-      oprot.writeI64(self.readQps)
+    if self.readCapacity is not None:
+      oprot.writeFieldBegin('readCapacity', TType.I64, 1)
+      oprot.writeI64(self.readCapacity)
       oprot.writeFieldEnd()
-    if self.writeQps is not None:
-      oprot.writeFieldBegin('writeQps', TType.I64, 2)
-      oprot.writeI64(self.writeQps)
+    if self.writeCapacity is not None:
+      oprot.writeFieldBegin('writeCapacity', TType.I64, 2)
+      oprot.writeI64(self.writeCapacity)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.readQps is None:
-      raise TProtocol.TProtocolException(message='Required field readQps is unset!')
-    if self.writeQps is None:
-      raise TProtocol.TProtocolException(message='Required field writeQps is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.readQps)
-    value = (value * 31) ^ hash(self.writeQps)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -773,15 +748,8 @@ class TableQuota(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.size is None:
-      raise TProtocol.TProtocolException(message='Required field size is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.size)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -852,16 +820,8 @@ class KeySpec(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.attribute is None:
-      raise TProtocol.TProtocolException(message='Required field attribute is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.attribute)
-    value = (value * 31) ^ hash(self.asc)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -975,18 +935,8 @@ class LocalSecondaryIndexSpec(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.indexSchema is None:
-      raise TProtocol.TProtocolException(message='Required field indexSchema is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.indexSchema)
-    value = (value * 31) ^ hash(self.projections)
-    value = (value * 31) ^ hash(self.consistencyMode)
-    value = (value * 31) ^ hash(self.unique)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1069,16 +1019,8 @@ class EntityGroupSpec(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.attributes is None:
-      raise TProtocol.TProtocolException(message='Required field attributes is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.attributes)
-    value = (value * 31) ^ hash(self.enableHash)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1244,21 +1186,8 @@ class TableSchema(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.attributes is None:
-      raise TProtocol.TProtocolException(message='Required field attributes is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.version)
-    value = (value * 31) ^ hash(self.entityGroup)
-    value = (value * 31) ^ hash(self.primaryIndex)
-    value = (value * 31) ^ hash(self.secondaryIndexes)
-    value = (value * 31) ^ hash(self.attributes)
-    value = (value * 31) ^ hash(self.ttl)
-    value = (value * 31) ^ hash(self.preSplits)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1283,6 +1212,7 @@ class TableMetadata(object):
    - appAcl: 权限控制设置
    - quota: 空间配额
    - throughput: 吞吐量配额
+   - description: 表备注信息
   """
 
   thrift_spec = (
@@ -1292,14 +1222,16 @@ class TableMetadata(object):
     (3, TType.MAP, 'appAcl', (TType.STRING,None,TType.LIST,(TType.I32,None)), None, ), # 3
     (4, TType.STRUCT, 'quota', (TableQuota, TableQuota.thrift_spec), None, ), # 4
     (5, TType.STRUCT, 'throughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 5
+    (6, TType.STRING, 'description', None, None, ), # 6
   )
 
-  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None,):
+  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None,):
     self.tableId = tableId
     self.developerId = developerId
     self.appAcl = appAcl
     self.quota = quota
     self.throughput = throughput
+    self.description = description
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1348,6 +1280,11 @@ class TableMetadata(object):
           self.throughput.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.description = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1385,21 +1322,16 @@ class TableMetadata(object):
       oprot.writeFieldBegin('throughput', TType.STRUCT, 5)
       self.throughput.write(oprot)
       oprot.writeFieldEnd()
+    if self.description is not None:
+      oprot.writeFieldBegin('description', TType.STRING, 6)
+      oprot.writeString(self.description)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableId)
-    value = (value * 31) ^ hash(self.developerId)
-    value = (value * 31) ^ hash(self.appAcl)
-    value = (value * 31) ^ hash(self.quota)
-    value = (value * 31) ^ hash(self.throughput)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1474,18 +1406,8 @@ class TableSpec(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.schema is None:
-      raise TProtocol.TProtocolException(message='Required field schema is unset!')
-    if self.metadata is None:
-      raise TProtocol.TProtocolException(message='Required field metadata is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.schema)
-    value = (value * 31) ^ hash(self.metadata)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1609,16 +1531,6 @@ class TableStatus(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.state)
-    value = (value * 31) ^ hash(self.createTime)
-    value = (value * 31) ^ hash(self.alterTime)
-    value = (value * 31) ^ hash(self.statTime)
-    value = (value * 31) ^ hash(self.size)
-    value = (value * 31) ^ hash(self.rowCount)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1707,13 +1619,6 @@ class TableInfo(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.name)
-    value = (value * 31) ^ hash(self.spec)
-    value = (value * 31) ^ hash(self.status)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1798,19 +1703,8 @@ class SimpleCondition(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.operator is None:
-      raise TProtocol.TProtocolException(message='Required field operator is unset!')
-    if self.field is None:
-      raise TProtocol.TProtocolException(message='Required field field is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.operator)
-    value = (value * 31) ^ hash(self.field)
-    value = (value * 31) ^ hash(self.value)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1907,12 +1801,6 @@ class TableSplit(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.startKey)
-    value = (value * 31) ^ hash(self.stopKey)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2014,19 +1902,8 @@ class GetRequest(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.tableName is None:
-      raise TProtocol.TProtocolException(message='Required field tableName is unset!')
-    if self.keys is None:
-      raise TProtocol.TProtocolException(message='Required field keys is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.keys)
-    value = (value * 31) ^ hash(self.attributes)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2098,11 +1975,6 @@ class GetResult(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.item)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2197,19 +2069,8 @@ class PutRequest(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.tableName is None:
-      raise TProtocol.TProtocolException(message='Required field tableName is unset!')
-    if self.record is None:
-      raise TProtocol.TProtocolException(message='Required field record is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.record)
-    value = (value * 31) ^ hash(self.condition)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2270,11 +2131,6 @@ class PutResult(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2379,21 +2235,8 @@ class IncrementRequest(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.tableName is None:
-      raise TProtocol.TProtocolException(message='Required field tableName is unset!')
-    if self.keys is None:
-      raise TProtocol.TProtocolException(message='Required field keys is unset!')
-    if self.amounts is None:
-      raise TProtocol.TProtocolException(message='Required field amounts is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.keys)
-    value = (value * 31) ^ hash(self.amounts)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2465,11 +2308,6 @@ class IncrementResult(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.amounts)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2585,20 +2423,8 @@ class RemoveRequest(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.tableName is None:
-      raise TProtocol.TProtocolException(message='Required field tableName is unset!')
-    if self.keys is None:
-      raise TProtocol.TProtocolException(message='Required field keys is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.keys)
-    value = (value * 31) ^ hash(self.attributes)
-    value = (value * 31) ^ hash(self.condition)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2659,11 +2485,6 @@ class RemoveResult(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2870,24 +2691,8 @@ class ScanRequest(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.tableName is None:
-      raise TProtocol.TProtocolException(message='Required field tableName is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.indexName)
-    value = (value * 31) ^ hash(self.startKey)
-    value = (value * 31) ^ hash(self.stopKey)
-    value = (value * 31) ^ hash(self.attributes)
-    value = (value * 31) ^ hash(self.condition)
-    value = (value * 31) ^ hash(self.limit)
-    value = (value * 31) ^ hash(self.reverse)
-    value = (value * 31) ^ hash(self.inGlobalOrder)
-    value = (value * 31) ^ hash(self.cacheResult)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2991,12 +2796,6 @@ class ScanResult(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.nextStartKey)
-    value = (value * 31) ^ hash(self.records)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3097,14 +2896,6 @@ class Request(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.getRequest)
-    value = (value * 31) ^ hash(self.putRequest)
-    value = (value * 31) ^ hash(self.incrementRequest)
-    value = (value * 31) ^ hash(self.removeRequest)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3175,18 +2966,8 @@ class BatchRequestItem(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.action is None:
-      raise TProtocol.TProtocolException(message='Required field action is unset!')
-    if self.request is None:
-      raise TProtocol.TProtocolException(message='Required field request is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.action)
-    value = (value * 31) ^ hash(self.request)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3288,14 +3069,6 @@ class Result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.getResult)
-    value = (value * 31) ^ hash(self.putResult)
-    value = (value * 31) ^ hash(self.incrementResult)
-    value = (value * 31) ^ hash(self.removeResult)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3391,20 +3164,8 @@ class BatchResultItem(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.action is None:
-      raise TProtocol.TProtocolException(message='Required field action is unset!')
-    if self.success is None:
-      raise TProtocol.TProtocolException(message='Required field success is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.action)
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.result)
-    value = (value * 31) ^ hash(self.serviceException)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3472,15 +3233,8 @@ class BatchRequest(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.items is None:
-      raise TProtocol.TProtocolException(message='Required field items is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.items)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3550,11 +3304,6 @@ class BatchResult(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.items)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

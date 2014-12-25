@@ -65,16 +65,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_createCredential(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = createCredential_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -192,13 +191,6 @@ class createCredential_args(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.xiaomiAppId)
-    value = (value * 31) ^ hash(self.appUserAuthProvider)
-    value = (value * 31) ^ hash(self.authToken)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -271,12 +263,6 @@ class createCredential_result(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

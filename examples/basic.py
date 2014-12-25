@@ -35,7 +35,7 @@ from sds.table.ttypes import Request
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-endpoint = "http://sds.api.xiaomi.com"
+endpoint = "https://sds.api.xiaomi.com"
 # Set yout AppKey and AppSecret
 appKey = ""
 appSecret = ""
@@ -60,7 +60,7 @@ table_spec = TableSpec(
                            'pm25': DataType.INT64
                        }),
     metadata=TableMetadata(quota=TableQuota(size=100 * 1024 * 1024),
-                           throughput=ProvisionThroughput(readQps=2000, writeQps=2000)))
+                           throughput=ProvisionThroughput(readCapacity=2000, writeCapacity=2000)))
 
 try:
     admin_client.dropTable(table_name)

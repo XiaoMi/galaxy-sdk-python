@@ -172,19 +172,8 @@ class Credential(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.type is None:
-      raise TProtocol.TProtocolException(message='Required field type is unset!')
-    if self.secretKeyId is None:
-      raise TProtocol.TProtocolException(message='Required field secretKeyId is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.type)
-    value = (value * 31) ^ hash(self.secretKeyId)
-    value = (value * 31) ^ hash(self.secretKey)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -335,25 +324,8 @@ class HttpAuthorizationHeader(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.version is None:
-      raise TProtocol.TProtocolException(message='Required field version is unset!')
-    if self.userType is None:
-      raise TProtocol.TProtocolException(message='Required field userType is unset!')
-    if self.secretKeyId is None:
-      raise TProtocol.TProtocolException(message='Required field secretKeyId is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.version)
-    value = (value * 31) ^ hash(self.userType)
-    value = (value * 31) ^ hash(self.secretKeyId)
-    value = (value * 31) ^ hash(self.secretKey)
-    value = (value * 31) ^ hash(self.signature)
-    value = (value * 31) ^ hash(self.algorithm)
-    value = (value * 31) ^ hash(self.signedHeaders)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

@@ -65,6 +65,7 @@ class ErrorCode(object):
   CLOCK_TOO_SKEWED = 32
   REQUEST_TOO_LARGE = 33
   BAD_REQUEST = 34
+  TTRANSPORT_ERROR = 35
 
   _VALUES_TO_NAMES = {
     1: "INTERNAL_ERROR",
@@ -85,6 +86,7 @@ class ErrorCode(object):
     32: "CLOCK_TOO_SKEWED",
     33: "REQUEST_TOO_LARGE",
     34: "BAD_REQUEST",
+    35: "TTRANSPORT_ERROR",
   }
 
   _NAMES_TO_VALUES = {
@@ -106,6 +108,21 @@ class ErrorCode(object):
     "CLOCK_TOO_SKEWED": 32,
     "REQUEST_TOO_LARGE": 33,
     "BAD_REQUEST": 34,
+    "TTRANSPORT_ERROR": 35,
+  }
+
+class RetryType(object):
+  SAFE = 0
+  UNSAFE = 1
+
+  _VALUES_TO_NAMES = {
+    0: "SAFE",
+    1: "UNSAFE",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAFE": 0,
+    "UNSAFE": 1,
   }
 
 
@@ -193,21 +210,11 @@ class ServiceException(TException):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.errorCode is None:
-      raise TProtocol.TProtocolException(message='Required field errorCode is unset!')
     return
 
 
   def __str__(self):
     return repr(self)
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.errorCode)
-    value = (value * 31) ^ hash(self.errorMessage)
-    value = (value * 31) ^ hash(self.details)
-    value = (value * 31) ^ hash(self.callId)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

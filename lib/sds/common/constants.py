@@ -10,9 +10,9 @@
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 from ttypes import *
 
-DEFAULT_CLIENT_TIMEOUT = 10
-DEFAULT_ADMIN_CLIENT_TIMEOUT = 30
-DEFAULT_CLIENT_CONN_TIMEOUT = 3
+DEFAULT_CLIENT_TIMEOUT = 10000
+DEFAULT_ADMIN_CLIENT_TIMEOUT = 30000
+DEFAULT_CLIENT_CONN_TIMEOUT = 3000
 DEFAULT_SERVICE_ENDPOINT = "http://sds.api.xiaomi.com"
 DEFAULT_SECURE_SERVICE_ENDPOINT = "https://sds.api.xiaomi.com"
 API_ROOT_PATH = "/v1/api"

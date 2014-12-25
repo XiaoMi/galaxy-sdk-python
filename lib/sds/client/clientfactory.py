@@ -17,7 +17,7 @@ from sds.common.constants import AUTH_SERVICE_PATH
 from sds.common.constants import ADMIN_SERVICE_PATH
 from sds.common.constants import TABLE_SERVICE_PATH
 from sds.common.constants import Version
-from sds.errors.constants import ERROR_AUTO_BACKOFF
+from sds.errors.constants import ERROR_BACKOFF
 from sds.errors.constants import MAX_RETRY
 from sds.client.exceptions import SdsTransportException
 
@@ -78,8 +78,8 @@ class RetryableClient:
                 try:
                     return getattr(self.client, item)(*args)
                 except SdsTransportException, ex:
-                    if ERROR_AUTO_BACKOFF.has_key(ex.errorCode) and retry < MAX_RETRY:
-                        sec = ERROR_AUTO_BACKOFF[ex.errorCode] / 1000.0 * (1 << retry)
+                    if ERROR_BACKOFF.has_key(ex.errorCode) and retry < MAX_RETRY:
+                        sec = ERROR_BACKOFF[ex.errorCode] / 1000.0 * (1 << retry)
                         time.sleep(sec)
                         retry += 1
                     else:

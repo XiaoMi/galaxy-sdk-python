@@ -35,7 +35,7 @@ class Version(object):
     None, # 0
     (1, TType.I32, 'major', None, 1, ), # 1
     (2, TType.I32, 'minor', None, 0, ), # 2
-    (3, TType.STRING, 'patch', None, "d0bc1b06", ), # 3
+    (3, TType.STRING, 'patch', None, "e882eb61", ), # 3
     (4, TType.STRING, 'comments', None, "", ), # 4
   )
 
@@ -104,20 +104,8 @@ class Version(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.major is None:
-      raise TProtocol.TProtocolException(message='Required field major is unset!')
-    if self.minor is None:
-      raise TProtocol.TProtocolException(message='Required field minor is unset!')
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.major)
-    value = (value * 31) ^ hash(self.minor)
-    value = (value * 31) ^ hash(self.patch)
-    value = (value * 31) ^ hash(self.comments)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
