@@ -66,6 +66,7 @@ class ErrorCode(object):
   REQUEST_TOO_LARGE = 33
   BAD_REQUEST = 34
   TTRANSPORT_ERROR = 35
+  UNSUPPORTED_TPROTOCOL = 36
 
   _VALUES_TO_NAMES = {
     1: "INTERNAL_ERROR",
@@ -87,6 +88,7 @@ class ErrorCode(object):
     33: "REQUEST_TOO_LARGE",
     34: "BAD_REQUEST",
     35: "TTRANSPORT_ERROR",
+    36: "UNSUPPORTED_TPROTOCOL",
   }
 
   _NAMES_TO_VALUES = {
@@ -109,6 +111,7 @@ class ErrorCode(object):
     "REQUEST_TOO_LARGE": 33,
     "BAD_REQUEST": 34,
     "TTRANSPORT_ERROR": 35,
+    "UNSUPPORTED_TPROTOCOL": 36,
   }
 
 class RetryType(object):

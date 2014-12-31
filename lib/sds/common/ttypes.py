@@ -19,6 +19,26 @@ except:
   fastbinary = None
 
 
+class ThriftProtocol(object):
+  """
+  thrift传输协议
+  """
+  TCOMPACT = 0
+  TJSON = 1
+  TBINARY = 2
+
+  _VALUES_TO_NAMES = {
+    0: "TCOMPACT",
+    1: "TJSON",
+    2: "TBINARY",
+  }
+
+  _NAMES_TO_VALUES = {
+    "TCOMPACT": 0,
+    "TJSON": 1,
+    "TBINARY": 2,
+  }
+
 
 class Version(object):
   """
@@ -35,7 +55,7 @@ class Version(object):
     None, # 0
     (1, TType.I32, 'major', None, 1, ), # 1
     (2, TType.I32, 'minor', None, 0, ), # 2
-    (3, TType.STRING, 'patch', None, "e882eb61", ), # 3
+    (3, TType.STRING, 'patch', None, "03c3feba", ), # 3
     (4, TType.STRING, 'comments', None, "", ), # 4
   )
 

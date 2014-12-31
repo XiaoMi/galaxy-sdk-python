@@ -35,7 +35,7 @@ from sds.table.ttypes import Request
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-endpoint = "https://sds.api.xiaomi.com"
+endpoint = "http://cnbj-s0.sds.api.xiaomi.com"
 # Set yout AppKey and AppSecret
 appKey = ""
 appSecret = ""
