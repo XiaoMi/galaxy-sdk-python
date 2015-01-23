@@ -60,10 +60,7 @@ class ClientFactory:
         return RetryableClient(client, self.retryIfTimeout)
 
     def get_client(self, clazz, url, timeout):
-        http_client = SdsTHttpClient(self._credential, url, timeout)
-        http_client.setCustomHeaders({'User-Agent': self._agent})
-        thrift_protocol = TJSONProtocol(http_client)
-        return clazz(thrift_protocol, thrift_protocol)
+        return ThreadSafeClient(clazz, self._credential, url, timeout, self._agent)
 
 
 class RetryableClient:
@@ -91,3 +88,21 @@ class RetryableClient:
                         raise se
 
         return __call_with_retries
+
+class ThreadSafeClient:
+    def __init__(self, clazz, credential, url, timeout, agent):
+        self.clazz = clazz
+        self.credential = credential
+        self.url = url
+        self.timeout = timeout
+        self.agent = agent
+
+    def __getattr__(self, item):
+        def __call_with_new_client(*args):
+            http_client = SdsTHttpClient(self.credential, self.url, self.timeout)
+            http_client.setCustomHeaders({'User-Agent': self.agent})
+            thrift_protocol = TJSONProtocol(http_client)
+            client = self.clazz(thrift_protocol, thrift_protocol)
+            return getattr(client, item)(*args)
+
+        return __call_with_new_client
