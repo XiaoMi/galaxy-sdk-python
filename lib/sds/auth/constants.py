@@ -27,4 +27,3 @@ SUGGESTED_SIGNATURE_HEADERS = [
   "X-Xiaomi-Timestamp",
   "X-Xiaomi-Content-MD5",
 ]
-MAX_CONTENT_SIZE = 524288

@@ -67,6 +67,7 @@ class ErrorCode(object):
   BAD_REQUEST = 34
   TTRANSPORT_ERROR = 35
   UNSUPPORTED_TPROTOCOL = 36
+  REQUEST_TIMEOUT = 37
 
   _VALUES_TO_NAMES = {
     1: "INTERNAL_ERROR",
@@ -89,6 +90,7 @@ class ErrorCode(object):
     34: "BAD_REQUEST",
     35: "TTRANSPORT_ERROR",
     36: "UNSUPPORTED_TPROTOCOL",
+    37: "REQUEST_TIMEOUT",
   }
 
   _NAMES_TO_VALUES = {
@@ -112,6 +114,7 @@ class ErrorCode(object):
     "BAD_REQUEST": 34,
     "TTRANSPORT_ERROR": 35,
     "UNSUPPORTED_TPROTOCOL": 36,
+    "REQUEST_TIMEOUT": 37,
   }
 
 class RetryType(object):

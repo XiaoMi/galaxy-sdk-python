@@ -176,6 +176,12 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
+  def findAllAppInfo(self):
+    """
+    获取AppInfo列表,只包括appId和appName
+    """
+    pass
+
 
 class Client(sds.common.BaseService.Client, Iface):
   """
@@ -752,6 +758,36 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "queryMetrics failed: unknown result");
 
+  def findAllAppInfo(self):
+    """
+    获取AppInfo列表,只包括appId和appName
+    """
+    self.send_findAllAppInfo()
+    return self.recv_findAllAppInfo()
+
+  def send_findAllAppInfo(self):
+    self._oprot.writeMessageBegin('findAllAppInfo', TMessageType.CALL, self._seqid)
+    args = findAllAppInfo_args()
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_findAllAppInfo(self):
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
+      raise x
+    result = findAllAppInfo_result()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "findAllAppInfo failed: unknown result");
+
 
 class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -773,6 +809,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["getTableSplits"] = Processor.process_getTableSplits
     self._processMap["queryMetric"] = Processor.process_queryMetric
     self._processMap["queryMetrics"] = Processor.process_queryMetrics
+    self._processMap["findAllAppInfo"] = Processor.process_findAllAppInfo
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -1023,6 +1060,20 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("queryMetrics", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_findAllAppInfo(self, seqid, iprot, oprot):
+    args = findAllAppInfo_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = findAllAppInfo_result()
+    try:
+      result.success = self._handler.findAllAppInfo()
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("findAllAppInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -3285,6 +3336,129 @@ class queryMetrics_result(object):
       oprot.writeListBegin(TType.STRUCT, len(self.success))
       for iter79 in self.success:
         iter79.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class findAllAppInfo_args(object):
+
+  thrift_spec = (
+  )
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('findAllAppInfo_args')
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class findAllAppInfo_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(AppInfo, AppInfo.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype83, _size80) = iprot.readListBegin()
+          for _i84 in xrange(_size80):
+            _elem85 = AppInfo()
+            _elem85.read(iprot)
+            self.success.append(_elem85)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('findAllAppInfo_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter86 in self.success:
+        iter86.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:

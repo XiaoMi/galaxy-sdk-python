@@ -180,6 +180,7 @@ class AppInfo(object):
    - developerId: 小米开发者ID (注意：不同于小米ID)
    - tableMappings: 表到表ID的映射
    - oauthAppMapping: 应用OAuth信息, OAuth提供方到第三方OAuth应用信息(如OAuth AppID)的映射
+   - appName: 小米应用名称
   """
 
   thrift_spec = (
@@ -188,13 +189,15 @@ class AppInfo(object):
     (2, TType.STRING, 'developerId', None, None, ), # 2
     (3, TType.MAP, 'tableMappings', (TType.STRING,None,TType.STRING,None), None, ), # 3
     (4, TType.MAP, 'oauthAppMapping', (TType.STRING,None,TType.STRING,None), None, ), # 4
+    (5, TType.STRING, 'appName', None, None, ), # 5
   )
 
-  def __init__(self, appId=None, developerId=None, tableMappings=None, oauthAppMapping=None,):
+  def __init__(self, appId=None, developerId=None, tableMappings=None, oauthAppMapping=None, appName=None,):
     self.appId = appId
     self.developerId = developerId
     self.tableMappings = tableMappings
     self.oauthAppMapping = oauthAppMapping
+    self.appName = appName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -237,6 +240,11 @@ class AppInfo(object):
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.appName = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -270,6 +278,10 @@ class AppInfo(object):
         oprot.writeString(kiter16)
         oprot.writeString(viter17)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.appName is not None:
+      oprot.writeFieldBegin('appName', TType.STRING, 5)
+      oprot.writeString(self.appName)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

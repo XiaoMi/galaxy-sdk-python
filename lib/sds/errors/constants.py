@@ -13,6 +13,7 @@ from ttypes import *
 ERROR_BACKOFF = {
     2 : 1000,
     25 : 1000,
+    37 : 0,
     32 : 0,
     1 : 1000,
     35 : 1000,
@@ -20,6 +21,7 @@ ERROR_BACKOFF = {
 ERROR_RETRY_TYPE = {
     2 :   0,
     25 :   0,
+    37 :   0,
     32 :   0,
     1 :   1,
     35 :   1,

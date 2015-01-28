@@ -209,6 +209,23 @@ class TableState(object):
     "LAZY_DELETE": 8,
   }
 
+class ScanOp(object):
+  COUNT = 0
+  DELETE = 1
+  UPDATE = 2
+
+  _VALUES_TO_NAMES = {
+    0: "COUNT",
+    1: "DELETE",
+    2: "UPDATE",
+  }
+
+  _NAMES_TO_VALUES = {
+    "COUNT": 0,
+    "DELETE": 1,
+    "UPDATE": 2,
+  }
+
 class BatchOp(object):
   GET = 1
   PUT = 2
@@ -1813,6 +1830,79 @@ class TableSplit(object):
   def __ne__(self, other):
     return not (self == other)
 
+class ScanAction(object):
+  """
+  Attributes:
+   - action: scan时连带操作
+   - request: 实际操作，不需要指定key
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'action', None, None, ), # 1
+    (2, TType.STRUCT, 'request', (Request, Request.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, action=None, request=None,):
+    self.action = action
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.action = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.request = Request()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ScanAction')
+    if self.action is not None:
+      oprot.writeFieldBegin('action', TType.I32, 1)
+      oprot.writeI32(self.action)
+      oprot.writeFieldEnd()
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 2)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class GetRequest(object):
   """
   Attributes:
@@ -2520,6 +2610,8 @@ class ScanRequest(object):
   注意：逆序查询效率较低，谨慎使用，建议设置对应的Key为逆序存储
    - inGlobalOrder: 是否全局有序扫描
    - cacheResult: 是否将结果放入cache，对于类似MapReduce的大批量扫描的应用应该关闭此选项
+   - lookAheadStep: 查找属性在seek之前进行顺序skip的次数。非必要情况，请不要设置
+   - action: scan时的连带操作，包括COUNT，DELETE和UPDATE
   """
 
   thrift_spec = (
@@ -2534,9 +2626,11 @@ class ScanRequest(object):
     (8, TType.BOOL, 'reverse', None, False, ), # 8
     (9, TType.BOOL, 'inGlobalOrder', None, True, ), # 9
     (10, TType.BOOL, 'cacheResult', None, True, ), # 10
+    (11, TType.I32, 'lookAheadStep', None, 0, ), # 11
+    (12, TType.STRUCT, 'action', (ScanAction, ScanAction.thrift_spec), None, ), # 12
   )
 
-  def __init__(self, tableName=None, indexName=None, startKey=None, stopKey=None, attributes=None, condition=None, limit=thrift_spec[7][4], reverse=thrift_spec[8][4], inGlobalOrder=thrift_spec[9][4], cacheResult=thrift_spec[10][4],):
+  def __init__(self, tableName=None, indexName=None, startKey=None, stopKey=None, attributes=None, condition=None, limit=thrift_spec[7][4], reverse=thrift_spec[8][4], inGlobalOrder=thrift_spec[9][4], cacheResult=thrift_spec[10][4], lookAheadStep=thrift_spec[11][4], action=None,):
     self.tableName = tableName
     self.indexName = indexName
     self.startKey = startKey
@@ -2547,6 +2641,8 @@ class ScanRequest(object):
     self.reverse = reverse
     self.inGlobalOrder = inGlobalOrder
     self.cacheResult = cacheResult
+    self.lookAheadStep = lookAheadStep
+    self.action = action
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2626,6 +2722,17 @@ class ScanRequest(object):
           self.cacheResult = iprot.readBool();
         else:
           iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.I32:
+          self.lookAheadStep = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.STRUCT:
+          self.action = ScanAction()
+          self.action.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2687,6 +2794,14 @@ class ScanRequest(object):
       oprot.writeFieldBegin('cacheResult', TType.BOOL, 10)
       oprot.writeBool(self.cacheResult)
       oprot.writeFieldEnd()
+    if self.lookAheadStep is not None:
+      oprot.writeFieldBegin('lookAheadStep', TType.I32, 11)
+      oprot.writeI32(self.lookAheadStep)
+      oprot.writeFieldEnd()
+    if self.action is not None:
+      oprot.writeFieldBegin('action', TType.STRUCT, 12)
+      self.action.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -2710,17 +2825,20 @@ class ScanResult(object):
   Attributes:
    - nextStartKey: 下一个需要扫描的记录主键，NULL表示达到制定的结束位置
    - records: 扫描的记录
+   - throttled: 是否超过表的qps quota
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.MAP, 'nextStartKey', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
     (2, TType.LIST, 'records', (TType.MAP,(TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec))), None, ), # 2
+    (3, TType.BOOL, 'throttled', None, None, ), # 3
   )
 
-  def __init__(self, nextStartKey=None, records=None,):
+  def __init__(self, nextStartKey=None, records=None, throttled=None,):
     self.nextStartKey = nextStartKey
     self.records = records
+    self.throttled = throttled
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2760,6 +2878,11 @@ class ScanResult(object):
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.BOOL:
+          self.throttled = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2788,6 +2911,10 @@ class ScanResult(object):
           viter262.write(oprot)
         oprot.writeMapEnd()
       oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.throttled is not None:
+      oprot.writeFieldBegin('throttled', TType.BOOL, 3)
+      oprot.writeBool(self.throttled)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
