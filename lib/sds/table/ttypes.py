@@ -1830,79 +1830,6 @@ class TableSplit(object):
   def __ne__(self, other):
     return not (self == other)
 
-class ScanAction(object):
-  """
-  Attributes:
-   - action: scan时连带操作
-   - request: 实际操作，不需要指定key
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.I32, 'action', None, None, ), # 1
-    (2, TType.STRUCT, 'request', (Request, Request.thrift_spec), None, ), # 2
-  )
-
-  def __init__(self, action=None, request=None,):
-    self.action = action
-    self.request = request
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.I32:
-          self.action = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.request = Request()
-          self.request.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('ScanAction')
-    if self.action is not None:
-      oprot.writeFieldBegin('action', TType.I32, 1)
-      oprot.writeI32(self.action)
-      oprot.writeFieldEnd()
-    if self.request is not None:
-      oprot.writeFieldBegin('request', TType.STRUCT, 2)
-      self.request.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class GetRequest(object):
   """
   Attributes:
@@ -2587,6 +2514,179 @@ class RemoveResult(object):
   def __ne__(self, other):
     return not (self == other)
 
+class Request(object):
+  """
+  Attributes:
+   - getRequest: 随机读操作
+   - putRequest: 写入操作，不支持条件
+   - incrementRequest: 自增操作
+   - removeRequest: 删除操作，不支持条件
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'getRequest', (GetRequest, GetRequest.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'putRequest', (PutRequest, PutRequest.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'incrementRequest', (IncrementRequest, IncrementRequest.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'removeRequest', (RemoveRequest, RemoveRequest.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, getRequest=None, putRequest=None, incrementRequest=None, removeRequest=None,):
+    self.getRequest = getRequest
+    self.putRequest = putRequest
+    self.incrementRequest = incrementRequest
+    self.removeRequest = removeRequest
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.getRequest = GetRequest()
+          self.getRequest.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.putRequest = PutRequest()
+          self.putRequest.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.incrementRequest = IncrementRequest()
+          self.incrementRequest.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.removeRequest = RemoveRequest()
+          self.removeRequest.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('Request')
+    if self.getRequest is not None:
+      oprot.writeFieldBegin('getRequest', TType.STRUCT, 1)
+      self.getRequest.write(oprot)
+      oprot.writeFieldEnd()
+    if self.putRequest is not None:
+      oprot.writeFieldBegin('putRequest', TType.STRUCT, 2)
+      self.putRequest.write(oprot)
+      oprot.writeFieldEnd()
+    if self.incrementRequest is not None:
+      oprot.writeFieldBegin('incrementRequest', TType.STRUCT, 3)
+      self.incrementRequest.write(oprot)
+      oprot.writeFieldEnd()
+    if self.removeRequest is not None:
+      oprot.writeFieldBegin('removeRequest', TType.STRUCT, 4)
+      self.removeRequest.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ScanAction(object):
+  """
+  Attributes:
+   - action: scan时连带操作
+   - request: 实际操作，不需要指定key
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'action', None, None, ), # 1
+    (2, TType.STRUCT, 'request', (Request, Request.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, action=None, request=None,):
+    self.action = action
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.action = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.request = Request()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ScanAction')
+    if self.action is not None:
+      oprot.writeFieldBegin('action', TType.I32, 1)
+      oprot.writeI32(self.action)
+      oprot.writeFieldEnd()
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 2)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class ScanRequest(object):
   """
   范围查询，支持主键和二级索引查询，
@@ -2915,106 +3015,6 @@ class ScanResult(object):
     if self.throttled is not None:
       oprot.writeFieldBegin('throttled', TType.BOOL, 3)
       oprot.writeBool(self.throttled)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class Request(object):
-  """
-  Attributes:
-   - getRequest: 随机读操作
-   - putRequest: 写入操作，不支持条件
-   - incrementRequest: 自增操作
-   - removeRequest: 删除操作，不支持条件
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'getRequest', (GetRequest, GetRequest.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'putRequest', (PutRequest, PutRequest.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'incrementRequest', (IncrementRequest, IncrementRequest.thrift_spec), None, ), # 3
-    (4, TType.STRUCT, 'removeRequest', (RemoveRequest, RemoveRequest.thrift_spec), None, ), # 4
-  )
-
-  def __init__(self, getRequest=None, putRequest=None, incrementRequest=None, removeRequest=None,):
-    self.getRequest = getRequest
-    self.putRequest = putRequest
-    self.incrementRequest = incrementRequest
-    self.removeRequest = removeRequest
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.getRequest = GetRequest()
-          self.getRequest.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.putRequest = PutRequest()
-          self.putRequest.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.incrementRequest = IncrementRequest()
-          self.incrementRequest.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRUCT:
-          self.removeRequest = RemoveRequest()
-          self.removeRequest.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('Request')
-    if self.getRequest is not None:
-      oprot.writeFieldBegin('getRequest', TType.STRUCT, 1)
-      self.getRequest.write(oprot)
-      oprot.writeFieldEnd()
-    if self.putRequest is not None:
-      oprot.writeFieldBegin('putRequest', TType.STRUCT, 2)
-      self.putRequest.write(oprot)
-      oprot.writeFieldEnd()
-    if self.incrementRequest is not None:
-      oprot.writeFieldBegin('incrementRequest', TType.STRUCT, 3)
-      self.incrementRequest.write(oprot)
-      oprot.writeFieldEnd()
-    if self.removeRequest is not None:
-      oprot.writeFieldBegin('removeRequest', TType.STRUCT, 4)
-      self.removeRequest.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
