@@ -141,6 +141,7 @@ class ServiceException(TException):
    - errorMessage: 错误信息
    - details: 错误信息细节
    - callId: RPC调用标识
+   - requestId: 请求标识
   """
 
   thrift_spec = (
@@ -149,13 +150,15 @@ class ServiceException(TException):
     (2, TType.STRING, 'errorMessage', None, None, ), # 2
     (3, TType.STRING, 'details', None, None, ), # 3
     (4, TType.STRING, 'callId', None, None, ), # 4
+    (5, TType.STRING, 'requestId', None, None, ), # 5
   )
 
-  def __init__(self, errorCode=None, errorMessage=None, details=None, callId=None,):
+  def __init__(self, errorCode=None, errorMessage=None, details=None, callId=None, requestId=None,):
     self.errorCode = errorCode
     self.errorMessage = errorMessage
     self.details = details
     self.callId = callId
+    self.requestId = requestId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -186,6 +189,11 @@ class ServiceException(TException):
           self.callId = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.requestId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -211,6 +219,10 @@ class ServiceException(TException):
     if self.callId is not None:
       oprot.writeFieldBegin('callId', TType.STRING, 4)
       oprot.writeString(self.callId)
+      oprot.writeFieldEnd()
+    if self.requestId is not None:
+      oprot.writeFieldBegin('requestId', TType.STRING, 5)
+      oprot.writeString(self.requestId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

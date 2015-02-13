@@ -4,6 +4,8 @@ import sys
 import platform
 import time
 import socket
+import random
+import uuid
 
 from thrift.protocol.TJSONProtocol import TJSONProtocol
 from sds.auth import AuthService
@@ -99,10 +101,16 @@ class ThreadSafeClient:
 
     def __getattr__(self, item):
         def __call_with_new_client(*args):
-            http_client = SdsTHttpClient(self.credential, self.url, self.timeout)
+            requestId = self.generateRandomId(8)
+            uri = '%s?requestId=%s' % (self.url, requestId)
+            http_client = SdsTHttpClient(self.credential, uri, self.timeout)
             http_client.setCustomHeaders({'User-Agent': self.agent})
             thrift_protocol = TJSONProtocol(http_client)
             client = self.clazz(thrift_protocol, thrift_protocol)
             return getattr(client, item)(*args)
 
         return __call_with_new_client
+
+    def generateRandomId(self, length):
+        requestId = str(uuid.uuid4())
+        return requestId[0:8]
