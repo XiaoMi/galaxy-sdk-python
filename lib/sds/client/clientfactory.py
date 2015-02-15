@@ -102,7 +102,7 @@ class ThreadSafeClient:
     def __getattr__(self, item):
         def __call_with_new_client(*args):
             requestId = self.generateRandomId(8)
-            uri = '%s?requestId=%s' % (self.url, requestId)
+            uri = '%s?id=%s&type=%s' % (self.url, requestId, item)
             http_client = SdsTHttpClient(self.credential, uri, self.timeout)
             http_client.setCustomHeaders({'User-Agent': self.agent})
             thrift_protocol = TJSONProtocol(http_client)
