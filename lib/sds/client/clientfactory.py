@@ -83,16 +83,11 @@ class RetryableClient:
                         retry += 1
                     else:
                         raise ex
-                except socket.timeout, stex:
+                except socket.timeout, se:
                     if self.retryIfTimeout and retry < MAX_RETRY:
                         retry += 1
                     else:
-                        raise stex
-                except socket.error, seex:
-                    if self.retryIfTimeout:
-                        retry += 1
-                    else:
-                        raise seex
+                        raise se
 
         return __call_with_retries
 
