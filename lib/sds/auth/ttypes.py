@@ -175,6 +175,13 @@ class Credential(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.type)
+    value = (value * 31) ^ hash(self.secretKeyId)
+    value = (value * 31) ^ hash(self.secretKey)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -204,6 +211,7 @@ class HttpAuthorizationHeader(object):
    - signedHeaders: 包含所有签名涉及到的部分，建议使用SUGGESTED_SIGNATURE_HEADERS，
   服务端未强制必须使用所列headers，定制的client自己负责签名的安全强度，
   使用签名时必须设置
+   - supportAccountKey
   """
 
   thrift_spec = (
@@ -216,9 +224,10 @@ class HttpAuthorizationHeader(object):
     (6, TType.I32, 'algorithm', None, None, ), # 6
     (7, TType.LIST, 'signedHeaders', (TType.STRING,None), [
     ], ), # 7
+    (8, TType.BOOL, 'supportAccountKey', None, False, ), # 8
   )
 
-  def __init__(self, version=thrift_spec[1][4], userType=thrift_spec[2][4], secretKeyId=None, secretKey=None, signature=None, algorithm=None, signedHeaders=thrift_spec[7][4],):
+  def __init__(self, version=thrift_spec[1][4], userType=thrift_spec[2][4], secretKeyId=None, secretKey=None, signature=None, algorithm=None, signedHeaders=thrift_spec[7][4], supportAccountKey=thrift_spec[8][4],):
     self.version = version
     self.userType = userType
     self.secretKeyId = secretKeyId
@@ -229,6 +238,7 @@ class HttpAuthorizationHeader(object):
       signedHeaders = [
     ]
     self.signedHeaders = signedHeaders
+    self.supportAccountKey = supportAccountKey
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -279,6 +289,11 @@ class HttpAuthorizationHeader(object):
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.BOOL:
+          self.supportAccountKey = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -320,12 +335,28 @@ class HttpAuthorizationHeader(object):
         oprot.writeString(iter6)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.supportAccountKey is not None:
+      oprot.writeFieldBegin('supportAccountKey', TType.BOOL, 8)
+      oprot.writeBool(self.supportAccountKey)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.version)
+    value = (value * 31) ^ hash(self.userType)
+    value = (value * 31) ^ hash(self.secretKeyId)
+    value = (value * 31) ^ hash(self.secretKey)
+    value = (value * 31) ^ hash(self.signature)
+    value = (value * 31) ^ hash(self.algorithm)
+    value = (value * 31) ^ hash(self.signedHeaders)
+    value = (value * 31) ^ hash(self.supportAccountKey)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

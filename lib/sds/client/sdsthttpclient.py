@@ -40,12 +40,14 @@ from sds.auth.constants import HttpAuthorizationHeader
 from sds.auth.constants import MacAlgorithm
 from sds.errors.constants import HttpStatusCode
 from sds.client.exceptions import SdsTransportException
+from sds.common.ttypes import ThriftProtocol
+from sds.common.constants import THRIFT_HEADER_MAP
 
 
 class SdsTHttpClient(TTransportBase):
     """Http implementation of TTransport base for SDS."""
 
-    def __init__(self, credential, uri_or_host, timeout=None):
+    def __init__(self, credential, uri_or_host, timeout = None, thrift_protocol = ThriftProtocol.TBINARY):
         self.credential = credential
         parsed = urlparse.urlparse(uri_or_host)
         self.scheme = parsed.scheme
@@ -59,6 +61,7 @@ class SdsTHttpClient(TTransportBase):
         if parsed.query:
             self.path += '?%s' % parsed.query
         self.__timeout = timeout
+        self.__protocol = thrift_protocol
         self.__wbuf = StringIO()
         self.__http = None
         self.__custom_headers = None
@@ -120,7 +123,7 @@ class SdsTHttpClient(TTransportBase):
         # Write headers
         self.__http.putheader('Host', self.host)
         self.__http.putheader('User-Agent', 'Python/SdsTHttpClient')
-        self.__http.putheader('Content-Type', 'application/x-thrift')
+        self.__http.putheader('Content-Type', THRIFT_HEADER_MAP[self.__protocol])
         self.__http.putheader('Content-Length', str(len(data)))
 
         if not self.__custom_headers or 'User-Agent' not in self.__custom_headers:

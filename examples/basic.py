@@ -29,18 +29,27 @@ from sds.table.ttypes import BatchRequestItem
 from sds.table.ttypes import BatchRequest
 from sds.table.ttypes import BatchOp
 from sds.table.ttypes import Request
-
+from sds.common.ttypes import ThriftProtocol
 
 # change default encodings if unicode is used
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 endpoint = "http://cnbj-s0.sds.api.xiaomi.com"
-# Set yout AppKey and AppSecret
+# Set your AppKey and AppSecret
 appKey = ""
 appSecret = ""
 credential = Credential(UserType.APP_SECRET, appKey, appSecret)
+
+# based on Binary transport protocol as default
 client_factory = ClientFactory(credential, True)
+
+# based on JSON transport protocol
+# client_factory = ClientFactory(credential, True, ThriftProtocol.TJSON)
+
+# based on Compact Binary transport protocol
+# client_factory = ClientFactory(credential, True, ThriftProtocol.TCOMPACT)
+
 # Clients are not thread-safe
 admin_client = client_factory.new_admin_client(endpoint + ADMIN_SERVICE_PATH,
                                                DEFAULT_ADMIN_CLIENT_TIMEOUT)

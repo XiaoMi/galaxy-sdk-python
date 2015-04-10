@@ -7,7 +7,6 @@ import socket
 import random
 import uuid
 
-from thrift.protocol.TJSONProtocol import TJSONProtocol
 from sds.auth import AuthService
 from sds.admin import AdminService
 from sds.table import TableService
@@ -22,12 +21,14 @@ from sds.common.constants import Version
 from sds.errors.constants import ERROR_BACKOFF
 from sds.errors.constants import MAX_RETRY
 from sds.client.exceptions import SdsTransportException
-
+from sds.common.ttypes import ThriftProtocol
+from sds.common.constants import THRIFT_PROTOCOL_MAP
 
 class ClientFactory:
-    def __init__(self, credential, retryIfTimeout = False):
+    def __init__(self, credential, retry_if_timeout = False, thrift_protocol = ThriftProtocol.TBINARY):
         self._credential = credential
-        self.retryIfTimeout = retryIfTimeout
+        self._retry_if_timeout = retry_if_timeout
+        self._protocol = thrift_protocol
         ver = Version()
         version = "%s.%s.%s" % (ver.major, ver.minor, ver.patch)
         script = os.path.basename(sys.argv[0])
@@ -43,7 +44,7 @@ class ClientFactory:
 
     def new_auth_client(self, url, timeout):
         client = self.get_client(AuthService.Client, url, timeout)
-        return RetryableClient(client, self.retryIfTimeout)
+        return RetryableClient(client, self._retry_if_timeout)
 
     def new_default_admin_client(self):
         return self.new_admin_client(DEFAULT_SERVICE_ENDPOINT + ADMIN_SERVICE_PATH,
@@ -51,7 +52,7 @@ class ClientFactory:
 
     def new_admin_client(self, url, timeout):
         client = self.get_client(AdminService.Client, url, timeout)
-        return RetryableClient(client, self.retryIfTimeout)
+        return RetryableClient(client, self._retry_if_timeout)
 
     def new_default_table_client(self):
         return self.new_table_client(DEFAULT_SERVICE_ENDPOINT + TABLE_SERVICE_PATH,
@@ -59,10 +60,10 @@ class ClientFactory:
 
     def new_table_client(self, url, timeout):
         client = self.get_client(TableService.Client, url, timeout)
-        return RetryableClient(client, self.retryIfTimeout)
+        return RetryableClient(client, self._retry_if_timeout)
 
     def get_client(self, clazz, url, timeout):
-        return ThreadSafeClient(clazz, self._credential, url, timeout, self._agent)
+        return ThreadSafeClient(clazz, self._credential, url, timeout, self._agent, self._protocol)
 
 
 class RetryableClient:
@@ -92,21 +93,26 @@ class RetryableClient:
         return __call_with_retries
 
 class ThreadSafeClient:
-    def __init__(self, clazz, credential, url, timeout, agent):
+    def __init__(self, clazz, credential, url, timeout, agent, thrift_protocol):
         self.clazz = clazz
         self.credential = credential
         self.url = url
         self.timeout = timeout
         self.agent = agent
+        self.protocol = thrift_protocol
 
     def __getattr__(self, item):
         def __call_with_new_client(*args):
             requestId = self.generateRandomId(8)
             uri = '%s?id=%s&type=%s' % (self.url, requestId, item)
-            http_client = SdsTHttpClient(self.credential, uri, self.timeout)
+            http_client = SdsTHttpClient(self.credential, uri, self.timeout, self.protocol)
             http_client.setCustomHeaders({'User-Agent': self.agent})
-            thrift_protocol = TJSONProtocol(http_client)
-            client = self.clazz(thrift_protocol, thrift_protocol)
+
+            protocol_class = THRIFT_PROTOCOL_MAP[self.protocol]
+            protocol_module = 'thrift.protocol.' + protocol_class
+            mod = __import__(protocol_module, fromlist=[protocol_class])
+            protocol_instance = getattr(mod, protocol_class)(http_client)
+            client = self.clazz(protocol_instance, protocol_instance)
             return getattr(client, item)(*args)
 
         return __call_with_new_client

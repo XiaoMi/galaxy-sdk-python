@@ -557,6 +557,27 @@ class Value(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.boolValue)
+    value = (value * 31) ^ hash(self.int8Value)
+    value = (value * 31) ^ hash(self.int16Value)
+    value = (value * 31) ^ hash(self.int32Value)
+    value = (value * 31) ^ hash(self.int64Value)
+    value = (value * 31) ^ hash(self.doubleValue)
+    value = (value * 31) ^ hash(self.stringValue)
+    value = (value * 31) ^ hash(self.binaryValue)
+    value = (value * 31) ^ hash(self.boolSetValue)
+    value = (value * 31) ^ hash(self.int8SetValue)
+    value = (value * 31) ^ hash(self.int16SetValue)
+    value = (value * 31) ^ hash(self.int32SetValue)
+    value = (value * 31) ^ hash(self.int64SetValue)
+    value = (value * 31) ^ hash(self.doubleSetValue)
+    value = (value * 31) ^ hash(self.stringSetValue)
+    value = (value * 31) ^ hash(self.binarySetValue)
+    value = (value * 31) ^ hash(self.nullValue)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -632,6 +653,12 @@ class Datum(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.type)
+    value = (value * 31) ^ hash(self.value)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -706,6 +733,12 @@ class ProvisionThroughput(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.readCapacity)
+    value = (value * 31) ^ hash(self.writeCapacity)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -767,6 +800,11 @@ class TableQuota(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.size)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -839,6 +877,12 @@ class KeySpec(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.attribute)
+    value = (value * 31) ^ hash(self.asc)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -955,6 +999,14 @@ class LocalSecondaryIndexSpec(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.indexSchema)
+    value = (value * 31) ^ hash(self.projections)
+    value = (value * 31) ^ hash(self.consistencyMode)
+    value = (value * 31) ^ hash(self.unique)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1038,6 +1090,12 @@ class EntityGroupSpec(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.attributes)
+    value = (value * 31) ^ hash(self.enableHash)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1206,6 +1264,17 @@ class TableSchema(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.version)
+    value = (value * 31) ^ hash(self.entityGroup)
+    value = (value * 31) ^ hash(self.primaryIndex)
+    value = (value * 31) ^ hash(self.secondaryIndexes)
+    value = (value * 31) ^ hash(self.attributes)
+    value = (value * 31) ^ hash(self.ttl)
+    value = (value * 31) ^ hash(self.preSplits)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1350,6 +1419,16 @@ class TableMetadata(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableId)
+    value = (value * 31) ^ hash(self.developerId)
+    value = (value * 31) ^ hash(self.appAcl)
+    value = (value * 31) ^ hash(self.quota)
+    value = (value * 31) ^ hash(self.throughput)
+    value = (value * 31) ^ hash(self.description)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1425,6 +1504,12 @@ class TableSpec(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.schema)
+    value = (value * 31) ^ hash(self.metadata)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1548,6 +1633,16 @@ class TableStatus(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.state)
+    value = (value * 31) ^ hash(self.createTime)
+    value = (value * 31) ^ hash(self.alterTime)
+    value = (value * 31) ^ hash(self.statTime)
+    value = (value * 31) ^ hash(self.size)
+    value = (value * 31) ^ hash(self.rowCount)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1636,6 +1731,13 @@ class TableInfo(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.name)
+    value = (value * 31) ^ hash(self.spec)
+    value = (value * 31) ^ hash(self.status)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1655,6 +1757,7 @@ class SimpleCondition(object):
    - operator
    - field
    - value
+   - rowExist
   """
 
   thrift_spec = (
@@ -1662,12 +1765,14 @@ class SimpleCondition(object):
     (1, TType.I32, 'operator', None, None, ), # 1
     (2, TType.STRING, 'field', None, None, ), # 2
     (3, TType.STRUCT, 'value', (Datum, Datum.thrift_spec), None, ), # 3
+    (4, TType.BOOL, 'rowExist', None, None, ), # 4
   )
 
-  def __init__(self, operator=None, field=None, value=None,):
+  def __init__(self, operator=None, field=None, value=None, rowExist=None,):
     self.operator = operator
     self.field = field
     self.value = value
+    self.rowExist = rowExist
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1694,6 +1799,11 @@ class SimpleCondition(object):
           self.value.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.BOOL:
+          self.rowExist = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1716,12 +1826,24 @@ class SimpleCondition(object):
       oprot.writeFieldBegin('value', TType.STRUCT, 3)
       self.value.write(oprot)
       oprot.writeFieldEnd()
+    if self.rowExist is not None:
+      oprot.writeFieldBegin('rowExist', TType.BOOL, 4)
+      oprot.writeBool(self.rowExist)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.operator)
+    value = (value * 31) ^ hash(self.field)
+    value = (value * 31) ^ hash(self.value)
+    value = (value * 31) ^ hash(self.rowExist)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1818,6 +1940,12 @@ class TableSplit(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.startKey)
+    value = (value * 31) ^ hash(self.stopKey)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1922,6 +2050,13 @@ class GetRequest(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.keys)
+    value = (value * 31) ^ hash(self.attributes)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1992,6 +2127,11 @@ class GetResult(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.item)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2089,6 +2229,13 @@ class PutRequest(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.record)
+    value = (value * 31) ^ hash(self.condition)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2148,6 +2295,11 @@ class PutResult(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2255,6 +2407,13 @@ class IncrementRequest(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.keys)
+    value = (value * 31) ^ hash(self.amounts)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2325,6 +2484,11 @@ class IncrementResult(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.amounts)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2443,6 +2607,14 @@ class RemoveRequest(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.keys)
+    value = (value * 31) ^ hash(self.attributes)
+    value = (value * 31) ^ hash(self.condition)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2502,6 +2674,11 @@ class RemoveResult(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2603,6 +2780,14 @@ class Request(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.getRequest)
+    value = (value * 31) ^ hash(self.putRequest)
+    value = (value * 31) ^ hash(self.incrementRequest)
+    value = (value * 31) ^ hash(self.removeRequest)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2675,6 +2860,12 @@ class ScanAction(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.action)
+    value = (value * 31) ^ hash(self.request)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2909,6 +3100,22 @@ class ScanRequest(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.indexName)
+    value = (value * 31) ^ hash(self.startKey)
+    value = (value * 31) ^ hash(self.stopKey)
+    value = (value * 31) ^ hash(self.attributes)
+    value = (value * 31) ^ hash(self.condition)
+    value = (value * 31) ^ hash(self.limit)
+    value = (value * 31) ^ hash(self.reverse)
+    value = (value * 31) ^ hash(self.inGlobalOrder)
+    value = (value * 31) ^ hash(self.cacheResult)
+    value = (value * 31) ^ hash(self.lookAheadStep)
+    value = (value * 31) ^ hash(self.action)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3023,6 +3230,13 @@ class ScanResult(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.nextStartKey)
+    value = (value * 31) ^ hash(self.records)
+    value = (value * 31) ^ hash(self.throttled)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3095,6 +3309,12 @@ class BatchRequestItem(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.action)
+    value = (value * 31) ^ hash(self.request)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3196,6 +3416,14 @@ class Result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.getResult)
+    value = (value * 31) ^ hash(self.putResult)
+    value = (value * 31) ^ hash(self.incrementResult)
+    value = (value * 31) ^ hash(self.removeResult)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3294,6 +3522,14 @@ class BatchResultItem(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.action)
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.result)
+    value = (value * 31) ^ hash(self.serviceException)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3363,6 +3599,11 @@ class BatchRequest(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.items)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3431,6 +3672,11 @@ class BatchResult(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.items)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

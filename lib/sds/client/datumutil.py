@@ -3,9 +3,10 @@ import base64
 from sds.table.ttypes import DataType
 from sds.table.ttypes import Datum
 from sds.table.ttypes import Value
+from sds.common.ttypes import ThriftProtocol
 
 
-def datum(datavalue, datatype=None):
+def datum(datavalue, datatype=None, thrift_protocol=ThriftProtocol.TBINARY):
     if datavalue is None:
         raise Exception("Datum must not be null")
     if datatype is None:
@@ -40,8 +41,11 @@ def datum(datavalue, datatype=None):
             return Datum(value=Value(stringValue=datavalue), type=datatype)
         elif datatype == DataType.BINARY:
             # TODO support StringIO for complete binary support
-            return Datum(value=Value(binaryValue=base64.encodestring(datavalue)),
-                         type=datatype)
+            if thrift_protocol == ThriftProtocol.TBINARY \
+                    or thrift_protocol == ThriftProtocol.TCOMPACT:
+                return Datum(value=Value(binaryValue=datavalue), type=datatype)
+            else:
+                return Datum(value=Value(binaryValue=base64.encodestring(datavalue)), type=datatype)
         elif datatype == DataType.BOOL_SET:
             return Datum(value=Value(boolSetValue=datavalue), type=datatype)
         elif datatype == DataType.INT8_SET:
@@ -62,7 +66,7 @@ def datum(datavalue, datatype=None):
             raise Exception("Unsupported data type: %s" % datatype)
 
 
-def value(dat):
+def value(dat, thrift_protocol=ThriftProtocol.TBINARY):
     if dat is None:
         return None
 
@@ -85,7 +89,11 @@ def value(dat):
     elif datatype == DataType.STRING:
         return datavalue.stringValue
     elif datatype == DataType.BINARY:
-        return base64.decodestring(datavalue.binaryValue)
+        if thrift_protocol == ThriftProtocol.TBINARY \
+                or thrift_protocol == ThriftProtocol.TCOMPACT:
+            return datavalue.binaryValue
+        else:
+            return base64.decodestring(datavalue.binaryValue)
     elif datatype == DataType.BOOL_SET:
         return datavalue.boolSetValue
     elif datatype == DataType.INT8_SET:
@@ -106,5 +114,5 @@ def value(dat):
         raise Exception("Unsupported data type: %s" % datatype)
 
 
-def values(dat):
-    return dict((k, value(dat[k])) for k in dat.iterkeys())
+def values(dat, thrift_protocol=ThriftProtocol.TBINARY):
+    return dict((k, value(dat[k], thrift_protocol)) for k in dat.iterkeys())

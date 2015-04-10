@@ -234,6 +234,15 @@ class ServiceException(TException):
   def __str__(self):
     return repr(self)
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.errorCode)
+    value = (value * 31) ^ hash(self.errorMessage)
+    value = (value * 31) ^ hash(self.details)
+    value = (value * 31) ^ hash(self.callId)
+    value = (value * 31) ^ hash(self.requestId)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]

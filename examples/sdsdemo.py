@@ -31,7 +31,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 endpoint = "http://cnbj-s0.sds.api.xiaomi.com"
-# Set yout AppKey and AppSecret
+# Set your AppKey and AppSecret
 appKey = ""
 appSecret = ""
 credential = Credential(UserType.APP_SECRET, appKey, appSecret)
