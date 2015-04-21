@@ -28,9 +28,10 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  AppInfo getAppInfo(string appId)')
   print('   findAllApps()')
   print('   findAllTables()')
+  print('   cleanAllLazyDroppedTables()')
   print('  TableInfo createTable(string tableName, TableSpec tableSpec)')
   print('  void dropTable(string tableName)')
-  print('  void lazyDropTable(string tableName)')
+  print('  void restoreTable(string tableName)')
   print('  void alterTable(string tableName, TableSpec tableSpec)')
   print('  void cloneTable(string srcName, string destTable, bool flushTable)')
   print('  void disableTable(string tableName)')
@@ -125,6 +126,12 @@ elif cmd == 'findAllTables':
     sys.exit(1)
   pp.pprint(client.findAllTables())
 
+elif cmd == 'cleanAllLazyDroppedTables':
+  if len(args) != 0:
+    print('cleanAllLazyDroppedTables requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.cleanAllLazyDroppedTables())
+
 elif cmd == 'createTable':
   if len(args) != 2:
     print('createTable requires 2 args')
@@ -137,11 +144,11 @@ elif cmd == 'dropTable':
     sys.exit(1)
   pp.pprint(client.dropTable(args[0],))
 
-elif cmd == 'lazyDropTable':
+elif cmd == 'restoreTable':
   if len(args) != 1:
-    print('lazyDropTable requires 1 args')
+    print('restoreTable requires 1 args')
     sys.exit(1)
-  pp.pprint(client.lazyDropTable(args[0],))
+  pp.pprint(client.restoreTable(args[0],))
 
 elif cmd == 'alterTable':
   if len(args) != 2:

@@ -53,6 +53,12 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
+  def cleanAllLazyDroppedTables(self):
+    """
+    清除所有延迟删除的表
+    """
+    pass
+
   def createTable(self, tableName, tableSpec):
     """
     创建表
@@ -72,9 +78,9 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def lazyDropTable(self, tableName):
+  def restoreTable(self, tableName):
     """
-    延迟删除表
+    恢复表
 
     Parameters:
      - tableName
@@ -320,6 +326,37 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "findAllTables failed: unknown result");
 
+  def cleanAllLazyDroppedTables(self):
+    """
+    清除所有延迟删除的表
+    """
+    self.send_cleanAllLazyDroppedTables()
+    return self.recv_cleanAllLazyDroppedTables()
+
+  def send_cleanAllLazyDroppedTables(self):
+    self._oprot.writeMessageBegin('cleanAllLazyDroppedTables', TMessageType.CALL, self._seqid)
+    args = cleanAllLazyDroppedTables_args()
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_cleanAllLazyDroppedTables(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = cleanAllLazyDroppedTables_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "cleanAllLazyDroppedTables failed: unknown result");
+
   def createTable(self, tableName, tableSpec):
     """
     创建表
@@ -390,25 +427,25 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
-  def lazyDropTable(self, tableName):
+  def restoreTable(self, tableName):
     """
-    延迟删除表
+    恢复表
 
     Parameters:
      - tableName
     """
-    self.send_lazyDropTable(tableName)
-    self.recv_lazyDropTable()
+    self.send_restoreTable(tableName)
+    self.recv_restoreTable()
 
-  def send_lazyDropTable(self, tableName):
-    self._oprot.writeMessageBegin('lazyDropTable', TMessageType.CALL, self._seqid)
-    args = lazyDropTable_args()
+  def send_restoreTable(self, tableName):
+    self._oprot.writeMessageBegin('restoreTable', TMessageType.CALL, self._seqid)
+    args = restoreTable_args()
     args.tableName = tableName
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_lazyDropTable(self):
+  def recv_restoreTable(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -416,7 +453,7 @@ class Client(sds.common.BaseService.Client, Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = lazyDropTable_result()
+    result = restoreTable_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.se is not None:
@@ -814,9 +851,10 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["getAppInfo"] = Processor.process_getAppInfo
     self._processMap["findAllApps"] = Processor.process_findAllApps
     self._processMap["findAllTables"] = Processor.process_findAllTables
+    self._processMap["cleanAllLazyDroppedTables"] = Processor.process_cleanAllLazyDroppedTables
     self._processMap["createTable"] = Processor.process_createTable
     self._processMap["dropTable"] = Processor.process_dropTable
-    self._processMap["lazyDropTable"] = Processor.process_lazyDropTable
+    self._processMap["restoreTable"] = Processor.process_restoreTable
     self._processMap["alterTable"] = Processor.process_alterTable
     self._processMap["cloneTable"] = Processor.process_cloneTable
     self._processMap["disableTable"] = Processor.process_disableTable
@@ -900,6 +938,20 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
+  def process_cleanAllLazyDroppedTables(self, seqid, iprot, oprot):
+    args = cleanAllLazyDroppedTables_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = cleanAllLazyDroppedTables_result()
+    try:
+      result.success = self._handler.cleanAllLazyDroppedTables()
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("cleanAllLazyDroppedTables", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
   def process_createTable(self, seqid, iprot, oprot):
     args = createTable_args()
     args.read(iprot)
@@ -928,16 +980,16 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_lazyDropTable(self, seqid, iprot, oprot):
-    args = lazyDropTable_args()
+  def process_restoreTable(self, seqid, iprot, oprot):
+    args = restoreTable_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = lazyDropTable_result()
+    result = restoreTable_result()
     try:
-      self._handler.lazyDropTable(args.tableName)
+      self._handler.restoreTable(args.tableName)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
-    oprot.writeMessageBegin("lazyDropTable", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("restoreTable", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -1641,6 +1693,138 @@ class findAllTables_result(object):
   def __ne__(self, other):
     return not (self == other)
 
+class cleanAllLazyDroppedTables_args(object):
+
+  thrift_spec = (
+  )
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('cleanAllLazyDroppedTables_args')
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class cleanAllLazyDroppedTables_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRING,None), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype44, _size41) = iprot.readListBegin()
+          for _i45 in xrange(_size41):
+            _elem46 = iprot.readString();
+            self.success.append(_elem46)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('cleanAllLazyDroppedTables_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRING, len(self.success))
+      for iter47 in self.success:
+        oprot.writeString(iter47)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class createTable_args(object):
   """
   Attributes:
@@ -1930,7 +2114,7 @@ class dropTable_result(object):
   def __ne__(self, other):
     return not (self == other)
 
-class lazyDropTable_args(object):
+class restoreTable_args(object):
   """
   Attributes:
    - tableName
@@ -1967,7 +2151,7 @@ class lazyDropTable_args(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('lazyDropTable_args')
+    oprot.writeStructBegin('restoreTable_args')
     if self.tableName is not None:
       oprot.writeFieldBegin('tableName', TType.STRING, 1)
       oprot.writeString(self.tableName)
@@ -1995,7 +2179,7 @@ class lazyDropTable_args(object):
   def __ne__(self, other):
     return not (self == other)
 
-class lazyDropTable_result(object):
+class restoreTable_result(object):
   """
   Attributes:
    - se
@@ -2033,7 +2217,7 @@ class lazyDropTable_result(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('lazyDropTable_result')
+    oprot.writeStructBegin('restoreTable_result')
     if self.se is not None:
       oprot.writeFieldBegin('se', TType.STRUCT, 1)
       self.se.write(oprot)
@@ -3093,24 +3277,24 @@ class getTableSplits_args(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.startKey = {}
-          (_ktype42, _vtype43, _size41 ) = iprot.readMapBegin()
-          for _i45 in xrange(_size41):
-            _key46 = iprot.readString();
-            _val47 = sds.table.ttypes.Datum()
-            _val47.read(iprot)
-            self.startKey[_key46] = _val47
+          (_ktype49, _vtype50, _size48 ) = iprot.readMapBegin()
+          for _i52 in xrange(_size48):
+            _key53 = iprot.readString();
+            _val54 = sds.table.ttypes.Datum()
+            _val54.read(iprot)
+            self.startKey[_key53] = _val54
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.MAP:
           self.stopKey = {}
-          (_ktype49, _vtype50, _size48 ) = iprot.readMapBegin()
-          for _i52 in xrange(_size48):
-            _key53 = iprot.readString();
-            _val54 = sds.table.ttypes.Datum()
-            _val54.read(iprot)
-            self.stopKey[_key53] = _val54
+          (_ktype56, _vtype57, _size55 ) = iprot.readMapBegin()
+          for _i59 in xrange(_size55):
+            _key60 = iprot.readString();
+            _val61 = sds.table.ttypes.Datum()
+            _val61.read(iprot)
+            self.stopKey[_key60] = _val61
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -3131,17 +3315,17 @@ class getTableSplits_args(object):
     if self.startKey is not None:
       oprot.writeFieldBegin('startKey', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
-      for kiter55,viter56 in self.startKey.items():
-        oprot.writeString(kiter55)
-        viter56.write(oprot)
+      for kiter62,viter63 in self.startKey.items():
+        oprot.writeString(kiter62)
+        viter63.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.stopKey is not None:
       oprot.writeFieldBegin('stopKey', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
-      for kiter57,viter58 in self.stopKey.items():
-        oprot.writeString(kiter57)
-        viter58.write(oprot)
+      for kiter64,viter65 in self.stopKey.items():
+        oprot.writeString(kiter64)
+        viter65.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3197,11 +3381,11 @@ class getTableSplits_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype62, _size59) = iprot.readListBegin()
-          for _i63 in xrange(_size59):
-            _elem64 = sds.table.ttypes.TableSplit()
-            _elem64.read(iprot)
-            self.success.append(_elem64)
+          (_etype69, _size66) = iprot.readListBegin()
+          for _i70 in xrange(_size66):
+            _elem71 = sds.table.ttypes.TableSplit()
+            _elem71.read(iprot)
+            self.success.append(_elem71)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3224,8 +3408,8 @@ class getTableSplits_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter65 in self.success:
-        iter65.write(oprot)
+      for iter72 in self.success:
+        iter72.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -3427,11 +3611,11 @@ class queryMetrics_args(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.queries = []
-          (_etype69, _size66) = iprot.readListBegin()
-          for _i70 in xrange(_size66):
-            _elem71 = MetricQueryRequest()
-            _elem71.read(iprot)
-            self.queries.append(_elem71)
+          (_etype76, _size73) = iprot.readListBegin()
+          for _i77 in xrange(_size73):
+            _elem78 = MetricQueryRequest()
+            _elem78.read(iprot)
+            self.queries.append(_elem78)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3448,8 +3632,8 @@ class queryMetrics_args(object):
     if self.queries is not None:
       oprot.writeFieldBegin('queries', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.queries))
-      for iter72 in self.queries:
-        iter72.write(oprot)
+      for iter79 in self.queries:
+        iter79.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3503,11 +3687,11 @@ class queryMetrics_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype76, _size73) = iprot.readListBegin()
-          for _i77 in xrange(_size73):
-            _elem78 = TimeSeriesData()
-            _elem78.read(iprot)
-            self.success.append(_elem78)
+          (_etype83, _size80) = iprot.readListBegin()
+          for _i84 in xrange(_size80):
+            _elem85 = TimeSeriesData()
+            _elem85.read(iprot)
+            self.success.append(_elem85)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3530,8 +3714,8 @@ class queryMetrics_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter79 in self.success:
-        iter79.write(oprot)
+      for iter86 in self.success:
+        iter86.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -3636,11 +3820,11 @@ class findAllAppInfo_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype83, _size80) = iprot.readListBegin()
-          for _i84 in xrange(_size80):
-            _elem85 = AppInfo()
-            _elem85.read(iprot)
-            self.success.append(_elem85)
+          (_etype90, _size87) = iprot.readListBegin()
+          for _i91 in xrange(_size87):
+            _elem92 = AppInfo()
+            _elem92.read(iprot)
+            self.success.append(_elem92)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3663,8 +3847,8 @@ class findAllAppInfo_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter86 in self.success:
-        iter86.write(oprot)
+      for iter93 in self.success:
+        iter93.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
