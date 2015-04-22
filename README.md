@@ -1,19 +1,39 @@
-结构化存储Python SDK
-========================
-1. 将lib目录加到`PYTHONPATH`中
+# Galaxy SDK for Python
 
-2. 运行示例代码，测试是否正常(需要修改示例代码中的AppID/AppSecret)
+This is XiaoMi Galaxy SDS SDK for python, which allows Python developers to write software that makes use of XiaoMi Galaxy SDS. 
+
+## Installing
+
+Requires Python >= 2.6. You can install using pip:
+
+`pip install galaxy-sdk-python` 
+
+or download source codes from [https://github.com/XiaoMi/galaxy-sdk-python.git]() 
+and add the 'lib' dir to your python path.
+
+## Configuring Credential
+
+Before using the SDK, ensure that you've configured credential. 
+You can get the necessary credential by registering on http://dev.xiaomi.com/.
+To configure credential, you may use codes like:
 
 ```
-python examples/basic.py
+appKey = "MY-APP-KEY"
+appSecret = "MY-SECRET-KEY"
+credential = Credential(UserType.APP_SECRET, appKey, appSecret)
 ```
 
+## Usage
 
-SDS Python SDK User Guide
-========================
-1. Add lib to `PYTHONPATH`
+To use SDK, you can import like:
 
-2. Run examples (you need to change the AppID/AppSecret in the example code)
+```
+from sds.table.ttypes import PutRequest
+from sds.table.ttypes import GetRequest
+```
+
+We have two examples in the 'examples' dir of the source code,
+users can run these examples after credential configured.
 
 ```
 python examples/basic.py

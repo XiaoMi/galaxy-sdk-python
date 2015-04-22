@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name='galaxy-sdk-python',
-    version="0.1.0",
+    version="0.1.3",
     author='Xiaomi Technology Co.',
     author_email='heliangliang@xiaomi.com',
     url='http://dev.mi.com',
