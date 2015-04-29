@@ -183,9 +183,11 @@ class TableState(object):
   ENABLED = 3
   DISABLING = 4
   DISABLED = 5
-  DELETING = 6
-  DELETED = 7
-  LAZY_DELETE = 8
+  DROPPING = 6
+  DROPPED = 7
+  LAZY_DROPPING = 8
+  LAZY_DROP = 9
+  RESTORING = 10
 
   _VALUES_TO_NAMES = {
     1: "CREATING",
@@ -193,9 +195,11 @@ class TableState(object):
     3: "ENABLED",
     4: "DISABLING",
     5: "DISABLED",
-    6: "DELETING",
-    7: "DELETED",
-    8: "LAZY_DELETE",
+    6: "DROPPING",
+    7: "DROPPED",
+    8: "LAZY_DROPPING",
+    9: "LAZY_DROP",
+    10: "RESTORING",
   }
 
   _NAMES_TO_VALUES = {
@@ -204,9 +208,11 @@ class TableState(object):
     "ENABLED": 3,
     "DISABLING": 4,
     "DISABLED": 5,
-    "DELETING": 6,
-    "DELETED": 7,
-    "LAZY_DELETE": 8,
+    "DROPPING": 6,
+    "DROPPED": 7,
+    "LAZY_DROPPING": 8,
+    "LAZY_DROP": 9,
+    "RESTORING": 10,
   }
 
 class ScanOp(object):
