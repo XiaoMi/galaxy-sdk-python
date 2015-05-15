@@ -2,19 +2,22 @@
 import os
 from setuptools import setup, find_packages
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+def load_file(name):
+    with open(name) as fs:
+        content = fs.read().strip().strip('\n')
+    return content
+
+README = load_file('README.md')
 
 setup(
     name='galaxy-sdk-python',
-    version="0.1.3",
+    version="0.1.7",
     author='Xiaomi Technology Co.',
     author_email='heliangliang@xiaomi.com',
     url='http://dev.mi.com',
     description='Xiaomi SDS SDK for Python',
-    long_description=read('README.md'),
-    packages=find_packages('lib'),
-    package_dir={'': 'lib'},
+    long_description=README,
+    packages=find_packages(exclude=['ez_setup', 'examples']),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Software Development :: Libraries',
