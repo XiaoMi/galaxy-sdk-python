@@ -11,13 +11,14 @@ README = load_file('README.md')
 
 setup(
     name='galaxy-sdk-python',
-    version="0.1.7",
+    version="0.1.8",
     author='Xiaomi Technology Co.',
     author_email='heliangliang@xiaomi.com',
     url='http://dev.mi.com',
     description='Xiaomi SDS SDK for Python',
     long_description=README,
-    packages=find_packages(exclude=['ez_setup', 'examples']),
+    packages=find_packages('lib'),
+    package_dir={'': 'lib'},
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Software Development :: Libraries',
