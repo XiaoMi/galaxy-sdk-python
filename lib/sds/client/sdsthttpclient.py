@@ -45,138 +45,138 @@ from sds.common.constants import THRIFT_HEADER_MAP
 
 
 class SdsTHttpClient(TTransportBase):
-    """Http implementation of TTransport base for SDS."""
+  """Http implementation of TTransport base for SDS."""
 
-    def __init__(self, credential, uri_or_host, timeout = None, thrift_protocol = ThriftProtocol.TBINARY):
-        self.credential = credential
-        parsed = urlparse.urlparse(uri_or_host)
-        self.scheme = parsed.scheme
-        assert self.scheme in ('http', 'https')
-        if self.scheme == 'http':
-            self.port = parsed.port or httplib.HTTP_PORT
-        elif self.scheme == 'https':
-            self.port = parsed.port or httplib.HTTPS_PORT
-        self.host = parsed.hostname
-        self.path = parsed.path
-        if parsed.query:
-            self.path += '?%s' % parsed.query
-        self.__timeout = timeout
-        self.__protocol = thrift_protocol
-        self.__wbuf = StringIO()
-        self.__http = None
-        self.__custom_headers = None
-        self.__clock_offset = 0
+  def __init__(self, credential, uri_or_host, timeout=None, thrift_protocol=ThriftProtocol.TBINARY):
+    self.credential = credential
+    parsed = urlparse.urlparse(uri_or_host)
+    self.scheme = parsed.scheme
+    assert self.scheme in ('http', 'https')
+    if self.scheme == 'http':
+      self.port = parsed.port or httplib.HTTP_PORT
+    elif self.scheme == 'https':
+      self.port = parsed.port or httplib.HTTPS_PORT
+    self.host = parsed.hostname
+    self.path = parsed.path
+    if parsed.query:
+      self.path += '?%s' % parsed.query
+    self.__timeout = timeout
+    self.__protocol = thrift_protocol
+    self.__wbuf = StringIO()
+    self.__http = None
+    self.__custom_headers = None
+    self.__clock_offset = 0
 
-    def open(self):
-        if self.scheme == 'http':
-            self.__http = httplib.HTTP(self.host, self.port)
-        else:
-            self.__http = httplib.HTTPS(self.host, self.port)
+  def open(self):
+    if self.scheme == 'http':
+      self.__http = httplib.HTTP(self.host, self.port)
+    else:
+      self.__http = httplib.HTTPS(self.host, self.port)
 
-    def close(self):
-        self.__http.close()
-        self.__http = None
+  def close(self):
+    self.__http.close()
+    self.__http = None
 
-    def isOpen(self):
-        return self.__http is not None
+  def isOpen(self):
+    return self.__http is not None
 
-    def setTimeout(self, ms):
-        if not hasattr(socket, 'getdefaulttimeout'):
-            raise NotImplementedError
+  def setTimeout(self, ms):
+    if not hasattr(socket, 'getdefaulttimeout'):
+      raise NotImplementedError
 
-        if ms is None:
-            self.__timeout = None
-        else:
-            self.__timeout = ms / 1000.0
+    if ms is None:
+      self.__timeout = None
+    else:
+      self.__timeout = ms / 1000.0
 
-    def setCustomHeaders(self, headers):
-        self.__custom_headers = headers
+  def setCustomHeaders(self, headers):
+    self.__custom_headers = headers
 
-    def read(self, sz):
-        return self.__http.file.read(sz)
+  def read(self, sz):
+    return self.__http.file.read(sz)
 
-    def write(self, buf):
-        self.__wbuf.write(buf)
+  def write(self, buf):
+    self.__wbuf.write(buf)
 
-    def __withTimeout(f):
-        def _f(*args, **kwargs):
-            orig_timeout = socket.getdefaulttimeout()
-            socket.setdefaulttimeout(args[0].__timeout)
-            result = f(*args, **kwargs)
-            socket.setdefaulttimeout(orig_timeout)
-            return result
+  def __withTimeout(f):
+    def _f(*args, **kwargs):
+      orig_timeout = socket.getdefaulttimeout()
+      socket.setdefaulttimeout(args[0].__timeout)
+      result = f(*args, **kwargs)
+      socket.setdefaulttimeout(orig_timeout)
+      return result
 
-        return _f
+    return _f
 
-    def flush(self):
-        if self.isOpen():
-            self.close()
-        self.open()
+  def flush(self):
+    if self.isOpen():
+      self.close()
+    self.open()
 
-        # Pull data out of buffer
-        data = self.__wbuf.getvalue()
-        self.__wbuf = StringIO()
+    # Pull data out of buffer
+    data = self.__wbuf.getvalue()
+    self.__wbuf = StringIO()
 
-        # HTTP request
-        self.__http.putrequest('POST', self.path)
+    # HTTP request
+    self.__http.putrequest('POST', self.path)
 
-        # Write headers
-        self.__http.putheader('Host', self.host)
-        self.__http.putheader('User-Agent', 'Python/SdsTHttpClient')
-        self.__http.putheader('Content-Type', THRIFT_HEADER_MAP[self.__protocol])
-        self.__http.putheader('Content-Length', str(len(data)))
+    # Write headers
+    self.__http.putheader('Host', self.host)
+    self.__http.putheader('User-Agent', 'Python/SdsTHttpClient')
+    self.__http.putheader('Content-Type', THRIFT_HEADER_MAP[self.__protocol])
+    self.__http.putheader('Content-Length', str(len(data)))
 
-        if not self.__custom_headers or 'User-Agent' not in self.__custom_headers:
-            user_agent = 'Python/THttpClient'
-            script = os.path.basename(sys.argv[0])
-            if script:
-                user_agent = '%s (%s)' % (user_agent, urllib.quote(script))
-            self.__http.putheader('User-Agent', user_agent)
+    if not self.__custom_headers or 'User-Agent' not in self.__custom_headers:
+      user_agent = 'Python/THttpClient'
+      script = os.path.basename(sys.argv[0])
+      if script:
+        user_agent = '%s (%s)' % (user_agent, urllib.quote(script))
+      self.__http.putheader('User-Agent', user_agent)
 
-        if self.__custom_headers:
-            for key, val in self.__custom_headers.iteritems():
-                self.__http.putheader(key, val)
+    if self.__custom_headers:
+      for key, val in self.__custom_headers.iteritems():
+        self.__http.putheader(key, val)
 
-        for key, val in self.__auth_headers(data).iteritems():
-            self.__http.putheader(key, val)
+    for key, val in self.__auth_headers(data).iteritems():
+      self.__http.putheader(key, val)
 
-        self.__http.endheaders()
+    self.__http.endheaders()
 
-        # Write payload
-        self.__http.send(data)
+    # Write payload
+    self.__http.send(data)
 
-        # Get reply to flush the request
-        code, message, headers = self.__http.getreply()
-        if code != 200:
-            if code == HttpStatusCode.CLOCK_TOO_SKEWED:
-                server_time = float(headers[HK_TIMESTAMP])
-                local_time = time.time()
-                self.__clock_offset = server_time - local_time
-            raise SdsTransportException(code, message)
+    # Get reply to flush the request
+    code, message, headers = self.__http.getreply()
+    if code != 200:
+      if code == HttpStatusCode.CLOCK_TOO_SKEWED:
+        server_time = float(headers[HK_TIMESTAMP])
+        local_time = time.time()
+        self.__clock_offset = server_time - local_time
+      raise SdsTransportException(code, message)
 
-    # Decorate if we know how to timeout
-    if hasattr(socket, 'getdefaulttimeout'):
-        flush = __withTimeout(flush)
+  # Decorate if we know how to timeout
+  if hasattr(socket, 'getdefaulttimeout'):
+    flush = __withTimeout(flush)
 
-    def __auth_headers(self, body):
-        headers = dict()
-        headers[HK_HOST] = self.host
-        headers[HK_TIMESTAMP] = str(int(time.time() + self.__clock_offset))
-        headers[HK_CONTENT_MD5] = hashlib.md5(body).hexdigest()
+  def __auth_headers(self, body):
+    headers = dict()
+    headers[HK_HOST] = self.host
+    headers[HK_TIMESTAMP] = str(int(time.time() + self.__clock_offset))
+    headers[HK_CONTENT_MD5] = hashlib.md5(body).hexdigest()
 
-        auth_header = HttpAuthorizationHeader()
-        auth_header.algorithm = MacAlgorithm.HmacSHA1
-        auth_header.userType = self.credential.type
-        auth_header.secretKeyId = self.credential.secretKeyId
+    auth_header = HttpAuthorizationHeader()
+    auth_header.algorithm = MacAlgorithm.HmacSHA1
+    auth_header.userType = self.credential.type
+    auth_header.secretKeyId = self.credential.secretKeyId
 
-        auth_header.signedHeaders = list(headers.iterkeys())
-        buf = "\n".join([headers[x] for x in auth_header.signedHeaders])
-        auth_header.signature = \
-            hmac.new(self.credential.secretKey, buf, hashlib.sha1).hexdigest()
+    auth_header.signedHeaders = list(headers.iterkeys())
+    buf = "\n".join([headers[x] for x in auth_header.signedHeaders])
+    auth_header.signature = \
+      hmac.new(self.credential.secretKey, buf, hashlib.sha1).hexdigest()
 
-        mb = TMemoryBuffer()
-        protocol = TJSONProtocol(mb)
-        auth_header.write(protocol)
-        headers[HK_AUTHORIZATION] = str(mb.getvalue())
+    mb = TMemoryBuffer()
+    protocol = TJSONProtocol(mb)
+    auth_header.write(protocol)
+    headers[HK_AUTHORIZATION] = str(mb.getvalue())
 
-        return headers
+    return headers

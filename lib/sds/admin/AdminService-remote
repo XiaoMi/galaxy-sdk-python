@@ -44,6 +44,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   queryMetrics( queries)')
   print('   findAllAppInfo()')
   print('  i64 getTableSize(string tableName)')
+  print('  void putClientMetrics(ClientMetrics clientMetrics)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
   print('  i64 getServerTime()')
@@ -222,6 +223,12 @@ elif cmd == 'getTableSize':
     print('getTableSize requires 1 args')
     sys.exit(1)
   pp.pprint(client.getTableSize(args[0],))
+
+elif cmd == 'putClientMetrics':
+  if len(args) != 1:
+    print('putClientMetrics requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.putClientMetrics(eval(args[0]),))
 
 elif cmd == 'getServerVersion':
   if len(args) != 0:

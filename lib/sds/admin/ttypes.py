@@ -22,6 +22,34 @@ except:
   fastbinary = None
 
 
+class ClientMetricType(object):
+  """
+  客户端metrics的类型
+  """
+  Letency = 1
+
+  _VALUES_TO_NAMES = {
+    1: "Letency",
+  }
+
+  _NAMES_TO_VALUES = {
+    "Letency": 1,
+  }
+
+class LatencyMetricType(object):
+  """
+  客户端metrics请求延迟的类型
+  """
+  ExecutionTime = 1
+
+  _VALUES_TO_NAMES = {
+    1: "ExecutionTime",
+  }
+
+  _NAMES_TO_VALUES = {
+    "ExecutionTime": 1,
+  }
+
 class MetricKey(object):
   """
   系统统计指标类型
@@ -310,6 +338,189 @@ class AppInfo(object):
   def __ne__(self, other):
     return not (self == other)
 
+class MetricData(object):
+  """
+  客户端metrics数据结构
+
+  Attributes:
+   - clientMetricType: 设置/获取metrics的类型
+   - metricName: 客户端请求调用的接口名称.实际计算的数据类型
+  e.g. createTable.ExecutionTime
+   - value: 实际计算的数值
+   - timeStamp: 客户端请求返回的时间戳
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'clientMetricType', None, None, ), # 1
+    (2, TType.STRING, 'metricName', None, None, ), # 2
+    (3, TType.I64, 'value', None, None, ), # 3
+    (4, TType.I64, 'timeStamp', None, None, ), # 4
+  )
+
+  def __init__(self, clientMetricType=None, metricName=None, value=None, timeStamp=None,):
+    self.clientMetricType = clientMetricType
+    self.metricName = metricName
+    self.value = value
+    self.timeStamp = timeStamp
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.clientMetricType = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.metricName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.value = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.timeStamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('MetricData')
+    if self.clientMetricType is not None:
+      oprot.writeFieldBegin('clientMetricType', TType.I32, 1)
+      oprot.writeI32(self.clientMetricType)
+      oprot.writeFieldEnd()
+    if self.metricName is not None:
+      oprot.writeFieldBegin('metricName', TType.STRING, 2)
+      oprot.writeString(self.metricName)
+      oprot.writeFieldEnd()
+    if self.value is not None:
+      oprot.writeFieldBegin('value', TType.I64, 3)
+      oprot.writeI64(self.value)
+      oprot.writeFieldEnd()
+    if self.timeStamp is not None:
+      oprot.writeFieldBegin('timeStamp', TType.I64, 4)
+      oprot.writeI64(self.timeStamp)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.clientMetricType)
+    value = (value * 31) ^ hash(self.metricName)
+    value = (value * 31) ^ hash(self.value)
+    value = (value * 31) ^ hash(self.timeStamp)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ClientMetrics(object):
+  """
+  客户端用于传输metrics的数据结构
+
+  Attributes:
+   - metricDataList: 添加/获取客户端metrics数据
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.LIST, 'metricDataList', (TType.STRUCT,(MetricData, MetricData.thrift_spec)), None, ), # 1
+  )
+
+  def __init__(self, metricDataList=None,):
+    self.metricDataList = metricDataList
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.LIST:
+          self.metricDataList = []
+          (_etype21, _size18) = iprot.readListBegin()
+          for _i22 in xrange(_size18):
+            _elem23 = MetricData()
+            _elem23.read(iprot)
+            self.metricDataList.append(_elem23)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ClientMetrics')
+    if self.metricDataList is not None:
+      oprot.writeFieldBegin('metricDataList', TType.LIST, 1)
+      oprot.writeListBegin(TType.STRUCT, len(self.metricDataList))
+      for iter24 in self.metricDataList:
+        iter24.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.metricDataList)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class MetricQueryRequest(object):
   """
   统计指标查询请求
@@ -507,11 +718,11 @@ class TimeSeriesData(object):
       elif fid == 4:
         if ftype == TType.MAP:
           self.data = {}
-          (_ktype19, _vtype20, _size18 ) = iprot.readMapBegin()
-          for _i22 in xrange(_size18):
-            _key23 = iprot.readI64();
-            _val24 = iprot.readDouble();
-            self.data[_key23] = _val24
+          (_ktype26, _vtype27, _size25 ) = iprot.readMapBegin()
+          for _i29 in xrange(_size25):
+            _key30 = iprot.readI64();
+            _val31 = iprot.readDouble();
+            self.data[_key30] = _val31
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -540,9 +751,9 @@ class TimeSeriesData(object):
     if self.data is not None:
       oprot.writeFieldBegin('data', TType.MAP, 4)
       oprot.writeMapBegin(TType.I64, TType.DOUBLE, len(self.data))
-      for kiter25,viter26 in self.data.items():
-        oprot.writeI64(kiter25)
-        oprot.writeDouble(viter26)
+      for kiter32,viter33 in self.data.items():
+        oprot.writeI64(kiter32)
+        oprot.writeDouble(viter33)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
