@@ -233,16 +233,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_saveAppInfo(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = saveAppInfo_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -266,16 +265,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getAppInfo(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = getAppInfo_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -297,16 +295,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_findAllApps(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = findAllApps_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -328,16 +325,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_findAllTables(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = findAllTables_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -359,16 +355,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_cleanAllLazyDroppedTables(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = cleanAllLazyDroppedTables_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -396,16 +391,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_createTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = createTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -431,16 +425,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_dropTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = dropTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -464,16 +457,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_restoreTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = restoreTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -499,16 +491,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_alterTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = alterTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -536,16 +527,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_cloneTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = cloneTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -569,16 +559,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_disableTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = disableTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -602,16 +591,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_enableTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = enableTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -635,16 +623,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_describeTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = describeTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -670,16 +657,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableStatus(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = getTableStatus_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -705,16 +691,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableState(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = getTableState_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -744,16 +729,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableSplits(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = getTableSplits_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -779,16 +763,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_queryMetric(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = queryMetric_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -814,16 +797,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_queryMetrics(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = queryMetrics_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -845,16 +827,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_findAllAppInfo(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = findAllAppInfo_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -880,16 +861,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableSize(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = getTableSize_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -915,16 +895,15 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_putClientMetrics(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = putClientMetrics_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -1317,11 +1296,6 @@ class saveAppInfo_args(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.appInfo)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1383,11 +1357,6 @@ class saveAppInfo_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1447,11 +1416,6 @@ class getAppInfo_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.appId)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1526,12 +1490,6 @@ class getAppInfo_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1573,10 +1531,6 @@ class findAllApps_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1659,12 +1613,6 @@ class findAllApps_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1706,10 +1654,6 @@ class findAllTables_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1792,12 +1736,6 @@ class findAllTables_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1839,10 +1777,6 @@ class cleanAllLazyDroppedTables_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1924,12 +1858,6 @@ class cleanAllLazyDroppedTables_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2002,12 +1930,6 @@ class createTable_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.tableSpec)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2082,12 +2004,6 @@ class createTable_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2147,11 +2063,6 @@ class dropTable_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2214,11 +2125,6 @@ class dropTable_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2278,11 +2184,6 @@ class restoreTable_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2344,11 +2245,6 @@ class restoreTable_result(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2423,12 +2319,6 @@ class alterTable_args(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.tableSpec)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2489,11 +2379,6 @@ class alterTable_result(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2579,13 +2464,6 @@ class cloneTable_args(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.srcName)
-    value = (value * 31) ^ hash(self.destTable)
-    value = (value * 31) ^ hash(self.flushTable)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2647,11 +2525,6 @@ class cloneTable_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2711,11 +2584,6 @@ class disableTable_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2778,11 +2646,6 @@ class disableTable_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2842,11 +2705,6 @@ class enableTable_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2909,11 +2767,6 @@ class enableTable_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2973,11 +2826,6 @@ class describeTable_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3052,12 +2900,6 @@ class describeTable_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3117,11 +2959,6 @@ class getTableStatus_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3196,12 +3033,6 @@ class getTableStatus_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3261,11 +3092,6 @@ class getTableState_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3338,12 +3164,6 @@ class getTableState_result(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3451,13 +3271,6 @@ class getTableSplits_args(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.startKey)
-    value = (value * 31) ^ hash(self.stopKey)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3539,12 +3352,6 @@ class getTableSplits_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3605,11 +3412,6 @@ class queryMetric_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.query)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3684,12 +3486,6 @@ class queryMetric_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3758,11 +3554,6 @@ class queryMetrics_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.queries)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3845,12 +3636,6 @@ class queryMetrics_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3892,10 +3677,6 @@ class findAllAppInfo_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3978,12 +3759,6 @@ class findAllAppInfo_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -4043,11 +3818,6 @@ class getTableSize_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -4121,12 +3891,6 @@ class getTableSize_result(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -4188,11 +3952,6 @@ class putClientMetrics_args(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.clientMetrics)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -4253,11 +4012,6 @@ class putClientMetrics_result(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

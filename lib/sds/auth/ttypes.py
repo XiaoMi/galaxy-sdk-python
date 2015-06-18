@@ -79,6 +79,7 @@ class AppUserAuthProvider(object):
   QQ_OAUTH = 3
   SINA_OAUTH = 4
   RENREN_OAUTH = 5
+  WEIXIN_OAUTH = 6
 
   _VALUES_TO_NAMES = {
     1: "XIAOMI_SSO",
@@ -86,6 +87,7 @@ class AppUserAuthProvider(object):
     3: "QQ_OAUTH",
     4: "SINA_OAUTH",
     5: "RENREN_OAUTH",
+    6: "WEIXIN_OAUTH",
   }
 
   _NAMES_TO_VALUES = {
@@ -94,6 +96,7 @@ class AppUserAuthProvider(object):
     "QQ_OAUTH": 3,
     "SINA_OAUTH": 4,
     "RENREN_OAUTH": 5,
+    "WEIXIN_OAUTH": 6,
   }
 
 
@@ -175,13 +178,6 @@ class Credential(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.type)
-    value = (value * 31) ^ hash(self.secretKeyId)
-    value = (value * 31) ^ hash(self.secretKey)
-    return value
-
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -195,6 +191,7 @@ class Credential(object):
 
 class HttpAuthorizationHeader(object):
   """
+  兼容旧sdk
   Authorization头包含的内容
 
   Attributes:
@@ -346,17 +343,127 @@ class HttpAuthorizationHeader(object):
     return
 
 
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.version)
-    value = (value * 31) ^ hash(self.userType)
-    value = (value * 31) ^ hash(self.secretKeyId)
-    value = (value * 31) ^ hash(self.secretKey)
-    value = (value * 31) ^ hash(self.signature)
-    value = (value * 31) ^ hash(self.algorithm)
-    value = (value * 31) ^ hash(self.signedHeaders)
-    value = (value * 31) ^ hash(self.supportAccountKey)
-    return value
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class OAuthInfo(object):
+  """
+  Oauth认证信息
+
+  Attributes:
+   - xiaomiAppId: 小米AppId
+   - appUserAuthProvider: 第三方身份认证提供方
+   - accessToken: 第三方认证的accessToken
+   - openId: 仅用于微信OAuth认证
+   - macKey: 仅用于小米OAuth认证
+   - macAlgorithm: 仅用于小米OAuth认证
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'xiaomiAppId', None, None, ), # 1
+    (2, TType.I32, 'appUserAuthProvider', None, None, ), # 2
+    (3, TType.STRING, 'accessToken', None, None, ), # 3
+    (4, TType.STRING, 'openId', None, None, ), # 4
+    (5, TType.STRING, 'macKey', None, None, ), # 5
+    (6, TType.STRING, 'macAlgorithm', None, None, ), # 6
+  )
+
+  def __init__(self, xiaomiAppId=None, appUserAuthProvider=None, accessToken=None, openId=None, macKey=None, macAlgorithm=None,):
+    self.xiaomiAppId = xiaomiAppId
+    self.appUserAuthProvider = appUserAuthProvider
+    self.accessToken = accessToken
+    self.openId = openId
+    self.macKey = macKey
+    self.macAlgorithm = macAlgorithm
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.xiaomiAppId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.appUserAuthProvider = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.accessToken = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.openId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.macKey = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.macAlgorithm = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('OAuthInfo')
+    if self.xiaomiAppId is not None:
+      oprot.writeFieldBegin('xiaomiAppId', TType.STRING, 1)
+      oprot.writeString(self.xiaomiAppId)
+      oprot.writeFieldEnd()
+    if self.appUserAuthProvider is not None:
+      oprot.writeFieldBegin('appUserAuthProvider', TType.I32, 2)
+      oprot.writeI32(self.appUserAuthProvider)
+      oprot.writeFieldEnd()
+    if self.accessToken is not None:
+      oprot.writeFieldBegin('accessToken', TType.STRING, 3)
+      oprot.writeString(self.accessToken)
+      oprot.writeFieldEnd()
+    if self.openId is not None:
+      oprot.writeFieldBegin('openId', TType.STRING, 4)
+      oprot.writeString(self.openId)
+      oprot.writeFieldEnd()
+    if self.macKey is not None:
+      oprot.writeFieldBegin('macKey', TType.STRING, 5)
+      oprot.writeString(self.macKey)
+      oprot.writeFieldEnd()
+    if self.macAlgorithm is not None:
+      oprot.writeFieldBegin('macAlgorithm', TType.STRING, 6)
+      oprot.writeString(self.macAlgorithm)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

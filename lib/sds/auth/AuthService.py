@@ -23,14 +23,12 @@ class Iface(sds.common.BaseService.Iface):
   """
   结构化存储授权相关接口(目前尚未开放)
   """
-  def createCredential(self, xiaomiAppId, appUserAuthProvider, authToken):
+  def createCredential(self, oauthInfo):
     """
     通过第三方认证系统换发Storage Access Token，采用App Secret登录无需此过程
 
     Parameters:
-     - xiaomiAppId
-     - appUserAuthProvider
-     - authToken
+     - oauthInfo
     """
     pass
 
@@ -42,39 +40,34 @@ class Client(sds.common.BaseService.Client, Iface):
   def __init__(self, iprot, oprot=None):
     sds.common.BaseService.Client.__init__(self, iprot, oprot)
 
-  def createCredential(self, xiaomiAppId, appUserAuthProvider, authToken):
+  def createCredential(self, oauthInfo):
     """
     通过第三方认证系统换发Storage Access Token，采用App Secret登录无需此过程
 
     Parameters:
-     - xiaomiAppId
-     - appUserAuthProvider
-     - authToken
+     - oauthInfo
     """
-    self.send_createCredential(xiaomiAppId, appUserAuthProvider, authToken)
+    self.send_createCredential(oauthInfo)
     return self.recv_createCredential()
 
-  def send_createCredential(self, xiaomiAppId, appUserAuthProvider, authToken):
+  def send_createCredential(self, oauthInfo):
     self._oprot.writeMessageBegin('createCredential', TMessageType.CALL, self._seqid)
     args = createCredential_args()
-    args.xiaomiAppId = xiaomiAppId
-    args.appUserAuthProvider = appUserAuthProvider
-    args.authToken = authToken
+    args.oauthInfo = oauthInfo
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
   def recv_createCredential(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
       raise x
     result = createCredential_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -108,7 +101,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = createCredential_result()
     try:
-      result.success = self._handler.createCredential(args.xiaomiAppId, args.appUserAuthProvider, args.authToken)
+      result.success = self._handler.createCredential(args.oauthInfo)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("createCredential", TMessageType.REPLY, seqid)
@@ -122,22 +115,16 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
 class createCredential_args(object):
   """
   Attributes:
-   - xiaomiAppId
-   - appUserAuthProvider
-   - authToken
+   - oauthInfo
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'xiaomiAppId', None, None, ), # 1
-    (2, TType.I32, 'appUserAuthProvider', None, None, ), # 2
-    (3, TType.STRING, 'authToken', None, None, ), # 3
+    (1, TType.STRUCT, 'oauthInfo', (OAuthInfo, OAuthInfo.thrift_spec), None, ), # 1
   )
 
-  def __init__(self, xiaomiAppId=None, appUserAuthProvider=None, authToken=None,):
-    self.xiaomiAppId = xiaomiAppId
-    self.appUserAuthProvider = appUserAuthProvider
-    self.authToken = authToken
+  def __init__(self, oauthInfo=None,):
+    self.oauthInfo = oauthInfo
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -149,18 +136,9 @@ class createCredential_args(object):
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRING:
-          self.xiaomiAppId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.appUserAuthProvider = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.authToken = iprot.readString();
+        if ftype == TType.STRUCT:
+          self.oauthInfo = OAuthInfo()
+          self.oauthInfo.read(iprot)
         else:
           iprot.skip(ftype)
       else:
@@ -173,17 +151,9 @@ class createCredential_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('createCredential_args')
-    if self.xiaomiAppId is not None:
-      oprot.writeFieldBegin('xiaomiAppId', TType.STRING, 1)
-      oprot.writeString(self.xiaomiAppId)
-      oprot.writeFieldEnd()
-    if self.appUserAuthProvider is not None:
-      oprot.writeFieldBegin('appUserAuthProvider', TType.I32, 2)
-      oprot.writeI32(self.appUserAuthProvider)
-      oprot.writeFieldEnd()
-    if self.authToken is not None:
-      oprot.writeFieldBegin('authToken', TType.STRING, 3)
-      oprot.writeString(self.authToken)
+    if self.oauthInfo is not None:
+      oprot.writeFieldBegin('oauthInfo', TType.STRUCT, 1)
+      self.oauthInfo.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -191,13 +161,6 @@ class createCredential_args(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.xiaomiAppId)
-    value = (value * 31) ^ hash(self.appUserAuthProvider)
-    value = (value * 31) ^ hash(self.authToken)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -271,12 +234,6 @@ class createCredential_result(object):
   def validate(self):
     return
 
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
