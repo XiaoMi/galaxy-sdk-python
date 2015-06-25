@@ -7,12 +7,11 @@ from rpc.auth.ttypes import Credential, UserType
 
 
 # Please set your AppKey ,AppSecret and DeveloperId.
-app_key = "5341725076926"
-app_secret = "vhlqXBAsWMbRIKZx+UBfPQ=="
-developer_id = "88803"
+app_key = ""
+app_secret = ""
+developer_id = ""
 
-endpoint = "http://lg-hadoop-open1-tst-fds02.bj:21101"
-# endpoint = "http://staging.emq.api.xiaomi.com"
+endpoint = ""
 credential = Credential(UserType.APP_SECRET, app_key, app_secret)
 client_factory = ClientFactory(credential)
 queue_client = client_factory.queue_client(endpoint)
