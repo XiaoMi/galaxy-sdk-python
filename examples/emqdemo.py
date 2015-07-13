@@ -6,28 +6,23 @@ from emq.queue.ttypes import QueueAttribute, CreateQueueRequest, ListQueueReques
 from rpc.auth.ttypes import Credential, UserType
 
 
-# Please set your AppKey ,AppSecret and DeveloperId.
+# Please set your AppKey and AppSecret
 app_key = ""
 app_secret = ""
-developer_id = ""
 
 endpoint = ""
 credential = Credential(UserType.APP_SECRET, app_key, app_secret)
 client_factory = ClientFactory(credential)
 queue_client = client_factory.queue_client(endpoint)
 message_client = client_factory.message_client(endpoint)
-queue_name = "pythonExampleQueue"
+queue_name = "testPythonExampleQueue"
 
 queue_attribute = QueueAttribute()
 create_request = CreateQueueRequest(queueName=queue_name, queueAttribute=queue_attribute)
 
-queue_name = "%s/%s" % (developer_id, queue_name)
-delete_request = DeleteQueueRequest(queueName=queue_name)
-try:
-  queue_client.deleteQueue(delete_request)
-except GalaxyEmqServiceException, e:
-  print e
-queue_client.createQueue(create_request)
+create_queue_response = queue_client.createQueue(create_request)
+queue_name = create_queue_response.queueName
+print "created queue:" + queue_name
 listqueue_equest = ListQueueRequest(queueNamePrefix="test")
 print queue_client.listQueue(listqueue_equest)
 
@@ -49,6 +44,13 @@ for receive_message in receive_message_response_list:
 visibility_seconds = 200
 change_message_visibility_request = ChangeMessageVisibilityRequest(queue_name, receipt_handle, visibility_seconds)
 message_client.changeMessageVisibilitySeconds(change_message_visibility_request)
+
+delete_request = DeleteQueueRequest(queueName=queue_name)
+try:
+  queue_client.deleteQueue(delete_request)
+  print "deleted queue:" + queue_name
+except GalaxyEmqServiceException, e:
+  print e
 
 
 
