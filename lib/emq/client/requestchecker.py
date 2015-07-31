@@ -50,6 +50,8 @@ class RequestChecker(object):
     elif isinstance(request, SendMessageRequest):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.messageBody, "messageBody")
+      if request.messageAttributes is not None:
+        self.check_message_attribute(request.messageAttributes)
     elif isinstance(request, ReceiveMessageRequest):
       self.validate_queue_name(request.queueName)
       if request.maxReceiveMessageNumber is not None:
@@ -107,6 +109,26 @@ class RequestChecker(object):
       self.validate_delaySeconds(send_entry.delaySeconds)
     if send_entry.invisibilitySeconds is not None:
       self.validate_invisibilitySeconds(send_entry.invisibilitySeconds)
+    if send_entry.messageAttributes is not None:
+      self.check_message_attribute(send_entry.messageAttributes)
+
+  def check_message_attribute(self, messageAttributes):
+    if messageAttributes is not None:
+      for attribute in messageAttributes:
+        if attribute.type.lower().startswith("string"):
+          if attribute.stringValue is None:
+            raise GalaxyEmqServiceException(errMsg="stringValue cannot be None when type is STRING")
+        elif attribute.type.lower().startswith("binary"):
+          if attribute.binaryValue is None:
+            raise GalaxyEmqServiceException(errMsg="binaryValue cannot be None when type is BINARY")
+        else:
+          raise GalaxyEmqServiceException(errMsg="Attribute type must start with \"STRING\" or \"BINARY\"")
+        for c in attribute.type:
+          if not c in string.ascii_letters and not c in string.digits and c != '.':
+            raise GalaxyEmqServiceException(errMsg="Invalid character \'" + c + "\' in attribute type")
+        if attribute.name == "" or attribute.name is None:
+          raise GalaxyEmqServiceException(errMsg="Empty attribute name")
+      self.check_list_duplicate([a.name for a in messageAttributes], "attribute name")
 
   def check_change_entry(self, change_entry):
     self.validate_not_none(change_entry.invisibilitySeconds, "invisibilitySeconds")
@@ -118,7 +140,7 @@ class RequestChecker(object):
 
   def validate_queue_name(self, queue_name, allow_slash=True, is_prefix=False, param_name="queue name"):
     chars = list(queue_name)
-    if queue_name == "" or queue_name is None:
+    if (queue_name == "" or queue_name is None) and not is_prefix:
       raise GalaxyEmqServiceException(errMsg="Bad request, %s shouldn't be empty." % param_name)
     for c in chars:
       if not self.isJavaIdentifierPart(c) or (not allow_slash and c == "/"):
