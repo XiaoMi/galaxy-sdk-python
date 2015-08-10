@@ -9,17 +9,18 @@ from emq.client.constants import THRIFT_PROTOCOL_MAP, DEFAULT_SECURE_SERVICE_END
   DEFAULT_CLIENT_TIMEOUT, DEFAULT_CLIENT_CONN_TIMEOUT, MESSAGE_SERVICE_PATH
 from emq.client.requestchecker import RequestChecker
 from emq.client.thttpclient import THttpClient
+from emq.common.constants import ERROR_BACKOFF, MAX_RETRY, ERROR_RETRY_TYPE
 from emq.common.ttypes import Version, GalaxyEmqServiceException
 from emq.message import MessageService
 from emq.queue import QueueService
 from rpc.common.ttypes import ThriftProtocol
-from rpc.errors.constants import ERROR_BACKOFF, MAX_RETRY
 
 
 class ClientFactory:
-  def __init__(self, credential, retry_if_timeout=False, thrift_protocol=ThriftProtocol.TBINARY):
+  def __init__(self, credential, is_retry=False, max_retry=MAX_RETRY, thrift_protocol=ThriftProtocol.TBINARY):
     self._credential = credential
-    self._retry_if_timeout = retry_if_timeout
+    self._is_retry = is_retry
+    self._max_retry = max_retry
     self._protocol = thrift_protocol
     ver = Version()
     version = "%s.%s" % (ver.major, ver.minor)
@@ -34,42 +35,56 @@ class ClientFactory:
                    timeout=DEFAULT_CLIENT_TIMEOUT):
     url = endpoint + QUEUE_SERVICE_PATH
     client = self.get_client(QueueService.Client, url, timeout)
-    return RetryableClient(client, self._retry_if_timeout)
+    return RetryableClient(client, self._is_retry, self._max_retry)
 
   def message_client(self, endpoint=DEFAULT_SECURE_SERVICE_ENDPOINT,
                      timeout=DEFAULT_CLIENT_CONN_TIMEOUT):
     url = endpoint + MESSAGE_SERVICE_PATH
     client = self.get_client(MessageService.Client, url, timeout)
-    return RetryableClient(client, self._retry_if_timeout)
+    return RetryableClient(client, self._is_retry, self._max_retry)
 
   def get_client(self, clazz, url, timeout):
     return ThreadSafeClient(clazz, self._credential, url, timeout, self._agent, self._protocol)
 
+
 class RetryableClient:
-  def __init__(self, client, retryIfTimeout):
+  def __init__(self, client, is_retry, max_retry):
     self.client = client
-    self.retryIfTimeout = retryIfTimeout
+    self.is_retry = is_retry
+    self.max_retry = max_retry
 
   def __getattr__(self, item):
     def __call_with_retries(*args):
       retry = 0
-      while retry < 3:
+      while retry < self.max_retry:
         try:
           return getattr(self.client, item)(*args)
         except GalaxyEmqServiceException, ex:
-          if ERROR_BACKOFF.has_key(ex.errorCode) and retry < MAX_RETRY:
-            sec = ERROR_BACKOFF[ex.errorCode] / 1000.0 * (1 << retry)
+          error_type = self.__get_error_retry_type(ex.errorCode, item)
+          if error_type == 0 or (self.is_retry and error_type == 1):
+            sec = ERROR_BACKOFF.get(ex.errorCode, 0) / 1000.0 * (1 << retry)
             time.sleep(sec)
             retry += 1
+            # print "retry, time is:%d" % retry
           else:
+            # print "won't retry, error code is:%s" % ex
             raise ex
         except socket.timeout, se:
-          if self.retryIfTimeout and retry < MAX_RETRY:
+          if self.is_retry and retry < self.max_retry:
             retry += 1
           else:
             raise se
 
     return __call_with_retries
+
+  def __get_error_retry_type(self, errorCode, item):
+    retry_type = ERROR_RETRY_TYPE.get(errorCode, -1)
+    if retry_type == 2 and (item.startswith("delete") or item.startswith("change")):
+      return 0
+    elif retry_type == 2:
+      return 1
+    else:
+      return retry_type
 
 
 class ThreadSafeClient:

@@ -119,13 +119,8 @@ class THttpClient(TTransportBase):
     self.__http.send(data)
 
     # Get reply to flush the request
-    code, message, headers = self.__http.getreply()
-    if code != 200:
-      if code == HttpStatusCode.CLOCK_TOO_SKEWED:
-        server_time = float(headers[TIMESTAMP])
-        local_time = time.time()
-        self.__clock_offset = server_time - local_time
-      raise GalaxyEmqServiceException(code, message)
+    status, reason, message = self.__http.getreply()
+    # print "http get reply is:%s" % self.__http.getreply
 
   # Decorate if we know how to timeout
   if hasattr(socket, 'getdefaulttimeout'):

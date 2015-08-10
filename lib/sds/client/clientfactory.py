@@ -103,7 +103,6 @@ class RetryableClient:
 
     return __call_with_retries
 
-
 class ThreadSafeClient:
   def __init__(self, clazz, credential, url, timeout, agent, thrift_protocol, metrics_collector):
     self.clazz = clazz

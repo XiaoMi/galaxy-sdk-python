@@ -4,7 +4,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:new_style
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -18,7 +18,7 @@ except:
   fastbinary = None
 
 
-class Iface:
+class Iface(object):
   def getServiceVersion(self):
     """
     Get EMQ service version;
@@ -164,7 +164,7 @@ class Processor(Iface, TProcessor):
 
 # HELPER FUNCTIONS AND STRUCTURES
 
-class getServiceVersion_args:
+class getServiceVersion_args(object):
 
   thrift_spec = (
   )
@@ -210,7 +210,7 @@ class getServiceVersion_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getServiceVersion_result:
+class getServiceVersion_result(object):
   """
   Attributes:
    - success
@@ -289,7 +289,7 @@ class getServiceVersion_result:
   def __ne__(self, other):
     return not (self == other)
 
-class validClientVersion_args:
+class validClientVersion_args(object):
   """
   Attributes:
    - clientVersion
@@ -355,7 +355,7 @@ class validClientVersion_args:
   def __ne__(self, other):
     return not (self == other)
 
-class validClientVersion_result:
+class validClientVersion_result(object):
   """
   Attributes:
    - e

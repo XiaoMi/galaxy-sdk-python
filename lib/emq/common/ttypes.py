@@ -4,7 +4,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:new_style
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -17,6 +17,97 @@ except:
   fastbinary = None
 
 
+class ErrorCode(object):
+  """
+  List of ErrorCode.
+  """
+  INVALID_ACTION = 1
+  INVALID_ATTRIBUTE = 2
+  QUEUE_DELETED_RECENTLY = 3
+  QUEUE_EXIST = 4
+  QUEUE_NAME_MISSING = 5
+  QUEUE_NOT_EXIST = 6
+  QUEUE_INUSE = 7
+  QUEUE_URI_CONFLICT = 8
+  INVALID_RECEIPT_HANDLE = 9
+  MESSAGE_BODY_MISSING = 10
+  RECEIPT_HANDLE_NOT_EXIST = 11
+  INDEX_NOT_UNIQUE = 12
+  PERMISSION_DENIED = 13
+  BAD_REQUEST = 34
+  INTERNAL_ERROR = 14
+  PARTITION_NOT_EXIST = 15
+  PARTITION_NOT_RUNNING = 16
+  QUEUE_NOT_CACHED = 17
+  PARTITION_NOT_SERVING = 18
+  TTRANSPORT_ERROR = 19
+  UNKNOWN = 30
+
+  _VALUES_TO_NAMES = {
+    1: "INVALID_ACTION",
+    2: "INVALID_ATTRIBUTE",
+    3: "QUEUE_DELETED_RECENTLY",
+    4: "QUEUE_EXIST",
+    5: "QUEUE_NAME_MISSING",
+    6: "QUEUE_NOT_EXIST",
+    7: "QUEUE_INUSE",
+    8: "QUEUE_URI_CONFLICT",
+    9: "INVALID_RECEIPT_HANDLE",
+    10: "MESSAGE_BODY_MISSING",
+    11: "RECEIPT_HANDLE_NOT_EXIST",
+    12: "INDEX_NOT_UNIQUE",
+    13: "PERMISSION_DENIED",
+    34: "BAD_REQUEST",
+    14: "INTERNAL_ERROR",
+    15: "PARTITION_NOT_EXIST",
+    16: "PARTITION_NOT_RUNNING",
+    17: "QUEUE_NOT_CACHED",
+    18: "PARTITION_NOT_SERVING",
+    19: "TTRANSPORT_ERROR",
+    30: "UNKNOWN",
+  }
+
+  _NAMES_TO_VALUES = {
+    "INVALID_ACTION": 1,
+    "INVALID_ATTRIBUTE": 2,
+    "QUEUE_DELETED_RECENTLY": 3,
+    "QUEUE_EXIST": 4,
+    "QUEUE_NAME_MISSING": 5,
+    "QUEUE_NOT_EXIST": 6,
+    "QUEUE_INUSE": 7,
+    "QUEUE_URI_CONFLICT": 8,
+    "INVALID_RECEIPT_HANDLE": 9,
+    "MESSAGE_BODY_MISSING": 10,
+    "RECEIPT_HANDLE_NOT_EXIST": 11,
+    "INDEX_NOT_UNIQUE": 12,
+    "PERMISSION_DENIED": 13,
+    "BAD_REQUEST": 34,
+    "INTERNAL_ERROR": 14,
+    "PARTITION_NOT_EXIST": 15,
+    "PARTITION_NOT_RUNNING": 16,
+    "QUEUE_NOT_CACHED": 17,
+    "PARTITION_NOT_SERVING": 18,
+    "TTRANSPORT_ERROR": 19,
+    "UNKNOWN": 30,
+  }
+
+class RetryType(object):
+  SAFE = 0
+  UNSAFE = 1
+  UNSURE = 2
+
+  _VALUES_TO_NAMES = {
+    0: "SAFE",
+    1: "UNSAFE",
+    2: "UNSURE",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAFE": 0,
+    "UNSAFE": 1,
+    "UNSURE": 2,
+  }
+
 
 class GalaxyEmqServiceException(TException):
   """
@@ -28,6 +119,7 @@ class GalaxyEmqServiceException(TException):
    - errorCode
    - errMsg
    - details
+   - requestId
   """
 
   thrift_spec = (
@@ -35,12 +127,14 @@ class GalaxyEmqServiceException(TException):
     (1, TType.I32, 'errorCode', None, None, ), # 1
     (2, TType.STRING, 'errMsg', None, None, ), # 2
     (3, TType.STRING, 'details', None, None, ), # 3
+    (4, TType.STRING, 'requestId', None, None, ), # 4
   )
 
-  def __init__(self, errorCode=None, errMsg=None, details=None,):
+  def __init__(self, errorCode=None, errMsg=None, details=None, requestId=None,):
     self.errorCode = errorCode
     self.errMsg = errMsg
     self.details = details
+    self.requestId = requestId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -66,6 +160,11 @@ class GalaxyEmqServiceException(TException):
           self.details = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.requestId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -88,6 +187,10 @@ class GalaxyEmqServiceException(TException):
       oprot.writeFieldBegin('details', TType.STRING, 3)
       oprot.writeString(self.details)
       oprot.writeFieldEnd()
+    if self.requestId is not None:
+      oprot.writeFieldBegin('requestId', TType.STRING, 4)
+      oprot.writeString(self.requestId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -103,6 +206,7 @@ class GalaxyEmqServiceException(TException):
     value = (value * 31) ^ hash(self.errorCode)
     value = (value * 31) ^ hash(self.errMsg)
     value = (value * 31) ^ hash(self.details)
+    value = (value * 31) ^ hash(self.requestId)
     return value
 
   def __repr__(self):
@@ -116,7 +220,7 @@ class GalaxyEmqServiceException(TException):
   def __ne__(self, other):
     return not (self == other)
 
-class Version:
+class Version(object):
   """
   Attributes:
    - major: The major version number;
