@@ -10,11 +10,10 @@ from rpc.auth.ttypes import Credential, UserType
 app_key = ""
 app_secret = ""
 
-endpoint = ""
 credential = Credential(UserType.APP_SECRET, app_key, app_secret)
 client_factory = ClientFactory(credential)
-queue_client = client_factory.queue_client(endpoint)
-message_client = client_factory.message_client(endpoint)
+queue_client = client_factory.queue_client()
+message_client = client_factory.message_client()
 queue_name = "testPythonExampleQueue"
 
 queue_attribute = QueueAttribute()
