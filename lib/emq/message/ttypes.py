@@ -27,8 +27,6 @@ class MessageAttribute(object):
   Author: shenyuannan@xiaomi.com
 
   Attributes:
-   - name: name of the attribute
-  must be unique in one message
    - type: must start with "STRING" or "BINARY", with an optional "." and a user-defined sub-type
   like "STRING.INTEGER" or "BINARY.JPEG"
   do not contain characters excepts alphabets, digits or "."
@@ -41,14 +39,12 @@ class MessageAttribute(object):
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'name', None, None, ), # 1
-    (2, TType.STRING, 'type', None, None, ), # 2
-    (3, TType.STRING, 'stringValue', None, None, ), # 3
-    (4, TType.STRING, 'binaryValue', None, None, ), # 4
+    (1, TType.STRING, 'type', None, None, ), # 1
+    (2, TType.STRING, 'stringValue', None, None, ), # 2
+    (3, TType.STRING, 'binaryValue', None, None, ), # 3
   )
 
-  def __init__(self, name=None, type=None, stringValue=None, binaryValue=None,):
-    self.name = name
+  def __init__(self, type=None, stringValue=None, binaryValue=None,):
     self.type = type
     self.stringValue = stringValue
     self.binaryValue = binaryValue
@@ -64,20 +60,15 @@ class MessageAttribute(object):
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.type = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.type = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
           self.stringValue = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 4:
+      elif fid == 3:
         if ftype == TType.STRING:
           self.binaryValue = iprot.readString();
         else:
@@ -92,28 +83,22 @@ class MessageAttribute(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('MessageAttribute')
-    if self.name is not None:
-      oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
-      oprot.writeFieldEnd()
     if self.type is not None:
-      oprot.writeFieldBegin('type', TType.STRING, 2)
+      oprot.writeFieldBegin('type', TType.STRING, 1)
       oprot.writeString(self.type)
       oprot.writeFieldEnd()
     if self.stringValue is not None:
-      oprot.writeFieldBegin('stringValue', TType.STRING, 3)
+      oprot.writeFieldBegin('stringValue', TType.STRING, 2)
       oprot.writeString(self.stringValue)
       oprot.writeFieldEnd()
     if self.binaryValue is not None:
-      oprot.writeFieldBegin('binaryValue', TType.STRING, 4)
+      oprot.writeFieldBegin('binaryValue', TType.STRING, 3)
       oprot.writeString(self.binaryValue)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.name is None:
-      raise TProtocol.TProtocolException(message='Required field name is unset!')
     if self.type is None:
       raise TProtocol.TProtocolException(message='Required field type is unset!')
     return
@@ -121,7 +106,6 @@ class MessageAttribute(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.name)
     value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.stringValue)
     value = (value * 31) ^ hash(self.binaryValue)
@@ -161,7 +145,7 @@ class SendMessageRequest(object):
     (2, TType.STRING, 'messageBody', None, None, ), # 2
     (3, TType.I32, 'delaySeconds', None, None, ), # 3
     (4, TType.I32, 'invisibilitySeconds', None, None, ), # 4
-    (5, TType.LIST, 'messageAttributes', (TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
+    (5, TType.MAP, 'messageAttributes', (TType.STRING,None,TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
   )
 
   def __init__(self, queueName=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None,):
@@ -201,14 +185,15 @@ class SendMessageRequest(object):
         else:
           iprot.skip(ftype)
       elif fid == 5:
-        if ftype == TType.LIST:
-          self.messageAttributes = []
-          (_etype3, _size0) = iprot.readListBegin()
+        if ftype == TType.MAP:
+          self.messageAttributes = {}
+          (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
           for _i4 in xrange(_size0):
-            _elem5 = MessageAttribute()
-            _elem5.read(iprot)
-            self.messageAttributes.append(_elem5)
-          iprot.readListEnd()
+            _key5 = iprot.readString();
+            _val6 = MessageAttribute()
+            _val6.read(iprot)
+            self.messageAttributes[_key5] = _val6
+          iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       else:
@@ -238,11 +223,12 @@ class SendMessageRequest(object):
       oprot.writeI32(self.invisibilitySeconds)
       oprot.writeFieldEnd()
     if self.messageAttributes is not None:
-      oprot.writeFieldBegin('messageAttributes', TType.LIST, 5)
-      oprot.writeListBegin(TType.STRUCT, len(self.messageAttributes))
-      for iter6 in self.messageAttributes:
-        iter6.write(oprot)
-      oprot.writeListEnd()
+      oprot.writeFieldBegin('messageAttributes', TType.MAP, 5)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.messageAttributes))
+      for kiter7,viter8 in self.messageAttributes.items():
+        oprot.writeString(kiter7)
+        viter8.write(oprot)
+      oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -278,18 +264,29 @@ class SendMessageRequest(object):
 class SendMessageResponse(object):
   """
   Attributes:
-   - messageID: MessageID for the send message, it should in format
-  "partititonID:createTimestamp:sequenceID";
+   - messageID: MessageID for the send message
+
+   - bodyLength: Length of messge body
+
+   - bodyMd5: MD5 string of the message body
+
+   - sendTimestamp: timestamp when the message arrived servers
 
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'messageID', None, None, ), # 1
+    (2, TType.I32, 'bodyLength', None, None, ), # 2
+    (3, TType.STRING, 'bodyMd5', None, None, ), # 3
+    (4, TType.I64, 'sendTimestamp', None, None, ), # 4
   )
 
-  def __init__(self, messageID=None,):
+  def __init__(self, messageID=None, bodyLength=None, bodyMd5=None, sendTimestamp=None,):
     self.messageID = messageID
+    self.bodyLength = bodyLength
+    self.bodyMd5 = bodyMd5
+    self.sendTimestamp = sendTimestamp
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -303,6 +300,21 @@ class SendMessageResponse(object):
       if fid == 1:
         if ftype == TType.STRING:
           self.messageID = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.bodyLength = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.bodyMd5 = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.sendTimestamp = iprot.readI64();
         else:
           iprot.skip(ftype)
       else:
@@ -319,6 +331,18 @@ class SendMessageResponse(object):
       oprot.writeFieldBegin('messageID', TType.STRING, 1)
       oprot.writeString(self.messageID)
       oprot.writeFieldEnd()
+    if self.bodyLength is not None:
+      oprot.writeFieldBegin('bodyLength', TType.I32, 2)
+      oprot.writeI32(self.bodyLength)
+      oprot.writeFieldEnd()
+    if self.bodyMd5 is not None:
+      oprot.writeFieldBegin('bodyMd5', TType.STRING, 3)
+      oprot.writeString(self.bodyMd5)
+      oprot.writeFieldEnd()
+    if self.sendTimestamp is not None:
+      oprot.writeFieldBegin('sendTimestamp', TType.I64, 4)
+      oprot.writeI64(self.sendTimestamp)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -331,6 +355,9 @@ class SendMessageResponse(object):
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.messageID)
+    value = (value * 31) ^ hash(self.bodyLength)
+    value = (value * 31) ^ hash(self.bodyMd5)
+    value = (value * 31) ^ hash(self.sendTimestamp)
     return value
 
   def __repr__(self):
@@ -369,7 +396,7 @@ class SendMessageBatchRequestEntry(object):
     (2, TType.STRING, 'messageBody', None, None, ), # 2
     (3, TType.I32, 'delaySeconds', None, None, ), # 3
     (4, TType.I32, 'invisibilitySeconds', None, None, ), # 4
-    (5, TType.LIST, 'messageAttributes', (TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
+    (5, TType.MAP, 'messageAttributes', (TType.STRING,None,TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
   )
 
   def __init__(self, entryId=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None,):
@@ -409,14 +436,15 @@ class SendMessageBatchRequestEntry(object):
         else:
           iprot.skip(ftype)
       elif fid == 5:
-        if ftype == TType.LIST:
-          self.messageAttributes = []
-          (_etype10, _size7) = iprot.readListBegin()
-          for _i11 in xrange(_size7):
-            _elem12 = MessageAttribute()
-            _elem12.read(iprot)
-            self.messageAttributes.append(_elem12)
-          iprot.readListEnd()
+        if ftype == TType.MAP:
+          self.messageAttributes = {}
+          (_ktype10, _vtype11, _size9 ) = iprot.readMapBegin()
+          for _i13 in xrange(_size9):
+            _key14 = iprot.readString();
+            _val15 = MessageAttribute()
+            _val15.read(iprot)
+            self.messageAttributes[_key14] = _val15
+          iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       else:
@@ -446,11 +474,12 @@ class SendMessageBatchRequestEntry(object):
       oprot.writeI32(self.invisibilitySeconds)
       oprot.writeFieldEnd()
     if self.messageAttributes is not None:
-      oprot.writeFieldBegin('messageAttributes', TType.LIST, 5)
-      oprot.writeListBegin(TType.STRUCT, len(self.messageAttributes))
-      for iter13 in self.messageAttributes:
-        iter13.write(oprot)
-      oprot.writeListEnd()
+      oprot.writeFieldBegin('messageAttributes', TType.MAP, 5)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.messageAttributes))
+      for kiter16,viter17 in self.messageAttributes.items():
+        oprot.writeString(kiter16)
+        viter17.write(oprot)
+      oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -519,11 +548,11 @@ class SendMessageBatchRequest(object):
       elif fid == 2:
         if ftype == TType.LIST:
           self.sendMessageBatchRequestEntryList = []
-          (_etype17, _size14) = iprot.readListBegin()
-          for _i18 in xrange(_size14):
-            _elem19 = SendMessageBatchRequestEntry()
-            _elem19.read(iprot)
-            self.sendMessageBatchRequestEntryList.append(_elem19)
+          (_etype21, _size18) = iprot.readListBegin()
+          for _i22 in xrange(_size18):
+            _elem23 = SendMessageBatchRequestEntry()
+            _elem23.read(iprot)
+            self.sendMessageBatchRequestEntryList.append(_elem23)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -544,8 +573,8 @@ class SendMessageBatchRequest(object):
     if self.sendMessageBatchRequestEntryList is not None:
       oprot.writeFieldBegin('sendMessageBatchRequestEntryList', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.sendMessageBatchRequestEntryList))
-      for iter20 in self.sendMessageBatchRequestEntryList:
-        iter20.write(oprot)
+      for iter24 in self.sendMessageBatchRequestEntryList:
+        iter24.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -581,8 +610,13 @@ class SendMessageBatchResponseEntry(object):
   Attributes:
    - entryId: corresponding to the entryId in request
 
-   - messageID: MessageID for the send message, it should in format
-  "partititonID:createTimestamp:sequenceID";
+   - messageID: MessageID for the send message
+
+   - bodyLength: Length of messge body
+
+   - bodyMd5: MD5 string of the message body
+
+   - sendTimestamp: timestamp when the message arrived servers
 
   """
 
@@ -590,11 +624,17 @@ class SendMessageBatchResponseEntry(object):
     None, # 0
     (1, TType.STRING, 'entryId', None, None, ), # 1
     (2, TType.STRING, 'messageID', None, None, ), # 2
+    (3, TType.I32, 'bodyLength', None, None, ), # 3
+    (4, TType.STRING, 'bodyMd5', None, None, ), # 4
+    (5, TType.I64, 'sendTimestamp', None, None, ), # 5
   )
 
-  def __init__(self, entryId=None, messageID=None,):
+  def __init__(self, entryId=None, messageID=None, bodyLength=None, bodyMd5=None, sendTimestamp=None,):
     self.entryId = entryId
     self.messageID = messageID
+    self.bodyLength = bodyLength
+    self.bodyMd5 = bodyMd5
+    self.sendTimestamp = sendTimestamp
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -615,6 +655,21 @@ class SendMessageBatchResponseEntry(object):
           self.messageID = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.bodyLength = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.bodyMd5 = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.I64:
+          self.sendTimestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -633,6 +688,18 @@ class SendMessageBatchResponseEntry(object):
       oprot.writeFieldBegin('messageID', TType.STRING, 2)
       oprot.writeString(self.messageID)
       oprot.writeFieldEnd()
+    if self.bodyLength is not None:
+      oprot.writeFieldBegin('bodyLength', TType.I32, 3)
+      oprot.writeI32(self.bodyLength)
+      oprot.writeFieldEnd()
+    if self.bodyMd5 is not None:
+      oprot.writeFieldBegin('bodyMd5', TType.STRING, 4)
+      oprot.writeString(self.bodyMd5)
+      oprot.writeFieldEnd()
+    if self.sendTimestamp is not None:
+      oprot.writeFieldBegin('sendTimestamp', TType.I64, 5)
+      oprot.writeI64(self.sendTimestamp)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -648,6 +715,9 @@ class SendMessageBatchResponseEntry(object):
     value = 17
     value = (value * 31) ^ hash(self.entryId)
     value = (value * 31) ^ hash(self.messageID)
+    value = (value * 31) ^ hash(self.bodyLength)
+    value = (value * 31) ^ hash(self.bodyMd5)
+    value = (value * 31) ^ hash(self.sendTimestamp)
     return value
 
   def __repr__(self):
@@ -777,22 +847,22 @@ class SendMessageBatchResponse(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.successful = []
-          (_etype24, _size21) = iprot.readListBegin()
-          for _i25 in xrange(_size21):
-            _elem26 = SendMessageBatchResponseEntry()
-            _elem26.read(iprot)
-            self.successful.append(_elem26)
+          (_etype28, _size25) = iprot.readListBegin()
+          for _i29 in xrange(_size25):
+            _elem30 = SendMessageBatchResponseEntry()
+            _elem30.read(iprot)
+            self.successful.append(_elem30)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.LIST:
           self.failed = []
-          (_etype30, _size27) = iprot.readListBegin()
-          for _i31 in xrange(_size27):
-            _elem32 = MessageBatchErrorEntry()
-            _elem32.read(iprot)
-            self.failed.append(_elem32)
+          (_etype34, _size31) = iprot.readListBegin()
+          for _i35 in xrange(_size31):
+            _elem36 = MessageBatchErrorEntry()
+            _elem36.read(iprot)
+            self.failed.append(_elem36)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -809,15 +879,15 @@ class SendMessageBatchResponse(object):
     if self.successful is not None:
       oprot.writeFieldBegin('successful', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.successful))
-      for iter33 in self.successful:
-        iter33.write(oprot)
+      for iter37 in self.successful:
+        iter37.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.failed is not None:
       oprot.writeFieldBegin('failed', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.failed))
-      for iter34 in self.failed:
-        iter34.write(oprot)
+      for iter38 in self.failed:
+        iter38.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -950,6 +1020,15 @@ class ReceiveMessageResponse(object):
 
    - messageBody: Message body for the received message;
 
+   - attributes: Attributes of message, including:
+  - senderId
+  - messageLength
+  - md5OfBody
+  - sendTimestamp
+  - receiveTimestamp
+  - firstReceiveTimestamp
+  - receiveCount
+
    - messageAttributes: User-defined attributes attached to message
 
   """
@@ -959,13 +1038,15 @@ class ReceiveMessageResponse(object):
     (1, TType.STRING, 'messageID', None, None, ), # 1
     (2, TType.STRING, 'receiptHandle', None, None, ), # 2
     (3, TType.STRING, 'messageBody', None, None, ), # 3
-    (4, TType.LIST, 'messageAttributes', (TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 4
+    (4, TType.MAP, 'attributes', (TType.STRING,None,TType.STRING,None), None, ), # 4
+    (5, TType.MAP, 'messageAttributes', (TType.STRING,None,TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
   )
 
-  def __init__(self, messageID=None, receiptHandle=None, messageBody=None, messageAttributes=None,):
+  def __init__(self, messageID=None, receiptHandle=None, messageBody=None, attributes=None, messageAttributes=None,):
     self.messageID = messageID
     self.receiptHandle = receiptHandle
     self.messageBody = messageBody
+    self.attributes = attributes
     self.messageAttributes = messageAttributes
 
   def read(self, iprot):
@@ -993,14 +1074,26 @@ class ReceiveMessageResponse(object):
         else:
           iprot.skip(ftype)
       elif fid == 4:
-        if ftype == TType.LIST:
-          self.messageAttributes = []
-          (_etype38, _size35) = iprot.readListBegin()
-          for _i39 in xrange(_size35):
-            _elem40 = MessageAttribute()
-            _elem40.read(iprot)
-            self.messageAttributes.append(_elem40)
-          iprot.readListEnd()
+        if ftype == TType.MAP:
+          self.attributes = {}
+          (_ktype40, _vtype41, _size39 ) = iprot.readMapBegin()
+          for _i43 in xrange(_size39):
+            _key44 = iprot.readString();
+            _val45 = iprot.readString();
+            self.attributes[_key44] = _val45
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.MAP:
+          self.messageAttributes = {}
+          (_ktype47, _vtype48, _size46 ) = iprot.readMapBegin()
+          for _i50 in xrange(_size46):
+            _key51 = iprot.readString();
+            _val52 = MessageAttribute()
+            _val52.read(iprot)
+            self.messageAttributes[_key51] = _val52
+          iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       else:
@@ -1025,12 +1118,21 @@ class ReceiveMessageResponse(object):
       oprot.writeFieldBegin('messageBody', TType.STRING, 3)
       oprot.writeString(self.messageBody)
       oprot.writeFieldEnd()
+    if self.attributes is not None:
+      oprot.writeFieldBegin('attributes', TType.MAP, 4)
+      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.attributes))
+      for kiter53,viter54 in self.attributes.items():
+        oprot.writeString(kiter53)
+        oprot.writeString(viter54)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
     if self.messageAttributes is not None:
-      oprot.writeFieldBegin('messageAttributes', TType.LIST, 4)
-      oprot.writeListBegin(TType.STRUCT, len(self.messageAttributes))
-      for iter41 in self.messageAttributes:
-        iter41.write(oprot)
-      oprot.writeListEnd()
+      oprot.writeFieldBegin('messageAttributes', TType.MAP, 5)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.messageAttributes))
+      for kiter55,viter56 in self.messageAttributes.items():
+        oprot.writeString(kiter55)
+        viter56.write(oprot)
+      oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1050,6 +1152,7 @@ class ReceiveMessageResponse(object):
     value = (value * 31) ^ hash(self.messageID)
     value = (value * 31) ^ hash(self.receiptHandle)
     value = (value * 31) ^ hash(self.messageBody)
+    value = (value * 31) ^ hash(self.attributes)
     value = (value * 31) ^ hash(self.messageAttributes)
     return value
 
@@ -1288,11 +1391,11 @@ class ChangeMessageVisibilityBatchRequest(object):
       elif fid == 2:
         if ftype == TType.LIST:
           self.changeMessageVisibilityRequestEntryList = []
-          (_etype45, _size42) = iprot.readListBegin()
-          for _i46 in xrange(_size42):
-            _elem47 = ChangeMessageVisibilityBatchRequestEntry()
-            _elem47.read(iprot)
-            self.changeMessageVisibilityRequestEntryList.append(_elem47)
+          (_etype60, _size57) = iprot.readListBegin()
+          for _i61 in xrange(_size57):
+            _elem62 = ChangeMessageVisibilityBatchRequestEntry()
+            _elem62.read(iprot)
+            self.changeMessageVisibilityRequestEntryList.append(_elem62)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1313,8 +1416,8 @@ class ChangeMessageVisibilityBatchRequest(object):
     if self.changeMessageVisibilityRequestEntryList is not None:
       oprot.writeFieldBegin('changeMessageVisibilityRequestEntryList', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.changeMessageVisibilityRequestEntryList))
-      for iter48 in self.changeMessageVisibilityRequestEntryList:
-        iter48.write(oprot)
+      for iter63 in self.changeMessageVisibilityRequestEntryList:
+        iter63.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1377,21 +1480,21 @@ class ChangeMessageVisibilityBatchResponse(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.successful = []
-          (_etype52, _size49) = iprot.readListBegin()
-          for _i53 in xrange(_size49):
-            _elem54 = iprot.readString();
-            self.successful.append(_elem54)
+          (_etype67, _size64) = iprot.readListBegin()
+          for _i68 in xrange(_size64):
+            _elem69 = iprot.readString();
+            self.successful.append(_elem69)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.LIST:
           self.failed = []
-          (_etype58, _size55) = iprot.readListBegin()
-          for _i59 in xrange(_size55):
-            _elem60 = MessageBatchErrorEntry()
-            _elem60.read(iprot)
-            self.failed.append(_elem60)
+          (_etype73, _size70) = iprot.readListBegin()
+          for _i74 in xrange(_size70):
+            _elem75 = MessageBatchErrorEntry()
+            _elem75.read(iprot)
+            self.failed.append(_elem75)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1408,15 +1511,15 @@ class ChangeMessageVisibilityBatchResponse(object):
     if self.successful is not None:
       oprot.writeFieldBegin('successful', TType.LIST, 1)
       oprot.writeListBegin(TType.STRING, len(self.successful))
-      for iter61 in self.successful:
-        oprot.writeString(iter61)
+      for iter76 in self.successful:
+        oprot.writeString(iter76)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.failed is not None:
       oprot.writeFieldBegin('failed', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.failed))
-      for iter62 in self.failed:
-        iter62.write(oprot)
+      for iter77 in self.failed:
+        iter77.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1631,11 +1734,11 @@ class DeleteMessageBatchRequest(object):
       elif fid == 2:
         if ftype == TType.LIST:
           self.deleteMessageBatchRequestEntryList = []
-          (_etype66, _size63) = iprot.readListBegin()
-          for _i67 in xrange(_size63):
-            _elem68 = DeleteMessageBatchRequestEntry()
-            _elem68.read(iprot)
-            self.deleteMessageBatchRequestEntryList.append(_elem68)
+          (_etype81, _size78) = iprot.readListBegin()
+          for _i82 in xrange(_size78):
+            _elem83 = DeleteMessageBatchRequestEntry()
+            _elem83.read(iprot)
+            self.deleteMessageBatchRequestEntryList.append(_elem83)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1656,8 +1759,8 @@ class DeleteMessageBatchRequest(object):
     if self.deleteMessageBatchRequestEntryList is not None:
       oprot.writeFieldBegin('deleteMessageBatchRequestEntryList', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.deleteMessageBatchRequestEntryList))
-      for iter69 in self.deleteMessageBatchRequestEntryList:
-        iter69.write(oprot)
+      for iter84 in self.deleteMessageBatchRequestEntryList:
+        iter84.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1720,21 +1823,21 @@ class DeleteMessageBatchResponse(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.successful = []
-          (_etype73, _size70) = iprot.readListBegin()
-          for _i74 in xrange(_size70):
-            _elem75 = iprot.readString();
-            self.successful.append(_elem75)
+          (_etype88, _size85) = iprot.readListBegin()
+          for _i89 in xrange(_size85):
+            _elem90 = iprot.readString();
+            self.successful.append(_elem90)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.LIST:
           self.failed = []
-          (_etype79, _size76) = iprot.readListBegin()
-          for _i80 in xrange(_size76):
-            _elem81 = MessageBatchErrorEntry()
-            _elem81.read(iprot)
-            self.failed.append(_elem81)
+          (_etype94, _size91) = iprot.readListBegin()
+          for _i95 in xrange(_size91):
+            _elem96 = MessageBatchErrorEntry()
+            _elem96.read(iprot)
+            self.failed.append(_elem96)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1751,15 +1854,15 @@ class DeleteMessageBatchResponse(object):
     if self.successful is not None:
       oprot.writeFieldBegin('successful', TType.LIST, 1)
       oprot.writeListBegin(TType.STRING, len(self.successful))
-      for iter82 in self.successful:
-        oprot.writeString(iter82)
+      for iter97 in self.successful:
+        oprot.writeString(iter97)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.failed is not None:
       oprot.writeFieldBegin('failed', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.failed))
-      for iter83 in self.failed:
-        iter83.write(oprot)
+      for iter98 in self.failed:
+        iter98.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

@@ -855,11 +855,11 @@ class receiveMessage_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype87, _size84) = iprot.readListBegin()
-          for _i88 in xrange(_size84):
-            _elem89 = ReceiveMessageResponse()
-            _elem89.read(iprot)
-            self.success.append(_elem89)
+          (_etype102, _size99) = iprot.readListBegin()
+          for _i103 in xrange(_size99):
+            _elem104 = ReceiveMessageResponse()
+            _elem104.read(iprot)
+            self.success.append(_elem104)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -882,8 +882,8 @@ class receiveMessage_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter90 in self.success:
-        iter90.write(oprot)
+      for iter105 in self.success:
+        iter105.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.e is not None:

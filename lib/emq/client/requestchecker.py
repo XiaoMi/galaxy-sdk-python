@@ -51,7 +51,8 @@ class RequestChecker(object):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.messageBody, "messageBody")
       if request.messageAttributes is not None:
-        self.check_message_attribute(request.messageAttributes)
+        for attribute in request.messageAttributes.values():
+          self.check_message_attribute(attribute)
     elif isinstance(request, ReceiveMessageRequest):
       self.validate_queue_name(request.queueName)
       if request.maxReceiveMessageNumber is not None:
@@ -110,25 +111,21 @@ class RequestChecker(object):
     if send_entry.invisibilitySeconds is not None:
       self.validate_invisibilitySeconds(send_entry.invisibilitySeconds)
     if send_entry.messageAttributes is not None:
-      self.check_message_attribute(send_entry.messageAttributes)
+      for attribute in send_entry.messageAttributes.values():
+        self.check_message_attribute(attribute)
 
-  def check_message_attribute(self, messageAttributes):
-    if messageAttributes is not None:
-      for attribute in messageAttributes:
-        if attribute.type.lower().startswith("string"):
-          if attribute.stringValue is None:
-            raise GalaxyEmqServiceException(errMsg="stringValue cannot be None when type is STRING")
-        elif attribute.type.lower().startswith("binary"):
-          if attribute.binaryValue is None:
-            raise GalaxyEmqServiceException(errMsg="binaryValue cannot be None when type is BINARY")
-        else:
-          raise GalaxyEmqServiceException(errMsg="Attribute type must start with \"STRING\" or \"BINARY\"")
-        for c in attribute.type:
-          if not c in string.ascii_letters and not c in string.digits and c != '.':
-            raise GalaxyEmqServiceException(errMsg="Invalid character \'" + c + "\' in attribute type")
-        if attribute.name == "" or attribute.name is None:
-          raise GalaxyEmqServiceException(errMsg="Empty attribute name")
-      self.check_list_duplicate([a.name for a in messageAttributes], "attribute name")
+  def check_message_attribute(self, attribute):
+    if attribute.type.lower().startswith("string"):
+      if attribute.stringValue is None:
+        raise GalaxyEmqServiceException(errMsg="stringValue cannot be None when type is STRING")
+    elif attribute.type.lower().startswith("binary"):
+      if attribute.binaryValue is None:
+        raise GalaxyEmqServiceException(errMsg="binaryValue cannot be None when type is BINARY")
+    else:
+      raise GalaxyEmqServiceException(errMsg="Attribute type must start with \"STRING\" or \"BINARY\"")
+    for c in attribute.type:
+      if not c in string.ascii_letters and not c in string.digits and c != '.':
+        raise GalaxyEmqServiceException(errMsg="Invalid character \'" + c + "\' in attribute type")
 
   def check_change_entry(self, change_entry):
     self.validate_not_none(change_entry.invisibilitySeconds, "invisibilitySeconds")
