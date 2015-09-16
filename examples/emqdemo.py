@@ -40,7 +40,7 @@ for receive_message in receive_message_response_list:
   receipt_handle = receive_message.receiptHandle
   print receive_message.messageBody
 
-visibility_seconds = 200
+visibility_seconds = 0
 change_message_visibility_request = ChangeMessageVisibilityRequest(queue_name, receipt_handle, visibility_seconds)
 message_client.changeMessageVisibilitySeconds(change_message_visibility_request)
 

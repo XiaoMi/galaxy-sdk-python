@@ -53,6 +53,10 @@ class RequestChecker(object):
       if request.messageAttributes is not None:
         for attribute in request.messageAttributes.values():
           self.check_message_attribute(attribute)
+      if request.delaySeconds is not None:
+        self.validate_delaySeconds(request.delaySeconds)
+      if request.invisibilitySeconds is not None:
+        self.validate_invisibilitySeconds(request.invisibilitySeconds)
     elif isinstance(request, ReceiveMessageRequest):
       self.validate_queue_name(request.queueName)
       if request.maxReceiveMessageNumber is not None:
@@ -62,7 +66,7 @@ class RequestChecker(object):
     elif isinstance(request, ChangeMessageVisibilityRequest):
       self.validate_queue_name(request.queueName)
       if request.invisibilitySeconds is not None:
-        self.validate_invisibilitySeconds(request.invisibilitySeconds)
+        self.validate_changeInvisibilitySeconds(request.invisibilitySeconds)
       self.validate_not_none(request.receiptHandle, "receiptHandle")
       self.validate_not_empty(request.receiptHandle, "receiptHandle")
     elif isinstance(request, DeleteMessageRequest):
@@ -129,7 +133,7 @@ class RequestChecker(object):
 
   def check_change_entry(self, change_entry):
     self.validate_not_none(change_entry.invisibilitySeconds, "invisibilitySeconds")
-    self.validate_invisibilitySeconds(change_entry.invisibilitySeconds)
+    self.validate_changeInvisibilitySeconds(change_entry.invisibilitySeconds)
 
   def check_list_duplicate(self, l, name):
     if len(l) != len({}.fromkeys(l).keys()):
@@ -201,6 +205,11 @@ class RequestChecker(object):
   def validate_invisibilitySeconds(self, invisibilitySeconds):
     self.check_filed_range(invisibilitySeconds,
                            GALAXY_EMQ_QUEUE_INVISIBILITY_SECONDS_MINIMAL,
+                           GALAXY_EMQ_QUEUE_INVISIBILITY_SECONDS_MAXIMAL,
+                           "invisibilitySeconds")
+
+  def validate_changeInvisibilitySeconds(self, invisibilitySeconds):
+    self.check_filed_range(invisibilitySeconds, 0,
                            GALAXY_EMQ_QUEUE_INVISIBILITY_SECONDS_MAXIMAL,
                            "invisibilitySeconds")
 
