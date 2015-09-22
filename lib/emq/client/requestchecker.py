@@ -63,6 +63,9 @@ class RequestChecker(object):
         self.validate_receiveMessageMaximumNumber(request.maxReceiveMessageNumber)
       if request.maxReceiveMessageWaitSeconds is not None:
         self.validate_receiveMessageWaitSeconds(request.maxReceiveMessageWaitSeconds)
+      if request.attributeName is not None:
+        self.validate_not_empty(request.attributeName, "attributeName")
+        self.check_message_attribute(request.attributeValue)
     elif isinstance(request, ChangeMessageVisibilityRequest):
       self.validate_queue_name(request.queueName)
       if request.invisibilitySeconds is not None:
@@ -119,6 +122,7 @@ class RequestChecker(object):
         self.check_message_attribute(attribute)
 
   def check_message_attribute(self, attribute):
+    self.validate_not_none(attribute, "messageAttribute")
     if attribute.type.lower().startswith("string"):
       if attribute.stringValue is None:
         raise GalaxyEmqServiceException(errMsg="stringValue cannot be None when type is STRING")

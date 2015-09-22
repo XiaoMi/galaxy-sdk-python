@@ -923,6 +923,12 @@ class ReceiveMessageRequest(object):
 
    - maxReceiveMessageWaitSeconds: Max receive message wait seconds, default 20s (0 ~ 20), 0s means no wait;
 
+   - attributeName: Attribute name to match
+  case-sensitive
+
+   - attributeValue: Attribute value to match, corresponding to attributeName
+  case-sensitive
+
   """
 
   thrift_spec = (
@@ -930,12 +936,16 @@ class ReceiveMessageRequest(object):
     (1, TType.STRING, 'queueName', None, None, ), # 1
     (2, TType.I32, 'maxReceiveMessageNumber', None, 100, ), # 2
     (3, TType.I32, 'maxReceiveMessageWaitSeconds', None, 0, ), # 3
+    (4, TType.STRING, 'attributeName', None, None, ), # 4
+    (5, TType.STRUCT, 'attributeValue', (MessageAttribute, MessageAttribute.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, queueName=None, maxReceiveMessageNumber=thrift_spec[2][4], maxReceiveMessageWaitSeconds=thrift_spec[3][4],):
+  def __init__(self, queueName=None, maxReceiveMessageNumber=thrift_spec[2][4], maxReceiveMessageWaitSeconds=thrift_spec[3][4], attributeName=None, attributeValue=None,):
     self.queueName = queueName
     self.maxReceiveMessageNumber = maxReceiveMessageNumber
     self.maxReceiveMessageWaitSeconds = maxReceiveMessageWaitSeconds
+    self.attributeName = attributeName
+    self.attributeValue = attributeValue
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -961,6 +971,17 @@ class ReceiveMessageRequest(object):
           self.maxReceiveMessageWaitSeconds = iprot.readI32();
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.attributeName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRUCT:
+          self.attributeValue = MessageAttribute()
+          self.attributeValue.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -983,6 +1004,14 @@ class ReceiveMessageRequest(object):
       oprot.writeFieldBegin('maxReceiveMessageWaitSeconds', TType.I32, 3)
       oprot.writeI32(self.maxReceiveMessageWaitSeconds)
       oprot.writeFieldEnd()
+    if self.attributeName is not None:
+      oprot.writeFieldBegin('attributeName', TType.STRING, 4)
+      oprot.writeString(self.attributeName)
+      oprot.writeFieldEnd()
+    if self.attributeValue is not None:
+      oprot.writeFieldBegin('attributeValue', TType.STRUCT, 5)
+      self.attributeValue.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -997,6 +1026,8 @@ class ReceiveMessageRequest(object):
     value = (value * 31) ^ hash(self.queueName)
     value = (value * 31) ^ hash(self.maxReceiveMessageNumber)
     value = (value * 31) ^ hash(self.maxReceiveMessageWaitSeconds)
+    value = (value * 31) ^ hash(self.attributeName)
+    value = (value * 31) ^ hash(self.attributeValue)
     return value
 
   def __repr__(self):
@@ -1174,9 +1205,7 @@ class ChangeMessageVisibilityRequest(object):
 
    - receiptHandle: receiptHandle for change visibility;
 
-   - invisibilitySeconds: The extra invisibilitySeconds for this message, the invisibility seconds
-  will be (oldIvisibulitySeconds + newInvisibilitySeconds), and can only
-  affect on the newly received message and ont exceed old invisibilitySeconds;
+   - invisibilitySeconds: The extra invisibilitySeconds for this message
 
   """
 
@@ -1274,9 +1303,7 @@ class ChangeMessageVisibilityBatchRequestEntry(object):
   Attributes:
    - receiptHandle: receiptHandle for change visibility;
 
-   - invisibilitySeconds: The extra invisibilitySeconds for this message, the invisibility seconds
-  will be (oldIvisibulitySeconds + newInvisibilitySeconds), and can only
-  affect on the newly received message and ont exceed old invisibilitySeconds;
+   - invisibilitySeconds: The extra invisibilitySeconds for this message
 
   """
 
