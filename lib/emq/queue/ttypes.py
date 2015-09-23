@@ -83,7 +83,7 @@ class QueueAttribute(object):
 
    - partitionNumber: Partition number for this queue default 4 (1 ~ 255)
 
-   - userAttributes: User-defined attributes
+   - userAttributes: User-defined attributes;
 
   """
 
@@ -250,7 +250,7 @@ class QueueState(object):
    - approximateMessageNumber: The approximate message number in this queue;
 
    - approximateAvailableMessageNumber: The available message number in this queue, this is for message that could
-  be get using receivedMesasge
+  be get using receivedMessage
 
    - approximateInvisibilityMessageNumber: The invisibility message number in this queue, this is for received message
   that in invisibilitySeconds and not deleted;
@@ -374,12 +374,242 @@ class QueueState(object):
   def __ne__(self, other):
     return not (self == other)
 
+class Throughput(object):
+  """
+  Attributes:
+   - readQps: Queue read qps;
+
+   - writeQps: Queue write qps;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'readQps', None, None, ), # 1
+    (2, TType.I64, 'writeQps', None, None, ), # 2
+  )
+
+  def __init__(self, readQps=None, writeQps=None,):
+    self.readQps = readQps
+    self.writeQps = writeQps
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.readQps = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.writeQps = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('Throughput')
+    if self.readQps is not None:
+      oprot.writeFieldBegin('readQps', TType.I64, 1)
+      oprot.writeI64(self.readQps)
+      oprot.writeFieldEnd()
+    if self.writeQps is not None:
+      oprot.writeFieldBegin('writeQps', TType.I64, 2)
+      oprot.writeI64(self.writeQps)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.readQps)
+    value = (value * 31) ^ hash(self.writeQps)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class SpaceQuota(object):
+  """
+  Attributes:
+   - size: Queue read qps;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'size', None, None, ), # 1
+  )
+
+  def __init__(self, size=None,):
+    self.size = size
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.size = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('SpaceQuota')
+    if self.size is not None:
+      oprot.writeFieldBegin('size', TType.I64, 1)
+      oprot.writeI64(self.size)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.size)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class QueueQuota(object):
+  """
+  Attributes:
+   - spaceQuota: Queue space quota;
+
+   - throughput: Queue read and qps;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'spaceQuota', (SpaceQuota, SpaceQuota.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'throughput', (Throughput, Throughput.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, spaceQuota=None, throughput=None,):
+    self.spaceQuota = spaceQuota
+    self.throughput = throughput
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.spaceQuota = SpaceQuota()
+          self.spaceQuota.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.throughput = Throughput()
+          self.throughput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('QueueQuota')
+    if self.spaceQuota is not None:
+      oprot.writeFieldBegin('spaceQuota', TType.STRUCT, 1)
+      self.spaceQuota.write(oprot)
+      oprot.writeFieldEnd()
+    if self.throughput is not None:
+      oprot.writeFieldBegin('throughput', TType.STRUCT, 2)
+      self.throughput.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.spaceQuota)
+    value = (value * 31) ^ hash(self.throughput)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class CreateQueueRequest(object):
   """
   Attributes:
-   - queueName: The queue name
+   - queueName: The queue name;
 
-   - queueAttribute: The queue attribute
+   - queueAttribute: The queue attribute;
+
+   - queueQuota: The queue quota, including space quota, read qps, and write qps;
 
   """
 
@@ -387,11 +617,13 @@ class CreateQueueRequest(object):
     None, # 0
     (1, TType.STRING, 'queueName', None, None, ), # 1
     (2, TType.STRUCT, 'queueAttribute', (QueueAttribute, QueueAttribute.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 3
   )
 
-  def __init__(self, queueName=None, queueAttribute=None,):
+  def __init__(self, queueName=None, queueAttribute=None, queueQuota=None,):
     self.queueName = queueName
     self.queueAttribute = queueAttribute
+    self.queueQuota = queueQuota
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -411,6 +643,12 @@ class CreateQueueRequest(object):
         if ftype == TType.STRUCT:
           self.queueAttribute = QueueAttribute()
           self.queueAttribute.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.queueQuota = QueueQuota()
+          self.queueQuota.read(iprot)
         else:
           iprot.skip(ftype)
       else:
@@ -431,6 +669,10 @@ class CreateQueueRequest(object):
       oprot.writeFieldBegin('queueAttribute', TType.STRUCT, 2)
       self.queueAttribute.write(oprot)
       oprot.writeFieldEnd()
+    if self.queueQuota is not None:
+      oprot.writeFieldBegin('queueQuota', TType.STRUCT, 3)
+      self.queueQuota.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -444,6 +686,7 @@ class CreateQueueRequest(object):
     value = 17
     value = (value * 31) ^ hash(self.queueName)
     value = (value * 31) ^ hash(self.queueAttribute)
+    value = (value * 31) ^ hash(self.queueQuota)
     return value
 
   def __repr__(self):
@@ -460,11 +703,13 @@ class CreateQueueRequest(object):
 class CreateQueueResponse(object):
   """
   Attributes:
-   - queueName: The queue name
+   - queueName: The queue name;
   The name returned here may be a little different from user set in request (with developerId as prefix).
   So the user should use the name returned by this response for those following operations
 
    - queueAttribute: The queue attribute;
+
+   - queueQuota: The queue quota;
 
   """
 
@@ -472,11 +717,13 @@ class CreateQueueResponse(object):
     None, # 0
     (1, TType.STRING, 'queueName', None, None, ), # 1
     (2, TType.STRUCT, 'queueAttribute', (QueueAttribute, QueueAttribute.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 3
   )
 
-  def __init__(self, queueName=None, queueAttribute=None,):
+  def __init__(self, queueName=None, queueAttribute=None, queueQuota=None,):
     self.queueName = queueName
     self.queueAttribute = queueAttribute
+    self.queueQuota = queueQuota
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -498,6 +745,12 @@ class CreateQueueResponse(object):
           self.queueAttribute.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.queueQuota = QueueQuota()
+          self.queueQuota.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -516,6 +769,10 @@ class CreateQueueResponse(object):
       oprot.writeFieldBegin('queueAttribute', TType.STRUCT, 2)
       self.queueAttribute.write(oprot)
       oprot.writeFieldEnd()
+    if self.queueQuota is not None:
+      oprot.writeFieldBegin('queueQuota', TType.STRUCT, 3)
+      self.queueQuota.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -524,6 +781,8 @@ class CreateQueueResponse(object):
       raise TProtocol.TProtocolException(message='Required field queueName is unset!')
     if self.queueAttribute is None:
       raise TProtocol.TProtocolException(message='Required field queueAttribute is unset!')
+    if self.queueQuota is None:
+      raise TProtocol.TProtocolException(message='Required field queueQuota is unset!')
     return
 
 
@@ -531,6 +790,7 @@ class CreateQueueResponse(object):
     value = 17
     value = (value * 31) ^ hash(self.queueName)
     value = (value * 31) ^ hash(self.queueAttribute)
+    value = (value * 31) ^ hash(self.queueQuota)
     return value
 
   def __repr__(self):
@@ -683,9 +943,9 @@ class PurgeQueueRequest(object):
 class SetQueueAttributesRequest(object):
   """
   Attributes:
-   - queueName: The queue name
+   - queueName: The queue name;
 
-   - queueAttribute: The queue attribute
+   - queueAttribute: The queue attribute;
 
   """
 
@@ -766,7 +1026,7 @@ class SetQueueAttributesRequest(object):
 class SetQueueAttributesResponse(object):
   """
   Attributes:
-   - queueName: The queue name
+   - queueName: The queue name;
 
    - queueAttribute: The queue attribute;
 
@@ -835,6 +1095,172 @@ class SetQueueAttributesResponse(object):
     value = 17
     value = (value * 31) ^ hash(self.queueName)
     value = (value * 31) ^ hash(self.queueAttribute)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class SetQueueQuotaRequest(object):
+  """
+  Attributes:
+   - queueName: The queue name;
+
+   - queueQuota: The queue quota;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+    (2, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, queueName=None, queueQuota=None,):
+    self.queueName = queueName
+    self.queueQuota = queueQuota
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.queueQuota = QueueQuota()
+          self.queueQuota.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('SetQueueQuotaRequest')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    if self.queueQuota is not None:
+      oprot.writeFieldBegin('queueQuota', TType.STRUCT, 2)
+      self.queueQuota.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueName is None:
+      raise TProtocol.TProtocolException(message='Required field queueName is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    value = (value * 31) ^ hash(self.queueQuota)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class SetQueueQuotaResponse(object):
+  """
+  Attributes:
+   - queueName: The queue name;
+
+   - queueQuota: The queue quota;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+    (2, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, queueName=None, queueQuota=None,):
+    self.queueName = queueName
+    self.queueQuota = queueQuota
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.queueQuota = QueueQuota()
+          self.queueQuota.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('SetQueueQuotaResponse')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    if self.queueQuota is not None:
+      oprot.writeFieldBegin('queueQuota', TType.STRUCT, 2)
+      self.queueQuota.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueName is None:
+      raise TProtocol.TProtocolException(message='Required field queueName is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    value = (value * 31) ^ hash(self.queueQuota)
     return value
 
   def __repr__(self):
@@ -919,11 +1345,13 @@ class GetQueueInfoRequest(object):
 class GetQueueInfoResponse(object):
   """
   Attributes:
-   - queueName: The queue name
+   - queueName: The queue name;
 
    - queueAttribute: The queue attribute;
 
    - queueState: The queue state;
+
+   - queueQuota: The queue quota;
 
   """
 
@@ -932,12 +1360,14 @@ class GetQueueInfoResponse(object):
     (1, TType.STRING, 'queueName', None, None, ), # 1
     (2, TType.STRUCT, 'queueAttribute', (QueueAttribute, QueueAttribute.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'queueState', (QueueState, QueueState.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, queueName=None, queueAttribute=None, queueState=None,):
+  def __init__(self, queueName=None, queueAttribute=None, queueState=None, queueQuota=None,):
     self.queueName = queueName
     self.queueAttribute = queueAttribute
     self.queueState = queueState
+    self.queueQuota = queueQuota
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -965,6 +1395,12 @@ class GetQueueInfoResponse(object):
           self.queueState.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.queueQuota = QueueQuota()
+          self.queueQuota.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -987,6 +1423,10 @@ class GetQueueInfoResponse(object):
       oprot.writeFieldBegin('queueState', TType.STRUCT, 3)
       self.queueState.write(oprot)
       oprot.writeFieldEnd()
+    if self.queueQuota is not None:
+      oprot.writeFieldBegin('queueQuota', TType.STRUCT, 4)
+      self.queueQuota.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -997,6 +1437,8 @@ class GetQueueInfoResponse(object):
       raise TProtocol.TProtocolException(message='Required field queueAttribute is unset!')
     if self.queueState is None:
       raise TProtocol.TProtocolException(message='Required field queueState is unset!')
+    if self.queueQuota is None:
+      raise TProtocol.TProtocolException(message='Required field queueQuota is unset!')
     return
 
 
@@ -1005,6 +1447,7 @@ class GetQueueInfoResponse(object):
     value = (value * 31) ^ hash(self.queueName)
     value = (value * 31) ^ hash(self.queueAttribute)
     value = (value * 31) ^ hash(self.queueState)
+    value = (value * 31) ^ hash(self.queueQuota)
     return value
 
   def __repr__(self):

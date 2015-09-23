@@ -133,7 +133,7 @@ class SendMessageRequest(object):
   queue, default 0s (0s ~ 15min);
 
    - invisibilitySeconds: Invisibility seconds for this message, this will overwrite
-  invisibilitySeconds of this queue, default 30s (0s ~ 12hour);
+  invisibilitySeconds of this queue, default 30s (2s ~ 12hour);
 
    - messageAttributes: User-defined attributes attached to message
 
@@ -266,7 +266,7 @@ class SendMessageResponse(object):
   Attributes:
    - messageID: MessageID for the send message
 
-   - bodyLength: Length of messge body
+   - bodyLength: Length of message body
 
    - bodyMd5: MD5 string of the message body
 
@@ -374,7 +374,7 @@ class SendMessageResponse(object):
 class SendMessageBatchRequestEntry(object):
   """
   Attributes:
-   - entryId: The identifier for this partitcular receipt handle;
+   - entryId: The identifier for this particular receipt handle;
   Using to identify the result in response;
   Need to be unique within one batch
 
@@ -384,7 +384,7 @@ class SendMessageBatchRequestEntry(object):
   queue, default 0s (0s ~ 15min);
 
    - invisibilitySeconds: Invisibility seconds for this message, this will overwrite
-  invisibilitySeconds of this queue, default 30s (0s ~ 12hour);
+  invisibilitySeconds of this queue, default 30s (2s ~ 12hour);
 
    - messageAttributes: User-defined attributes attached to message
 
@@ -612,7 +612,7 @@ class SendMessageBatchResponseEntry(object):
 
    - messageID: MessageID for the send message
 
-   - bodyLength: Length of messge body
+   - bodyLength: Length of message body
 
    - bodyMd5: MD5 string of the message body
 
@@ -819,7 +819,7 @@ class MessageBatchErrorEntry(object):
 class SendMessageBatchResponse(object):
   """
   Attributes:
-   - successful: The sucessful results list;
+   - successful: The successful results list;
 
    - failed: Failed results list;
 
@@ -1205,7 +1205,7 @@ class ChangeMessageVisibilityRequest(object):
 
    - receiptHandle: receiptHandle for change visibility;
 
-   - invisibilitySeconds: The extra invisibilitySeconds for this message
+   - invisibilitySeconds: The extra invisibilitySeconds for this message (0s ~ 12hour)
 
   """
 
@@ -1303,7 +1303,7 @@ class ChangeMessageVisibilityBatchRequestEntry(object):
   Attributes:
    - receiptHandle: receiptHandle for change visibility;
 
-   - invisibilitySeconds: The extra invisibilitySeconds for this message
+   - invisibilitySeconds: The extra invisibilitySeconds for this message (0s ~ 12hour)
 
   """
 
@@ -1478,7 +1478,7 @@ class ChangeMessageVisibilityBatchRequest(object):
 class ChangeMessageVisibilityBatchResponse(object):
   """
   Attributes:
-   - successful: The sucessful receipt handle;
+   - successful: The successful receipt handle;
 
    - failed: Failed results list;
   Using receipt handle to index
@@ -1821,7 +1821,7 @@ class DeleteMessageBatchRequest(object):
 class DeleteMessageBatchResponse(object):
   """
   Attributes:
-   - successful: The sucessful receipt handle;
+   - successful: The successful receipt handle;
 
    - failed: Failed results list;
   Using receipt handle to index

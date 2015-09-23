@@ -28,6 +28,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  void deleteQueue(DeleteQueueRequest request)')
   print('  void purgeQueue(PurgeQueueRequest request)')
   print('  SetQueueAttributesResponse setQueueAttribute(SetQueueAttributesRequest request)')
+  print('  SetQueueQuotaResponse setQueueQuota(SetQueueQuotaRequest request)')
   print('  GetQueueInfoResponse getQueueInfo(GetQueueInfoRequest request)')
   print('  ListQueueResponse listQueue(ListQueueRequest request)')
   print('  void setPermission(SetPermissionRequest request)')
@@ -116,6 +117,12 @@ elif cmd == 'setQueueAttribute':
     print('setQueueAttribute requires 1 args')
     sys.exit(1)
   pp.pprint(client.setQueueAttribute(eval(args[0]),))
+
+elif cmd == 'setQueueQuota':
+  if len(args) != 1:
+    print('setQueueQuota requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.setQueueQuota(eval(args[0]),))
 
 elif cmd == 'getQueueInfo':
   if len(args) != 1:

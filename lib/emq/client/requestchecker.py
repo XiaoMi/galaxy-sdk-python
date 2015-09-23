@@ -9,12 +9,14 @@ from emq.range.constants import GALAXY_EMQ_QUEUE_DELAY_SECONDS_MINIMAL, GALAXY_E
   GALAXY_EMQ_QUEUE_MAX_MESSAGE_BYTES_MINIMAL, GALAXY_EMQ_QUEUE_MAX_MESSAGE_BYTES_MAXIMAL, \
   GALAXY_EMQ_QUEUE_PARTITION_NUMBER_MINIMAL, GALAXY_EMQ_QUEUE_PARTITION_NUMBER_MAXIMAL, \
   GALAXY_EMQ_MESSAGE_DELAY_SECONDS_MAXIMAL, GALAXY_EMQ_MESSAGE_DELAY_SECONDS_MINIMAL, \
-  GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MAXIMAL, GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MINIMAL
+  GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MAXIMAL, GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MINIMAL, \
+  GALAXY_EMQ_QUEUE_WRITE_QPS_MINIMAL, GALAXY_EMQ_QUEUE_WRITE_QPS_MAXIMAL, GALAXY_EMQ_QUEUE_READ_QPS_MINIMAL, \
+  GALAXY_EMQ_QUEUE_READ_QPS_MAXIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MINIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MAXIMAL
 from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, ChangeMessageVisibilityRequest, \
   DeleteMessageRequest, SendMessageBatchRequest, SendMessageBatchRequestEntry, ChangeMessageVisibilityBatchRequestEntry, \
   ChangeMessageVisibilityBatchRequest, DeleteMessageBatchRequest
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
-  RevokePermissionRequest, QueryPermissionForIdRequest
+  RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota
 
 
 class RequestChecker(object):
@@ -34,9 +36,13 @@ class RequestChecker(object):
     elif isinstance(request, CreateQueueRequest):
       self.validate_queue_name(request.queueName, False)
       self.validate_queue_attribute(request.queueAttribute)
+      self.validate_queue_quota(request.queueQuota)
     elif isinstance(request, SetQueueAttributesRequest):
       self.validate_queue_name(request.queueName)
       self.validate_queue_attribute(request.queueAttribute)
+    elif isinstance(request, SetQueueQuotaRequest):
+      self.validate_queue_name(request.queueName)
+      self.validate_queue_quota(request.queueQuota)
     elif isinstance(request, SetPermissionRequest):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.developerId, "developerId")
@@ -90,7 +96,8 @@ class RequestChecker(object):
     elif isinstance(request, ChangeMessageVisibilityBatchRequest):
       self.validate_queue_name(request.queueName)
       changeMessageVisibilityBatchRequestEntryList = request.changeMessageVisibilityRequestEntryList
-      self.validate_not_empty(changeMessageVisibilityBatchRequestEntryList, "changeMessageVisibilityBatchRequestEntryList")
+      self.validate_not_empty(changeMessageVisibilityBatchRequestEntryList,
+                              "changeMessageVisibilityBatchRequestEntryList")
       receipt_handle_list = []
       for k in changeMessageVisibilityBatchRequestEntryList:
         self.validate_not_none(k.receiptHandle, "receiptHandle")
@@ -194,6 +201,20 @@ class RequestChecker(object):
     if queue_attribute.partitionNumber:
       self.validate_partitionNumber(queue_attribute.partitionNumber)
 
+  def validate_queue_quota(self, queue_quota):
+    if not queue_quota:
+      return
+    if not queue_quota.spaceQuota:
+      return
+    if queue_quota.spaceQuota.size:
+      self.validate_spaceQuota(queue_quota.spaceQuota.size)
+    if not queue_quota.throughput:
+      return
+    if queue_quota.throughput.readQps:
+      self.validate_readQps(queue_quota.throughput.readQps)
+    if queue_quota.throughput.writeQps:
+      self.validate_writeQps(queue_quota.throughput.writeQps)
+
   def check_filed_range(self, value, low, high, name):
     if not isinstance(value, int):
       raise GalaxyEmqServiceException(errMsg="Bad request, wrong date type of %s!" % name)
@@ -259,11 +280,29 @@ class RequestChecker(object):
                            GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MAXIMAL,
                            "messageInvisibilitySeconds")
 
+  def validate_spaceQuota(self, spaceQuota):
+    self.check_filed_range(spaceQuota,
+                           GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MINIMAL,
+                           GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MAXIMAL,
+                           "spaceQuota")
+
+  def validate_readQps(self, readQps):
+    self.check_filed_range(readQps,
+                           GALAXY_EMQ_QUEUE_READ_QPS_MINIMAL,
+                           GALAXY_EMQ_QUEUE_READ_QPS_MAXIMAL,
+                           "readQps")
+
+  def validate_writeQps(self, writeQps):
+    self.check_filed_range(writeQps,
+                           GALAXY_EMQ_QUEUE_WRITE_QPS_MINIMAL,
+                           GALAXY_EMQ_QUEUE_WRITE_QPS_MAXIMAL,
+                           "writeQps")
+
   def validate_not_none(self, param, name):
     if param is None:
       raise GalaxyEmqServiceException(errMsg="Bad request, the %s is required!" % name)
 
   def validate_not_empty(self, param, name):
     if not param:
-        raise GalaxyEmqServiceException(errMsg="Bad request, the %s shouldn't be empty!" % name)
+      raise GalaxyEmqServiceException(errMsg="Bad request, the %s shouldn't be empty!" % name)
 

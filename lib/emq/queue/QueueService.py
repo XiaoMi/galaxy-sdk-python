@@ -60,9 +60,19 @@ class Iface(emq.common.EMQBaseService.Iface):
     """
     pass
 
+  def setQueueQuota(self, request):
+    """
+    Set queue quota;
+
+
+    Parameters:
+     - request
+    """
+    pass
+
   def getQueueInfo(self, request):
     """
-    Get queue info, incloud QueueAttribute and QueueState;
+    Get queue info, include QueueAttribute, QueueState and QueueQuota;
 
 
     Parameters:
@@ -82,7 +92,7 @@ class Iface(emq.common.EMQBaseService.Iface):
 
   def setPermission(self, request):
     """
-    Set permisson for developer
+    Set permission for developer
     FULL_CONTROL required to use this method
 
 
@@ -277,9 +287,45 @@ class Client(emq.common.EMQBaseService.Client, Iface):
       raise result.e
     raise TApplicationException(TApplicationException.MISSING_RESULT, "setQueueAttribute failed: unknown result");
 
+  def setQueueQuota(self, request):
+    """
+    Set queue quota;
+
+
+    Parameters:
+     - request
+    """
+    self.send_setQueueQuota(request)
+    return self.recv_setQueueQuota()
+
+  def send_setQueueQuota(self, request):
+    self._oprot.writeMessageBegin('setQueueQuota', TMessageType.CALL, self._seqid)
+    args = setQueueQuota_args()
+    args.request = request
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_setQueueQuota(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = setQueueQuota_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.e is not None:
+      raise result.e
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "setQueueQuota failed: unknown result");
+
   def getQueueInfo(self, request):
     """
-    Get queue info, incloud QueueAttribute and QueueState;
+    Get queue info, include QueueAttribute, QueueState and QueueQuota;
 
 
     Parameters:
@@ -351,7 +397,7 @@ class Client(emq.common.EMQBaseService.Client, Iface):
 
   def setPermission(self, request):
     """
-    Set permisson for developer
+    Set permission for developer
     FULL_CONTROL required to use this method
 
 
@@ -535,6 +581,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     self._processMap["deleteQueue"] = Processor.process_deleteQueue
     self._processMap["purgeQueue"] = Processor.process_purgeQueue
     self._processMap["setQueueAttribute"] = Processor.process_setQueueAttribute
+    self._processMap["setQueueQuota"] = Processor.process_setQueueQuota
     self._processMap["getQueueInfo"] = Processor.process_getQueueInfo
     self._processMap["listQueue"] = Processor.process_listQueue
     self._processMap["setPermission"] = Processor.process_setPermission
@@ -610,6 +657,20 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     except emq.common.ttypes.GalaxyEmqServiceException, e:
       result.e = e
     oprot.writeMessageBegin("setQueueAttribute", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_setQueueQuota(self, seqid, iprot, oprot):
+    args = setQueueQuota_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = setQueueQuota_result()
+    try:
+      result.success = self._handler.setQueueQuota(args.request)
+    except emq.common.ttypes.GalaxyEmqServiceException, e:
+      result.e = e
+    oprot.writeMessageBegin("setQueueQuota", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -1237,6 +1298,151 @@ class setQueueAttribute_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('setQueueAttribute_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class setQueueQuota_args(object):
+  """
+  Attributes:
+   - request
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'request', (SetQueueQuotaRequest, SetQueueQuotaRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, request=None,):
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.request = SetQueueQuotaRequest()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('setQueueQuota_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 1)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class setQueueQuota_result(object):
+  """
+  Attributes:
+   - success
+   - e
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (SetQueueQuotaResponse, SetQueueQuotaResponse.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'e', (emq.common.ttypes.GalaxyEmqServiceException, emq.common.ttypes.GalaxyEmqServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, e=None,):
+    self.success = success
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = SetQueueQuotaResponse()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = emq.common.ttypes.GalaxyEmqServiceException()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('setQueueQuota_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)

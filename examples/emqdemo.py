@@ -1,8 +1,10 @@
+from pprint import pprint
 from time import sleep
 from emq.client.clientfactory import ClientFactory
 from emq.common.ttypes import GalaxyEmqServiceException
 from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, ChangeMessageVisibilityRequest
-from emq.queue.ttypes import QueueAttribute, CreateQueueRequest, ListQueueRequest, DeleteQueueRequest
+from emq.queue.ttypes import QueueAttribute, CreateQueueRequest, ListQueueRequest, DeleteQueueRequest, QueueQuota, \
+  SpaceQuota, Throughput, SetQueueQuotaRequest
 from rpc.auth.ttypes import Credential, UserType
 
 
@@ -17,13 +19,16 @@ message_client = client_factory.message_client()
 queue_name = "testPythonExampleQueue"
 
 queue_attribute = QueueAttribute()
-create_request = CreateQueueRequest(queueName=queue_name, queueAttribute=queue_attribute)
+queue_quota = QueueQuota(throughput=Throughput(readQps=100, writeQps=100))
+create_request = CreateQueueRequest(queueName=queue_name, queueAttribute=queue_attribute, queueQuota=queue_quota)
 
 create_queue_response = queue_client.createQueue(create_request)
+pprint(vars(create_queue_response))
+# print "create queue response:" + create_queue_response
 queue_name = create_queue_response.queueName
 print "created queue:" + queue_name
-listqueue_equest = ListQueueRequest(queueNamePrefix="test")
-print queue_client.listQueue(listqueue_equest)
+list_queue_request = ListQueueRequest(queueNamePrefix="test")
+print queue_client.listQueue(list_queue_request)
 
 message_body = "test message body"
 delay_seconds = 2
@@ -43,6 +48,14 @@ for receive_message in receive_message_response_list:
 visibility_seconds = 0
 change_message_visibility_request = ChangeMessageVisibilityRequest(queue_name, receipt_handle, visibility_seconds)
 message_client.changeMessageVisibilitySeconds(change_message_visibility_request)
+set_quota_request = SetQueueQuotaRequest(queueName=queue_name,
+                                         queueQuota=QueueQuota(spaceQuota=SpaceQuota(size=200),
+                                                               throughput=Throughput(readQps=200, writeQps=200)))
+try:
+  response = queue_client.setQueueQuota(set_quota_request)
+  pprint(vars(response))
+except GalaxyEmqServiceException, e:
+  print e
 
 delete_request = DeleteQueueRequest(queueName=queue_name)
 try:
@@ -50,6 +63,7 @@ try:
   print "deleted queue:" + queue_name
 except GalaxyEmqServiceException, e:
   print e
+
 
 
 
