@@ -781,8 +781,6 @@ class CreateQueueResponse(object):
       raise TProtocol.TProtocolException(message='Required field queueName is unset!')
     if self.queueAttribute is None:
       raise TProtocol.TProtocolException(message='Required field queueAttribute is unset!')
-    if self.queueQuota is None:
-      raise TProtocol.TProtocolException(message='Required field queueQuota is unset!')
     return
 
 
@@ -1437,8 +1435,6 @@ class GetQueueInfoResponse(object):
       raise TProtocol.TProtocolException(message='Required field queueAttribute is unset!')
     if self.queueState is None:
       raise TProtocol.TProtocolException(message='Required field queueState is unset!')
-    if self.queueQuota is None:
-      raise TProtocol.TProtocolException(message='Required field queueQuota is unset!')
     return
 
 
