@@ -105,15 +105,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_get(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = get_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -139,15 +140,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_put(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = put_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -173,15 +175,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_increment(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = increment_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -207,15 +210,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_remove(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = remove_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -241,15 +245,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_scan(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = scan_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -276,15 +281,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_batch(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = batch_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -454,6 +460,11 @@ class get_args(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -527,6 +538,12 @@ class get_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -587,6 +604,11 @@ class put_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -661,6 +683,12 @@ class put_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -721,6 +749,11 @@ class increment_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -795,6 +828,12 @@ class increment_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -855,6 +894,11 @@ class remove_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -929,6 +973,12 @@ class remove_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -989,6 +1039,11 @@ class scan_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1063,6 +1118,12 @@ class scan_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1123,6 +1184,11 @@ class batch_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1196,6 +1262,12 @@ class batch_result(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

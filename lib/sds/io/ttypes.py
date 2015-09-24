@@ -97,6 +97,11 @@ class DatumMapMeta(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.keyIdMap)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -189,6 +194,12 @@ class RCBasicMeta(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.keys)
+    value = (value * 31) ^ hash(self.types)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -271,6 +282,12 @@ class RCBasicRowGroupHeader(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.count)
+    value = (value * 31) ^ hash(self.offset)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -359,6 +376,13 @@ class SLFileMeta(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.type)
+    value = (value * 31) ^ hash(self.datumMapMeta)
+    value = (value * 31) ^ hash(self.rcBasicMeta)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -457,6 +481,12 @@ class DatumMapRecord(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.data)
+    value = (value * 31) ^ hash(self.keyIdMap)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -527,6 +557,11 @@ class ValueList(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.values)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -600,6 +635,11 @@ class DatumMap(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.data)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

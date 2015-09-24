@@ -318,6 +318,15 @@ class AppInfo(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.appId)
+    value = (value * 31) ^ hash(self.developerId)
+    value = (value * 31) ^ hash(self.tableMappings)
+    value = (value * 31) ^ hash(self.oauthAppMapping)
+    value = (value * 31) ^ hash(self.appName)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -417,6 +426,14 @@ class MetricData(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.clientMetricType)
+    value = (value * 31) ^ hash(self.metricName)
+    value = (value * 31) ^ hash(self.value)
+    value = (value * 31) ^ hash(self.timeStamp)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -487,6 +504,11 @@ class ClientMetrics(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.metricDataList)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -622,6 +644,17 @@ class MetricQueryRequest(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.startTime)
+    value = (value * 31) ^ hash(self.stopTime)
+    value = (value * 31) ^ hash(self.metricKey)
+    value = (value * 31) ^ hash(self.metricType)
+    value = (value * 31) ^ hash(self.downsampleInterval)
+    value = (value * 31) ^ hash(self.downsampleTimeUnit)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -729,6 +762,14 @@ class TimeSeriesData(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.metricKey)
+    value = (value * 31) ^ hash(self.metricType)
+    value = (value * 31) ^ hash(self.data)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

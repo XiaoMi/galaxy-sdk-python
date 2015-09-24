@@ -28,10 +28,9 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  AppInfo getAppInfo(string appId)')
   print('   findAllApps()')
   print('   findAllTables()')
-  print('   cleanAllLazyDroppedTables()')
   print('  TableInfo createTable(string tableName, TableSpec tableSpec)')
   print('  void dropTable(string tableName)')
-  print('  void restoreTable(string tableName)')
+  print('  void lazyDropTable(string tableName)')
   print('  void alterTable(string tableName, TableSpec tableSpec)')
   print('  void cloneTable(string srcName, string destTable, bool flushTable)')
   print('  void disableTable(string tableName)')
@@ -45,6 +44,13 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   findAllAppInfo()')
   print('  i64 getTableSize(string tableName)')
   print('  void putClientMetrics(ClientMetrics clientMetrics)')
+  print('  void subscribePhoneAlert(string tableName, string phoneNumber)')
+  print('  void unsubscribePhoneAlert(string tableName, string phoneNumber)')
+  print('  void subscribeEmailAlert(string tableName, string email)')
+  print('  void unsubscribeEmailAlert(string tableName, string email)')
+  print('   listSubscribedPhone(string tableName)')
+  print('   listSubscribedEmail(string tableName)')
+  print('   getTableHistorySize(string tableName, i64 startDate, i64 stopDate)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
   print('  i64 getServerTime()')
@@ -128,12 +134,6 @@ elif cmd == 'findAllTables':
     sys.exit(1)
   pp.pprint(client.findAllTables())
 
-elif cmd == 'cleanAllLazyDroppedTables':
-  if len(args) != 0:
-    print('cleanAllLazyDroppedTables requires 0 args')
-    sys.exit(1)
-  pp.pprint(client.cleanAllLazyDroppedTables())
-
 elif cmd == 'createTable':
   if len(args) != 2:
     print('createTable requires 2 args')
@@ -146,11 +146,11 @@ elif cmd == 'dropTable':
     sys.exit(1)
   pp.pprint(client.dropTable(args[0],))
 
-elif cmd == 'restoreTable':
+elif cmd == 'lazyDropTable':
   if len(args) != 1:
-    print('restoreTable requires 1 args')
+    print('lazyDropTable requires 1 args')
     sys.exit(1)
-  pp.pprint(client.restoreTable(args[0],))
+  pp.pprint(client.lazyDropTable(args[0],))
 
 elif cmd == 'alterTable':
   if len(args) != 2:
@@ -229,6 +229,48 @@ elif cmd == 'putClientMetrics':
     print('putClientMetrics requires 1 args')
     sys.exit(1)
   pp.pprint(client.putClientMetrics(eval(args[0]),))
+
+elif cmd == 'subscribePhoneAlert':
+  if len(args) != 2:
+    print('subscribePhoneAlert requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.subscribePhoneAlert(args[0],args[1],))
+
+elif cmd == 'unsubscribePhoneAlert':
+  if len(args) != 2:
+    print('unsubscribePhoneAlert requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.unsubscribePhoneAlert(args[0],args[1],))
+
+elif cmd == 'subscribeEmailAlert':
+  if len(args) != 2:
+    print('subscribeEmailAlert requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.subscribeEmailAlert(args[0],args[1],))
+
+elif cmd == 'unsubscribeEmailAlert':
+  if len(args) != 2:
+    print('unsubscribeEmailAlert requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.unsubscribeEmailAlert(args[0],args[1],))
+
+elif cmd == 'listSubscribedPhone':
+  if len(args) != 1:
+    print('listSubscribedPhone requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.listSubscribedPhone(args[0],))
+
+elif cmd == 'listSubscribedEmail':
+  if len(args) != 1:
+    print('listSubscribedEmail requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.listSubscribedEmail(args[0],))
+
+elif cmd == 'getTableHistorySize':
+  if len(args) != 3:
+    print('getTableHistorySize requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getTableHistorySize(args[0],eval(args[1]),eval(args[2]),))
 
 elif cmd == 'getServerVersion':
   if len(args) != 0:

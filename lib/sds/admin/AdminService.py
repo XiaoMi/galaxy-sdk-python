@@ -53,12 +53,6 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def cleanAllLazyDroppedTables(self):
-    """
-    清除所有延迟删除的表
-    """
-    pass
-
   def createTable(self, tableName, tableSpec):
     """
     创建表
@@ -78,9 +72,9 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def restoreTable(self, tableName):
+  def lazyDropTable(self, tableName):
     """
-    恢复表
+    延迟删除表
 
     Parameters:
      - tableName
@@ -203,6 +197,75 @@ class Iface(sds.common.BaseService.Iface):
 
     Parameters:
      - clientMetrics
+    """
+    pass
+
+  def subscribePhoneAlert(self, tableName, phoneNumber):
+    """
+    添加关注电话
+
+    Parameters:
+     - tableName
+     - phoneNumber
+    """
+    pass
+
+  def unsubscribePhoneAlert(self, tableName, phoneNumber):
+    """
+    取消关注电话
+
+    Parameters:
+     - tableName
+     - phoneNumber
+    """
+    pass
+
+  def subscribeEmailAlert(self, tableName, email):
+    """
+    添加关注邮箱
+
+    Parameters:
+     - tableName
+     - email
+    """
+    pass
+
+  def unsubscribeEmailAlert(self, tableName, email):
+    """
+    取消关注邮箱
+
+    Parameters:
+     - tableName
+     - email
+    """
+    pass
+
+  def listSubscribedPhone(self, tableName):
+    """
+    查看关注某个表的电话
+
+    Parameters:
+     - tableName
+    """
+    pass
+
+  def listSubscribedEmail(self, tableName):
+    """
+    查看关注某个表的邮箱地址
+
+    Parameters:
+     - tableName
+    """
+    pass
+
+  def getTableHistorySize(self, tableName, startDate, stopDate):
+    """
+    获取表空间历史大小
+
+    Parameters:
+     - tableName
+     - startDate
+     - stopDate
     """
     pass
 
@@ -233,15 +296,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_saveAppInfo(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = saveAppInfo_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -265,15 +329,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getAppInfo(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = getAppInfo_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -295,15 +360,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_findAllApps(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = findAllApps_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -325,50 +391,21 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_findAllTables(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = findAllTables_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "findAllTables failed: unknown result");
-
-  def cleanAllLazyDroppedTables(self):
-    """
-    清除所有延迟删除的表
-    """
-    self.send_cleanAllLazyDroppedTables()
-    return self.recv_cleanAllLazyDroppedTables()
-
-  def send_cleanAllLazyDroppedTables(self):
-    self._oprot.writeMessageBegin('cleanAllLazyDroppedTables', TMessageType.CALL, self._seqid)
-    args = cleanAllLazyDroppedTables_args()
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_cleanAllLazyDroppedTables(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
-      raise x
-    result = cleanAllLazyDroppedTables_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "cleanAllLazyDroppedTables failed: unknown result");
 
   def createTable(self, tableName, tableSpec):
     """
@@ -391,15 +428,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_createTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = createTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -425,47 +463,49 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_dropTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = dropTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
 
-  def restoreTable(self, tableName):
+  def lazyDropTable(self, tableName):
     """
-    恢复表
+    延迟删除表
 
     Parameters:
      - tableName
     """
-    self.send_restoreTable(tableName)
-    self.recv_restoreTable()
+    self.send_lazyDropTable(tableName)
+    self.recv_lazyDropTable()
 
-  def send_restoreTable(self, tableName):
-    self._oprot.writeMessageBegin('restoreTable', TMessageType.CALL, self._seqid)
-    args = restoreTable_args()
+  def send_lazyDropTable(self, tableName):
+    self._oprot.writeMessageBegin('lazyDropTable', TMessageType.CALL, self._seqid)
+    args = lazyDropTable_args()
     args.tableName = tableName
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_restoreTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+  def recv_lazyDropTable(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
-    result = restoreTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result = lazyDropTable_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -491,15 +531,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_alterTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = alterTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -527,15 +568,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_cloneTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = cloneTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -559,15 +601,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_disableTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = disableTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -591,15 +634,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_enableTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = enableTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
@@ -623,15 +667,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_describeTable(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = describeTable_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -657,15 +702,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableStatus(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = getTableStatus_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -691,15 +737,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableState(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = getTableState_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -729,15 +776,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableSplits(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = getTableSplits_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -763,15 +811,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_queryMetric(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = queryMetric_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -797,15 +846,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_queryMetrics(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = queryMetrics_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -827,15 +877,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_findAllAppInfo(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = findAllAppInfo_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -861,15 +912,16 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_getTableSize(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = getTableSize_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.se is not None:
@@ -895,18 +947,268 @@ class Client(sds.common.BaseService.Client, Iface):
     self._oprot.trans.flush()
 
   def recv_putClientMetrics(self):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
+      x.read(iprot)
+      iprot.readMessageEnd()
       raise x
     result = putClientMetrics_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    result.read(iprot)
+    iprot.readMessageEnd()
     if result.se is not None:
       raise result.se
     return
+
+  def subscribePhoneAlert(self, tableName, phoneNumber):
+    """
+    添加关注电话
+
+    Parameters:
+     - tableName
+     - phoneNumber
+    """
+    self.send_subscribePhoneAlert(tableName, phoneNumber)
+    self.recv_subscribePhoneAlert()
+
+  def send_subscribePhoneAlert(self, tableName, phoneNumber):
+    self._oprot.writeMessageBegin('subscribePhoneAlert', TMessageType.CALL, self._seqid)
+    args = subscribePhoneAlert_args()
+    args.tableName = tableName
+    args.phoneNumber = phoneNumber
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_subscribePhoneAlert(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = subscribePhoneAlert_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.se is not None:
+      raise result.se
+    return
+
+  def unsubscribePhoneAlert(self, tableName, phoneNumber):
+    """
+    取消关注电话
+
+    Parameters:
+     - tableName
+     - phoneNumber
+    """
+    self.send_unsubscribePhoneAlert(tableName, phoneNumber)
+    self.recv_unsubscribePhoneAlert()
+
+  def send_unsubscribePhoneAlert(self, tableName, phoneNumber):
+    self._oprot.writeMessageBegin('unsubscribePhoneAlert', TMessageType.CALL, self._seqid)
+    args = unsubscribePhoneAlert_args()
+    args.tableName = tableName
+    args.phoneNumber = phoneNumber
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_unsubscribePhoneAlert(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = unsubscribePhoneAlert_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.se is not None:
+      raise result.se
+    return
+
+  def subscribeEmailAlert(self, tableName, email):
+    """
+    添加关注邮箱
+
+    Parameters:
+     - tableName
+     - email
+    """
+    self.send_subscribeEmailAlert(tableName, email)
+    self.recv_subscribeEmailAlert()
+
+  def send_subscribeEmailAlert(self, tableName, email):
+    self._oprot.writeMessageBegin('subscribeEmailAlert', TMessageType.CALL, self._seqid)
+    args = subscribeEmailAlert_args()
+    args.tableName = tableName
+    args.email = email
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_subscribeEmailAlert(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = subscribeEmailAlert_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.se is not None:
+      raise result.se
+    return
+
+  def unsubscribeEmailAlert(self, tableName, email):
+    """
+    取消关注邮箱
+
+    Parameters:
+     - tableName
+     - email
+    """
+    self.send_unsubscribeEmailAlert(tableName, email)
+    self.recv_unsubscribeEmailAlert()
+
+  def send_unsubscribeEmailAlert(self, tableName, email):
+    self._oprot.writeMessageBegin('unsubscribeEmailAlert', TMessageType.CALL, self._seqid)
+    args = unsubscribeEmailAlert_args()
+    args.tableName = tableName
+    args.email = email
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_unsubscribeEmailAlert(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = unsubscribeEmailAlert_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.se is not None:
+      raise result.se
+    return
+
+  def listSubscribedPhone(self, tableName):
+    """
+    查看关注某个表的电话
+
+    Parameters:
+     - tableName
+    """
+    self.send_listSubscribedPhone(tableName)
+    return self.recv_listSubscribedPhone()
+
+  def send_listSubscribedPhone(self, tableName):
+    self._oprot.writeMessageBegin('listSubscribedPhone', TMessageType.CALL, self._seqid)
+    args = listSubscribedPhone_args()
+    args.tableName = tableName
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_listSubscribedPhone(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = listSubscribedPhone_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "listSubscribedPhone failed: unknown result");
+
+  def listSubscribedEmail(self, tableName):
+    """
+    查看关注某个表的邮箱地址
+
+    Parameters:
+     - tableName
+    """
+    self.send_listSubscribedEmail(tableName)
+    return self.recv_listSubscribedEmail()
+
+  def send_listSubscribedEmail(self, tableName):
+    self._oprot.writeMessageBegin('listSubscribedEmail', TMessageType.CALL, self._seqid)
+    args = listSubscribedEmail_args()
+    args.tableName = tableName
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_listSubscribedEmail(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = listSubscribedEmail_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "listSubscribedEmail failed: unknown result");
+
+  def getTableHistorySize(self, tableName, startDate, stopDate):
+    """
+    获取表空间历史大小
+
+    Parameters:
+     - tableName
+     - startDate
+     - stopDate
+    """
+    self.send_getTableHistorySize(tableName, startDate, stopDate)
+    return self.recv_getTableHistorySize()
+
+  def send_getTableHistorySize(self, tableName, startDate, stopDate):
+    self._oprot.writeMessageBegin('getTableHistorySize', TMessageType.CALL, self._seqid)
+    args = getTableHistorySize_args()
+    args.tableName = tableName
+    args.startDate = startDate
+    args.stopDate = stopDate
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getTableHistorySize(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getTableHistorySize_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableHistorySize failed: unknown result");
 
 
 class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
@@ -916,10 +1218,9 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["getAppInfo"] = Processor.process_getAppInfo
     self._processMap["findAllApps"] = Processor.process_findAllApps
     self._processMap["findAllTables"] = Processor.process_findAllTables
-    self._processMap["cleanAllLazyDroppedTables"] = Processor.process_cleanAllLazyDroppedTables
     self._processMap["createTable"] = Processor.process_createTable
     self._processMap["dropTable"] = Processor.process_dropTable
-    self._processMap["restoreTable"] = Processor.process_restoreTable
+    self._processMap["lazyDropTable"] = Processor.process_lazyDropTable
     self._processMap["alterTable"] = Processor.process_alterTable
     self._processMap["cloneTable"] = Processor.process_cloneTable
     self._processMap["disableTable"] = Processor.process_disableTable
@@ -933,6 +1234,13 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["findAllAppInfo"] = Processor.process_findAllAppInfo
     self._processMap["getTableSize"] = Processor.process_getTableSize
     self._processMap["putClientMetrics"] = Processor.process_putClientMetrics
+    self._processMap["subscribePhoneAlert"] = Processor.process_subscribePhoneAlert
+    self._processMap["unsubscribePhoneAlert"] = Processor.process_unsubscribePhoneAlert
+    self._processMap["subscribeEmailAlert"] = Processor.process_subscribeEmailAlert
+    self._processMap["unsubscribeEmailAlert"] = Processor.process_unsubscribeEmailAlert
+    self._processMap["listSubscribedPhone"] = Processor.process_listSubscribedPhone
+    self._processMap["listSubscribedEmail"] = Processor.process_listSubscribedEmail
+    self._processMap["getTableHistorySize"] = Processor.process_getTableHistorySize
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -1005,20 +1313,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_cleanAllLazyDroppedTables(self, seqid, iprot, oprot):
-    args = cleanAllLazyDroppedTables_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = cleanAllLazyDroppedTables_result()
-    try:
-      result.success = self._handler.cleanAllLazyDroppedTables()
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("cleanAllLazyDroppedTables", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
   def process_createTable(self, seqid, iprot, oprot):
     args = createTable_args()
     args.read(iprot)
@@ -1047,16 +1341,16 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_restoreTable(self, seqid, iprot, oprot):
-    args = restoreTable_args()
+  def process_lazyDropTable(self, seqid, iprot, oprot):
+    args = lazyDropTable_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = restoreTable_result()
+    result = lazyDropTable_result()
     try:
-      self._handler.restoreTable(args.tableName)
+      self._handler.lazyDropTable(args.tableName)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
-    oprot.writeMessageBegin("restoreTable", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("lazyDropTable", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -1243,6 +1537,104 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
+  def process_subscribePhoneAlert(self, seqid, iprot, oprot):
+    args = subscribePhoneAlert_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = subscribePhoneAlert_result()
+    try:
+      self._handler.subscribePhoneAlert(args.tableName, args.phoneNumber)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("subscribePhoneAlert", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_unsubscribePhoneAlert(self, seqid, iprot, oprot):
+    args = unsubscribePhoneAlert_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = unsubscribePhoneAlert_result()
+    try:
+      self._handler.unsubscribePhoneAlert(args.tableName, args.phoneNumber)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("unsubscribePhoneAlert", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_subscribeEmailAlert(self, seqid, iprot, oprot):
+    args = subscribeEmailAlert_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = subscribeEmailAlert_result()
+    try:
+      self._handler.subscribeEmailAlert(args.tableName, args.email)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("subscribeEmailAlert", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_unsubscribeEmailAlert(self, seqid, iprot, oprot):
+    args = unsubscribeEmailAlert_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = unsubscribeEmailAlert_result()
+    try:
+      self._handler.unsubscribeEmailAlert(args.tableName, args.email)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("unsubscribeEmailAlert", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_listSubscribedPhone(self, seqid, iprot, oprot):
+    args = listSubscribedPhone_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = listSubscribedPhone_result()
+    try:
+      result.success = self._handler.listSubscribedPhone(args.tableName)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("listSubscribedPhone", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_listSubscribedEmail(self, seqid, iprot, oprot):
+    args = listSubscribedEmail_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = listSubscribedEmail_result()
+    try:
+      result.success = self._handler.listSubscribedEmail(args.tableName)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("listSubscribedEmail", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getTableHistorySize(self, seqid, iprot, oprot):
+    args = getTableHistorySize_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getTableHistorySize_result()
+    try:
+      result.success = self._handler.getTableHistorySize(args.tableName, args.startDate, args.stopDate)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("getTableHistorySize", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
 
 # HELPER FUNCTIONS AND STRUCTURES
 
@@ -1295,6 +1687,11 @@ class saveAppInfo_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.appInfo)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1357,6 +1754,11 @@ class saveAppInfo_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1416,6 +1818,11 @@ class getAppInfo_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.appId)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1490,6 +1897,12 @@ class getAppInfo_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1531,6 +1944,10 @@ class findAllApps_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1613,6 +2030,12 @@ class findAllApps_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -1654,6 +2077,10 @@ class findAllTables_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1736,127 +2163,11 @@ class findAllTables_result(object):
     return
 
 
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class cleanAllLazyDroppedTables_args(object):
-
-  thrift_spec = (
-  )
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('cleanAllLazyDroppedTables_args')
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class cleanAllLazyDroppedTables_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRING,None), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype51, _size48) = iprot.readListBegin()
-          for _i52 in xrange(_size48):
-            _elem53 = iprot.readString();
-            self.success.append(_elem53)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('cleanAllLazyDroppedTables_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter54 in self.success:
-        oprot.writeString(iter54)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -1931,6 +2242,12 @@ class createTable_args(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.tableSpec)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2004,6 +2321,12 @@ class createTable_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2063,6 +2386,11 @@ class dropTable_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2125,6 +2453,11 @@ class dropTable_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2136,7 +2469,7 @@ class dropTable_result(object):
   def __ne__(self, other):
     return not (self == other)
 
-class restoreTable_args(object):
+class lazyDropTable_args(object):
   """
   Attributes:
    - tableName
@@ -2173,7 +2506,7 @@ class restoreTable_args(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('restoreTable_args')
+    oprot.writeStructBegin('lazyDropTable_args')
     if self.tableName is not None:
       oprot.writeFieldBegin('tableName', TType.STRING, 1)
       oprot.writeString(self.tableName)
@@ -2184,6 +2517,11 @@ class restoreTable_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2196,7 +2534,7 @@ class restoreTable_args(object):
   def __ne__(self, other):
     return not (self == other)
 
-class restoreTable_result(object):
+class lazyDropTable_result(object):
   """
   Attributes:
    - se
@@ -2234,7 +2572,7 @@ class restoreTable_result(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('restoreTable_result')
+    oprot.writeStructBegin('lazyDropTable_result')
     if self.se is not None:
       oprot.writeFieldBegin('se', TType.STRUCT, 1)
       self.se.write(oprot)
@@ -2245,6 +2583,11 @@ class restoreTable_result(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2319,6 +2662,12 @@ class alterTable_args(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.tableSpec)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2379,6 +2728,11 @@ class alterTable_result(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2464,6 +2818,13 @@ class cloneTable_args(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.srcName)
+    value = (value * 31) ^ hash(self.destTable)
+    value = (value * 31) ^ hash(self.flushTable)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2525,6 +2886,11 @@ class cloneTable_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2584,6 +2950,11 @@ class disableTable_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2646,6 +3017,11 @@ class disableTable_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2705,6 +3081,11 @@ class enableTable_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2767,6 +3148,11 @@ class enableTable_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2826,6 +3212,11 @@ class describeTable_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -2900,6 +3291,12 @@ class describeTable_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -2959,6 +3356,11 @@ class getTableStatus_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3033,6 +3435,12 @@ class getTableStatus_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3092,6 +3500,11 @@ class getTableState_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3165,6 +3578,12 @@ class getTableState_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3213,24 +3632,24 @@ class getTableSplits_args(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.startKey = {}
-          (_ktype56, _vtype57, _size55 ) = iprot.readMapBegin()
-          for _i59 in xrange(_size55):
-            _key60 = iprot.readString();
-            _val61 = sds.table.ttypes.Datum()
-            _val61.read(iprot)
-            self.startKey[_key60] = _val61
+          (_ktype49, _vtype50, _size48 ) = iprot.readMapBegin()
+          for _i52 in xrange(_size48):
+            _key53 = iprot.readString();
+            _val54 = sds.table.ttypes.Datum()
+            _val54.read(iprot)
+            self.startKey[_key53] = _val54
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.MAP:
           self.stopKey = {}
-          (_ktype63, _vtype64, _size62 ) = iprot.readMapBegin()
-          for _i66 in xrange(_size62):
-            _key67 = iprot.readString();
-            _val68 = sds.table.ttypes.Datum()
-            _val68.read(iprot)
-            self.stopKey[_key67] = _val68
+          (_ktype56, _vtype57, _size55 ) = iprot.readMapBegin()
+          for _i59 in xrange(_size55):
+            _key60 = iprot.readString();
+            _val61 = sds.table.ttypes.Datum()
+            _val61.read(iprot)
+            self.stopKey[_key60] = _val61
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -3251,17 +3670,17 @@ class getTableSplits_args(object):
     if self.startKey is not None:
       oprot.writeFieldBegin('startKey', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
-      for kiter69,viter70 in self.startKey.items():
-        oprot.writeString(kiter69)
-        viter70.write(oprot)
+      for kiter62,viter63 in self.startKey.items():
+        oprot.writeString(kiter62)
+        viter63.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.stopKey is not None:
       oprot.writeFieldBegin('stopKey', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
-      for kiter71,viter72 in self.stopKey.items():
-        oprot.writeString(kiter71)
-        viter72.write(oprot)
+      for kiter64,viter65 in self.stopKey.items():
+        oprot.writeString(kiter64)
+        viter65.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3270,6 +3689,13 @@ class getTableSplits_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.startKey)
+    value = (value * 31) ^ hash(self.stopKey)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3310,11 +3736,11 @@ class getTableSplits_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype76, _size73) = iprot.readListBegin()
-          for _i77 in xrange(_size73):
-            _elem78 = sds.table.ttypes.TableSplit()
-            _elem78.read(iprot)
-            self.success.append(_elem78)
+          (_etype69, _size66) = iprot.readListBegin()
+          for _i70 in xrange(_size66):
+            _elem71 = sds.table.ttypes.TableSplit()
+            _elem71.read(iprot)
+            self.success.append(_elem71)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3337,8 +3763,8 @@ class getTableSplits_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter79 in self.success:
-        iter79.write(oprot)
+      for iter72 in self.success:
+        iter72.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -3351,6 +3777,12 @@ class getTableSplits_result(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3412,6 +3844,11 @@ class queryMetric_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.query)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3486,6 +3923,12 @@ class queryMetric_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3523,11 +3966,11 @@ class queryMetrics_args(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.queries = []
-          (_etype83, _size80) = iprot.readListBegin()
-          for _i84 in xrange(_size80):
-            _elem85 = MetricQueryRequest()
-            _elem85.read(iprot)
-            self.queries.append(_elem85)
+          (_etype76, _size73) = iprot.readListBegin()
+          for _i77 in xrange(_size73):
+            _elem78 = MetricQueryRequest()
+            _elem78.read(iprot)
+            self.queries.append(_elem78)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3544,8 +3987,8 @@ class queryMetrics_args(object):
     if self.queries is not None:
       oprot.writeFieldBegin('queries', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.queries))
-      for iter86 in self.queries:
-        iter86.write(oprot)
+      for iter79 in self.queries:
+        iter79.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3554,6 +3997,11 @@ class queryMetrics_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queries)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3594,11 +4042,11 @@ class queryMetrics_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype90, _size87) = iprot.readListBegin()
-          for _i91 in xrange(_size87):
-            _elem92 = TimeSeriesData()
-            _elem92.read(iprot)
-            self.success.append(_elem92)
+          (_etype83, _size80) = iprot.readListBegin()
+          for _i84 in xrange(_size80):
+            _elem85 = TimeSeriesData()
+            _elem85.read(iprot)
+            self.success.append(_elem85)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3621,8 +4069,8 @@ class queryMetrics_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter93 in self.success:
-        iter93.write(oprot)
+      for iter86 in self.success:
+        iter86.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -3635,6 +4083,12 @@ class queryMetrics_result(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3678,6 +4132,10 @@ class findAllAppInfo_args(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3717,11 +4175,11 @@ class findAllAppInfo_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype97, _size94) = iprot.readListBegin()
-          for _i98 in xrange(_size94):
-            _elem99 = AppInfo()
-            _elem99.read(iprot)
-            self.success.append(_elem99)
+          (_etype90, _size87) = iprot.readListBegin()
+          for _i91 in xrange(_size87):
+            _elem92 = AppInfo()
+            _elem92.read(iprot)
+            self.success.append(_elem92)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3744,8 +4202,8 @@ class findAllAppInfo_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter100 in self.success:
-        iter100.write(oprot)
+      for iter93 in self.success:
+        iter93.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -3758,6 +4216,12 @@ class findAllAppInfo_result(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3818,6 +4282,11 @@ class getTableSize_args(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
@@ -3891,6 +4360,12 @@ class getTableSize_result(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -3952,6 +4427,11 @@ class putClientMetrics_args(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.clientMetrics)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -4012,6 +4492,1068 @@ class putClientMetrics_result(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class subscribePhoneAlert_args(object):
+  """
+  Attributes:
+   - tableName
+   - phoneNumber
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'phoneNumber', None, None, ), # 2
+  )
+
+  def __init__(self, tableName=None, phoneNumber=None,):
+    self.tableName = tableName
+    self.phoneNumber = phoneNumber
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.phoneNumber = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('subscribePhoneAlert_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.phoneNumber is not None:
+      oprot.writeFieldBegin('phoneNumber', TType.STRING, 2)
+      oprot.writeString(self.phoneNumber)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.phoneNumber)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class subscribePhoneAlert_result(object):
+  """
+  Attributes:
+   - se
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, se=None,):
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('subscribePhoneAlert_result')
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class unsubscribePhoneAlert_args(object):
+  """
+  Attributes:
+   - tableName
+   - phoneNumber
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'phoneNumber', None, None, ), # 2
+  )
+
+  def __init__(self, tableName=None, phoneNumber=None,):
+    self.tableName = tableName
+    self.phoneNumber = phoneNumber
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.phoneNumber = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('unsubscribePhoneAlert_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.phoneNumber is not None:
+      oprot.writeFieldBegin('phoneNumber', TType.STRING, 2)
+      oprot.writeString(self.phoneNumber)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.phoneNumber)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class unsubscribePhoneAlert_result(object):
+  """
+  Attributes:
+   - se
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, se=None,):
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('unsubscribePhoneAlert_result')
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class subscribeEmailAlert_args(object):
+  """
+  Attributes:
+   - tableName
+   - email
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'email', None, None, ), # 2
+  )
+
+  def __init__(self, tableName=None, email=None,):
+    self.tableName = tableName
+    self.email = email
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.email = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('subscribeEmailAlert_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.email is not None:
+      oprot.writeFieldBegin('email', TType.STRING, 2)
+      oprot.writeString(self.email)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.email)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class subscribeEmailAlert_result(object):
+  """
+  Attributes:
+   - se
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, se=None,):
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('subscribeEmailAlert_result')
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class unsubscribeEmailAlert_args(object):
+  """
+  Attributes:
+   - tableName
+   - email
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'email', None, None, ), # 2
+  )
+
+  def __init__(self, tableName=None, email=None,):
+    self.tableName = tableName
+    self.email = email
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.email = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('unsubscribeEmailAlert_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.email is not None:
+      oprot.writeFieldBegin('email', TType.STRING, 2)
+      oprot.writeString(self.email)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.email)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class unsubscribeEmailAlert_result(object):
+  """
+  Attributes:
+   - se
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, se=None,):
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('unsubscribeEmailAlert_result')
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class listSubscribedPhone_args(object):
+  """
+  Attributes:
+   - tableName
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+  )
+
+  def __init__(self, tableName=None,):
+    self.tableName = tableName
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('listSubscribedPhone_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class listSubscribedPhone_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRING,None), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype97, _size94) = iprot.readListBegin()
+          for _i98 in xrange(_size94):
+            _elem99 = iprot.readString();
+            self.success.append(_elem99)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('listSubscribedPhone_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRING, len(self.success))
+      for iter100 in self.success:
+        oprot.writeString(iter100)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class listSubscribedEmail_args(object):
+  """
+  Attributes:
+   - tableName
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+  )
+
+  def __init__(self, tableName=None,):
+    self.tableName = tableName
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('listSubscribedEmail_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class listSubscribedEmail_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRING,None), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype104, _size101) = iprot.readListBegin()
+          for _i105 in xrange(_size101):
+            _elem106 = iprot.readString();
+            self.success.append(_elem106)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('listSubscribedEmail_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRING, len(self.success))
+      for iter107 in self.success:
+        oprot.writeString(iter107)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getTableHistorySize_args(object):
+  """
+  Attributes:
+   - tableName
+   - startDate
+   - stopDate
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.I64, 'startDate', None, None, ), # 2
+    (3, TType.I64, 'stopDate', None, None, ), # 3
+  )
+
+  def __init__(self, tableName=None, startDate=None, stopDate=None,):
+    self.tableName = tableName
+    self.startDate = startDate
+    self.stopDate = stopDate
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.startDate = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.stopDate = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getTableHistorySize_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.startDate is not None:
+      oprot.writeFieldBegin('startDate', TType.I64, 2)
+      oprot.writeI64(self.startDate)
+      oprot.writeFieldEnd()
+    if self.stopDate is not None:
+      oprot.writeFieldBegin('stopDate', TType.I64, 3)
+      oprot.writeI64(self.stopDate)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.startDate)
+    value = (value * 31) ^ hash(self.stopDate)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getTableHistorySize_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.MAP, 'success', (TType.I64,None,TType.I64,None), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.MAP:
+          self.success = {}
+          (_ktype109, _vtype110, _size108 ) = iprot.readMapBegin()
+          for _i112 in xrange(_size108):
+            _key113 = iprot.readI64();
+            _val114 = iprot.readI64();
+            self.success[_key113] = _val114
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getTableHistorySize_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.MAP, 0)
+      oprot.writeMapBegin(TType.I64, TType.I64, len(self.success))
+      for kiter115,viter116 in self.success.items():
+        oprot.writeI64(kiter115)
+        oprot.writeI64(viter116)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)

@@ -178,6 +178,13 @@ class Credential(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.type)
+    value = (value * 31) ^ hash(self.secretKeyId)
+    value = (value * 31) ^ hash(self.secretKey)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -343,6 +350,18 @@ class HttpAuthorizationHeader(object):
     return
 
 
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.version)
+    value = (value * 31) ^ hash(self.userType)
+    value = (value * 31) ^ hash(self.secretKeyId)
+    value = (value * 31) ^ hash(self.secretKey)
+    value = (value * 31) ^ hash(self.signature)
+    value = (value * 31) ^ hash(self.algorithm)
+    value = (value * 31) ^ hash(self.signedHeaders)
+    value = (value * 31) ^ hash(self.supportAccountKey)
+    return value
+
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
@@ -464,6 +483,16 @@ class OAuthInfo(object):
   def validate(self):
     return
 
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.xiaomiAppId)
+    value = (value * 31) ^ hash(self.appUserAuthProvider)
+    value = (value * 31) ^ hash(self.accessToken)
+    value = (value * 31) ^ hash(self.openId)
+    value = (value * 31) ^ hash(self.macKey)
+    value = (value * 31) ^ hash(self.macAlgorithm)
+    return value
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
