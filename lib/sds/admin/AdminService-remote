@@ -30,7 +30,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   findAllTables()')
   print('  TableInfo createTable(string tableName, TableSpec tableSpec)')
   print('  void dropTable(string tableName)')
-  print('  void lazyDropTable(string tableName)')
   print('  void alterTable(string tableName, TableSpec tableSpec)')
   print('  void cloneTable(string srcName, string destTable, bool flushTable)')
   print('  void disableTable(string tableName)')
@@ -145,12 +144,6 @@ elif cmd == 'dropTable':
     print('dropTable requires 1 args')
     sys.exit(1)
   pp.pprint(client.dropTable(args[0],))
-
-elif cmd == 'lazyDropTable':
-  if len(args) != 1:
-    print('lazyDropTable requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.lazyDropTable(args[0],))
 
 elif cmd == 'alterTable':
   if len(args) != 2:

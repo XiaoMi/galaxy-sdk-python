@@ -72,15 +72,6 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def lazyDropTable(self, tableName):
-    """
-    延迟删除表
-
-    Parameters:
-     - tableName
-    """
-    pass
-
   def alterTable(self, tableName, tableSpec):
     """
     修改表
@@ -471,39 +462,6 @@ class Client(sds.common.BaseService.Client, Iface):
       iprot.readMessageEnd()
       raise x
     result = dropTable_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.se is not None:
-      raise result.se
-    return
-
-  def lazyDropTable(self, tableName):
-    """
-    延迟删除表
-
-    Parameters:
-     - tableName
-    """
-    self.send_lazyDropTable(tableName)
-    self.recv_lazyDropTable()
-
-  def send_lazyDropTable(self, tableName):
-    self._oprot.writeMessageBegin('lazyDropTable', TMessageType.CALL, self._seqid)
-    args = lazyDropTable_args()
-    args.tableName = tableName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_lazyDropTable(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = lazyDropTable_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.se is not None:
@@ -1206,8 +1164,6 @@ class Client(sds.common.BaseService.Client, Iface):
     iprot.readMessageEnd()
     if result.success is not None:
       return result.success
-    if result.se is not None:
-      raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableHistorySize failed: unknown result");
 
 
@@ -1220,7 +1176,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["findAllTables"] = Processor.process_findAllTables
     self._processMap["createTable"] = Processor.process_createTable
     self._processMap["dropTable"] = Processor.process_dropTable
-    self._processMap["lazyDropTable"] = Processor.process_lazyDropTable
     self._processMap["alterTable"] = Processor.process_alterTable
     self._processMap["cloneTable"] = Processor.process_cloneTable
     self._processMap["disableTable"] = Processor.process_disableTable
@@ -1337,20 +1292,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("dropTable", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_lazyDropTable(self, seqid, iprot, oprot):
-    args = lazyDropTable_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = lazyDropTable_result()
-    try:
-      self._handler.lazyDropTable(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("lazyDropTable", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -1626,10 +1567,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     args.read(iprot)
     iprot.readMessageEnd()
     result = getTableHistorySize_result()
-    try:
-      result.success = self._handler.getTableHistorySize(args.tableName, args.startDate, args.stopDate)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
+    result.success = self._handler.getTableHistorySize(args.tableName, args.startDate, args.stopDate)
     oprot.writeMessageBegin("getTableHistorySize", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -2442,137 +2380,6 @@ class dropTable_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('dropTable_result')
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class lazyDropTable_args(object):
-  """
-  Attributes:
-   - tableName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-  )
-
-  def __init__(self, tableName=None,):
-    self.tableName = tableName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('lazyDropTable_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class lazyDropTable_result(object):
-  """
-  Attributes:
-   - se
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, se=None,):
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('lazyDropTable_result')
     if self.se is not None:
       oprot.writeFieldBegin('se', TType.STRUCT, 1)
       self.se.write(oprot)
@@ -5482,17 +5289,14 @@ class getTableHistorySize_result(object):
   """
   Attributes:
    - success
-   - se
   """
 
   thrift_spec = (
     (0, TType.MAP, 'success', (TType.I64,None,TType.I64,None), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
   )
 
-  def __init__(self, success=None, se=None,):
+  def __init__(self, success=None,):
     self.success = success
-    self.se = se
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -5514,12 +5318,6 @@ class getTableHistorySize_result(object):
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -5538,10 +5336,6 @@ class getTableHistorySize_result(object):
         oprot.writeI64(viter116)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -5552,7 +5346,6 @@ class getTableHistorySize_result(object):
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
     return value
 
   def __repr__(self):

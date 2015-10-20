@@ -55,7 +55,7 @@ class Version(object):
     None, # 0
     (1, TType.I32, 'major', None, 1, ), # 1
     (2, TType.I32, 'minor', None, 0, ), # 2
-    (3, TType.STRING, 'patch', None, "08dc7acf", ), # 3
+    (3, TType.STRING, 'patch', None, "eb909973", ), # 3
     (4, TType.STRING, 'comments', None, "", ), # 4
   )
 
