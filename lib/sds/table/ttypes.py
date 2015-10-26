@@ -1328,11 +1328,11 @@ class TableMetadata(object):
     (4, TType.STRUCT, 'quota', (TableQuota, TableQuota.thrift_spec), None, ), # 4
     (5, TType.STRUCT, 'throughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 5
     (6, TType.STRING, 'description', None, None, ), # 6
-    (7, TType.BOOL, 'enableReplication', None, False, ), # 7
-    (8, TType.BOOL, 'enableScanInGlobalOrder', None, False, ), # 8
+    (7, TType.BOOL, 'enableReplication', None, None, ), # 7
+    (8, TType.BOOL, 'enableScanInGlobalOrder', None, None, ), # 8
   )
 
-  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, enableReplication=thrift_spec[7][4], enableScanInGlobalOrder=thrift_spec[8][4],):
+  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, enableReplication=None, enableScanInGlobalOrder=None,):
     self.tableId = tableId
     self.developerId = developerId
     self.appAcl = appAcl
