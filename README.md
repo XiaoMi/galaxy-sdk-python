@@ -1,6 +1,6 @@
 # Galaxy SDK for Python
 
-This is XiaoMi Galaxy SDS SDK for python, which allows Python developers to write software that makes use of XiaoMi Galaxy SDS. 
+This is XiaoMi Galaxy SDK for python, which allows Python developers to write software that makes use of XiaoMi Galaxy [EMR/SDS/FDS/EMQ].
 
 ## Installing
 

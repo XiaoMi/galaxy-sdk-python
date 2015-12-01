@@ -15,7 +15,7 @@ setup(
     author='Xiaomi Technology Co.',
     author_email='heliangliang@xiaomi.com',
     url='http://dev.mi.com',
-    description='Xiaomi SDS SDK for Python',
+    description='Xiaomi Galaxy SDK for Python',
     long_description=README,
     packages=find_packages('lib'),
     package_dir={'': 'lib'},
