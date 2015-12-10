@@ -11,6 +11,7 @@ from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import sds.errors.ttypes
 import sds.common.ttypes
 import sds.auth.ttypes
+import rpc.Authorization.ttypes
 
 
 from thrift.transport import TTransport
@@ -186,6 +187,7 @@ class TableState(object):
   DELETING = 6
   DELETED = 7
   LAZY_DELETE = 8
+  RENAMING = 9
 
   _VALUES_TO_NAMES = {
     1: "CREATING",
@@ -196,6 +198,7 @@ class TableState(object):
     6: "DELETING",
     7: "DELETED",
     8: "LAZY_DELETE",
+    9: "RENAMING",
   }
 
   _NAMES_TO_VALUES = {
@@ -207,6 +210,24 @@ class TableState(object):
     "DELETING": 6,
     "DELETED": 7,
     "LAZY_DELETE": 8,
+    "RENAMING": 9,
+  }
+
+class SnapshotState(object):
+  """
+  快照状态
+  """
+  ENABLED = 1
+  INPROGRESS = 2
+
+  _VALUES_TO_NAMES = {
+    1: "ENABLED",
+    2: "INPROGRESS",
+  }
+
+  _NAMES_TO_VALUES = {
+    "ENABLED": 1,
+    "INPROGRESS": 2,
   }
 
 class ScanOp(object):
@@ -1316,8 +1337,9 @@ class TableMetadata(object):
    - quota: 空间配额
    - throughput: 吞吐量配额
    - description: 表备注信息
-   - enableReplication: 是否做增量复制
    - enableScanInGlobalOrder: 是否支持全局有序扫描
+   - replication: 远程复制定义
+   - enableSysSnapshot: 是否支持系统定期做snapshot， 默认为true
   """
 
   thrift_spec = (
@@ -1328,19 +1350,21 @@ class TableMetadata(object):
     (4, TType.STRUCT, 'quota', (TableQuota, TableQuota.thrift_spec), None, ), # 4
     (5, TType.STRUCT, 'throughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 5
     (6, TType.STRING, 'description', None, None, ), # 6
-    (7, TType.BOOL, 'enableReplication', None, None, ), # 7
-    (8, TType.BOOL, 'enableScanInGlobalOrder', None, None, ), # 8
+    (7, TType.BOOL, 'enableScanInGlobalOrder', None, None, ), # 7
+    (8, TType.STRUCT, 'replication', (ReplicationSpec, ReplicationSpec.thrift_spec), None, ), # 8
+    (9, TType.BOOL, 'enableSysSnapshot', None, None, ), # 9
   )
 
-  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, enableReplication=None, enableScanInGlobalOrder=None,):
+  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, enableScanInGlobalOrder=None, replication=None, enableSysSnapshot=None,):
     self.tableId = tableId
     self.developerId = developerId
     self.appAcl = appAcl
     self.quota = quota
     self.throughput = throughput
     self.description = description
-    self.enableReplication = enableReplication
     self.enableScanInGlobalOrder = enableScanInGlobalOrder
+    self.replication = replication
+    self.enableSysSnapshot = enableSysSnapshot
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1396,12 +1420,18 @@ class TableMetadata(object):
           iprot.skip(ftype)
       elif fid == 7:
         if ftype == TType.BOOL:
-          self.enableReplication = iprot.readBool();
+          self.enableScanInGlobalOrder = iprot.readBool();
         else:
           iprot.skip(ftype)
       elif fid == 8:
+        if ftype == TType.STRUCT:
+          self.replication = ReplicationSpec()
+          self.replication.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
         if ftype == TType.BOOL:
-          self.enableScanInGlobalOrder = iprot.readBool();
+          self.enableSysSnapshot = iprot.readBool();
         else:
           iprot.skip(ftype)
       else:
@@ -1445,13 +1475,17 @@ class TableMetadata(object):
       oprot.writeFieldBegin('description', TType.STRING, 6)
       oprot.writeString(self.description)
       oprot.writeFieldEnd()
-    if self.enableReplication is not None:
-      oprot.writeFieldBegin('enableReplication', TType.BOOL, 7)
-      oprot.writeBool(self.enableReplication)
-      oprot.writeFieldEnd()
     if self.enableScanInGlobalOrder is not None:
-      oprot.writeFieldBegin('enableScanInGlobalOrder', TType.BOOL, 8)
+      oprot.writeFieldBegin('enableScanInGlobalOrder', TType.BOOL, 7)
       oprot.writeBool(self.enableScanInGlobalOrder)
+      oprot.writeFieldEnd()
+    if self.replication is not None:
+      oprot.writeFieldBegin('replication', TType.STRUCT, 8)
+      self.replication.write(oprot)
+      oprot.writeFieldEnd()
+    if self.enableSysSnapshot is not None:
+      oprot.writeFieldBegin('enableSysSnapshot', TType.BOOL, 9)
+      oprot.writeBool(self.enableSysSnapshot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1468,8 +1502,9 @@ class TableMetadata(object):
     value = (value * 31) ^ hash(self.quota)
     value = (value * 31) ^ hash(self.throughput)
     value = (value * 31) ^ hash(self.description)
-    value = (value * 31) ^ hash(self.enableReplication)
     value = (value * 31) ^ hash(self.enableScanInGlobalOrder)
+    value = (value * 31) ^ hash(self.replication)
+    value = (value * 31) ^ hash(self.enableSysSnapshot)
     return value
 
   def __repr__(self):
@@ -1552,6 +1587,375 @@ class TableSpec(object):
     value = 17
     value = (value * 31) ^ hash(self.schema)
     value = (value * 31) ^ hash(self.metadata)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ReplicationProvisionThroughput(object):
+  """
+  远程复制吞吐量配额
+
+  Attributes:
+   - consumeCapacity
+   - commitCapacity
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'consumeCapacity', None, None, ), # 1
+    (2, TType.I64, 'commitCapacity', None, None, ), # 2
+  )
+
+  def __init__(self, consumeCapacity=None, commitCapacity=None,):
+    self.consumeCapacity = consumeCapacity
+    self.commitCapacity = commitCapacity
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.consumeCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.commitCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ReplicationProvisionThroughput')
+    if self.consumeCapacity is not None:
+      oprot.writeFieldBegin('consumeCapacity', TType.I64, 1)
+      oprot.writeI64(self.consumeCapacity)
+      oprot.writeFieldEnd()
+    if self.commitCapacity is not None:
+      oprot.writeFieldBegin('commitCapacity', TType.I64, 2)
+      oprot.writeI64(self.commitCapacity)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.consumeCapacity)
+    value = (value * 31) ^ hash(self.commitCapacity)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ReplicationSpec(object):
+  """
+  远程复制定义
+
+  Attributes:
+   - enableReplication: 是否做增量复制
+   - throughput: 吞吐量配额
+   - maxSubscribers: 订阅者的最大数量
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.BOOL, 'enableReplication', None, None, ), # 1
+    (2, TType.STRUCT, 'throughput', (ReplicationProvisionThroughput, ReplicationProvisionThroughput.thrift_spec), None, ), # 2
+    (3, TType.I32, 'maxSubscribers', None, None, ), # 3
+  )
+
+  def __init__(self, enableReplication=None, throughput=None, maxSubscribers=None,):
+    self.enableReplication = enableReplication
+    self.throughput = throughput
+    self.maxSubscribers = maxSubscribers
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.BOOL:
+          self.enableReplication = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.throughput = ReplicationProvisionThroughput()
+          self.throughput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.maxSubscribers = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ReplicationSpec')
+    if self.enableReplication is not None:
+      oprot.writeFieldBegin('enableReplication', TType.BOOL, 1)
+      oprot.writeBool(self.enableReplication)
+      oprot.writeFieldEnd()
+    if self.throughput is not None:
+      oprot.writeFieldBegin('throughput', TType.STRUCT, 2)
+      self.throughput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.maxSubscribers is not None:
+      oprot.writeFieldBegin('maxSubscribers', TType.I32, 3)
+      oprot.writeI32(self.maxSubscribers)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.enableReplication)
+    value = (value * 31) ^ hash(self.throughput)
+    value = (value * 31) ^ hash(self.maxSubscribers)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class Subscriber(object):
+  """
+  Attributes:
+   - tableName: 表名
+   - subscriberName: 订阅者名字
+   - subscriberId: 订阅者ID,仅作为输出值，作为输入时无需指定
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'subscriberName', None, None, ), # 2
+    (3, TType.STRING, 'subscriberId', None, None, ), # 3
+  )
+
+  def __init__(self, tableName=None, subscriberName=None, subscriberId=None,):
+    self.tableName = tableName
+    self.subscriberName = subscriberName
+    self.subscriberId = subscriberId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.subscriberName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.subscriberId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('Subscriber')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.subscriberName is not None:
+      oprot.writeFieldBegin('subscriberName', TType.STRING, 2)
+      oprot.writeString(self.subscriberName)
+      oprot.writeFieldEnd()
+    if self.subscriberId is not None:
+      oprot.writeFieldBegin('subscriberId', TType.STRING, 3)
+      oprot.writeString(self.subscriberId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.subscriberName)
+    value = (value * 31) ^ hash(self.subscriberId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class Sinker(object):
+  """
+  Attributes:
+   - subscribedTableName: 主集群订阅的表名
+   - subscriberName: 订阅者名字
+   - endpoint: 主集群域名
+   - sinkedTableName: 备集群的表名
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'subscribedTableName', None, None, ), # 1
+    (2, TType.STRING, 'subscriberName', None, None, ), # 2
+    (3, TType.STRING, 'endpoint', None, None, ), # 3
+    (4, TType.STRING, 'sinkedTableName', None, None, ), # 4
+  )
+
+  def __init__(self, subscribedTableName=None, subscriberName=None, endpoint=None, sinkedTableName=None,):
+    self.subscribedTableName = subscribedTableName
+    self.subscriberName = subscriberName
+    self.endpoint = endpoint
+    self.sinkedTableName = sinkedTableName
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.subscribedTableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.subscriberName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.endpoint = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.sinkedTableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('Sinker')
+    if self.subscribedTableName is not None:
+      oprot.writeFieldBegin('subscribedTableName', TType.STRING, 1)
+      oprot.writeString(self.subscribedTableName)
+      oprot.writeFieldEnd()
+    if self.subscriberName is not None:
+      oprot.writeFieldBegin('subscriberName', TType.STRING, 2)
+      oprot.writeString(self.subscriberName)
+      oprot.writeFieldEnd()
+    if self.endpoint is not None:
+      oprot.writeFieldBegin('endpoint', TType.STRING, 3)
+      oprot.writeString(self.endpoint)
+      oprot.writeFieldEnd()
+    if self.sinkedTableName is not None:
+      oprot.writeFieldBegin('sinkedTableName', TType.STRING, 4)
+      oprot.writeString(self.sinkedTableName)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.subscribedTableName)
+    value = (value * 31) ^ hash(self.subscriberName)
+    value = (value * 31) ^ hash(self.endpoint)
+    value = (value * 31) ^ hash(self.sinkedTableName)
     return value
 
   def __repr__(self):
@@ -2001,39 +2405,27 @@ class TableSplit(object):
   def __ne__(self, other):
     return not (self == other)
 
-class PartitionInfo(object):
+class Partition(object):
   """
-  表分片信息
+  表分区信息，包括分区id，起始和结束的row key
 
   Attributes:
-   - putRequestNumber
-   - deleteRequestNumber
-   - incrementRequestNumber
-   - collectedEditNumber
-   - retrievedEditNumber
-   - fullScanNumber
-   - compactionNumber
+   - partitionId
+   - startKey
+   - stopKey
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.I64, 'putRequestNumber', None, None, ), # 1
-    (2, TType.I64, 'deleteRequestNumber', None, None, ), # 2
-    (3, TType.I64, 'incrementRequestNumber', None, None, ), # 3
-    (4, TType.I64, 'collectedEditNumber', None, None, ), # 4
-    (5, TType.I64, 'retrievedEditNumber', None, None, ), # 5
-    (6, TType.I64, 'fullScanNumber', None, None, ), # 6
-    (7, TType.I64, 'compactionNumber', None, None, ), # 7
+    (1, TType.I32, 'partitionId', None, None, ), # 1
+    (2, TType.MAP, 'startKey', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 2
+    (3, TType.MAP, 'stopKey', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 3
   )
 
-  def __init__(self, putRequestNumber=None, deleteRequestNumber=None, incrementRequestNumber=None, collectedEditNumber=None, retrievedEditNumber=None, fullScanNumber=None, compactionNumber=None,):
-    self.putRequestNumber = putRequestNumber
-    self.deleteRequestNumber = deleteRequestNumber
-    self.incrementRequestNumber = incrementRequestNumber
-    self.collectedEditNumber = collectedEditNumber
-    self.retrievedEditNumber = retrievedEditNumber
-    self.fullScanNumber = fullScanNumber
-    self.compactionNumber = compactionNumber
+  def __init__(self, partitionId=None, startKey=None, stopKey=None,):
+    self.partitionId = partitionId
+    self.startKey = startKey
+    self.stopKey = stopKey
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2045,38 +2437,32 @@ class PartitionInfo(object):
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.I64:
-          self.putRequestNumber = iprot.readI64();
+        if ftype == TType.I32:
+          self.partitionId = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I64:
-          self.deleteRequestNumber = iprot.readI64();
+        if ftype == TType.MAP:
+          self.startKey = {}
+          (_ktype137, _vtype138, _size136 ) = iprot.readMapBegin()
+          for _i140 in xrange(_size136):
+            _key141 = iprot.readString();
+            _val142 = Datum()
+            _val142.read(iprot)
+            self.startKey[_key141] = _val142
+          iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
-        if ftype == TType.I64:
-          self.incrementRequestNumber = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.I64:
-          self.collectedEditNumber = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      elif fid == 5:
-        if ftype == TType.I64:
-          self.retrievedEditNumber = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      elif fid == 6:
-        if ftype == TType.I64:
-          self.fullScanNumber = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      elif fid == 7:
-        if ftype == TType.I64:
-          self.compactionNumber = iprot.readI64();
+        if ftype == TType.MAP:
+          self.stopKey = {}
+          (_ktype144, _vtype145, _size143 ) = iprot.readMapBegin()
+          for _i147 in xrange(_size143):
+            _key148 = iprot.readString();
+            _val149 = Datum()
+            _val149.read(iprot)
+            self.stopKey[_key148] = _val149
+          iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       else:
@@ -2088,34 +2474,26 @@ class PartitionInfo(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('PartitionInfo')
-    if self.putRequestNumber is not None:
-      oprot.writeFieldBegin('putRequestNumber', TType.I64, 1)
-      oprot.writeI64(self.putRequestNumber)
+    oprot.writeStructBegin('Partition')
+    if self.partitionId is not None:
+      oprot.writeFieldBegin('partitionId', TType.I32, 1)
+      oprot.writeI32(self.partitionId)
       oprot.writeFieldEnd()
-    if self.deleteRequestNumber is not None:
-      oprot.writeFieldBegin('deleteRequestNumber', TType.I64, 2)
-      oprot.writeI64(self.deleteRequestNumber)
+    if self.startKey is not None:
+      oprot.writeFieldBegin('startKey', TType.MAP, 2)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
+      for kiter150,viter151 in self.startKey.items():
+        oprot.writeString(kiter150)
+        viter151.write(oprot)
+      oprot.writeMapEnd()
       oprot.writeFieldEnd()
-    if self.incrementRequestNumber is not None:
-      oprot.writeFieldBegin('incrementRequestNumber', TType.I64, 3)
-      oprot.writeI64(self.incrementRequestNumber)
-      oprot.writeFieldEnd()
-    if self.collectedEditNumber is not None:
-      oprot.writeFieldBegin('collectedEditNumber', TType.I64, 4)
-      oprot.writeI64(self.collectedEditNumber)
-      oprot.writeFieldEnd()
-    if self.retrievedEditNumber is not None:
-      oprot.writeFieldBegin('retrievedEditNumber', TType.I64, 5)
-      oprot.writeI64(self.retrievedEditNumber)
-      oprot.writeFieldEnd()
-    if self.fullScanNumber is not None:
-      oprot.writeFieldBegin('fullScanNumber', TType.I64, 6)
-      oprot.writeI64(self.fullScanNumber)
-      oprot.writeFieldEnd()
-    if self.compactionNumber is not None:
-      oprot.writeFieldBegin('compactionNumber', TType.I64, 7)
-      oprot.writeI64(self.compactionNumber)
+    if self.stopKey is not None:
+      oprot.writeFieldBegin('stopKey', TType.MAP, 3)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
+      for kiter152,viter153 in self.stopKey.items():
+        oprot.writeString(kiter152)
+        viter153.write(oprot)
+      oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2126,13 +2504,9 @@ class PartitionInfo(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.putRequestNumber)
-    value = (value * 31) ^ hash(self.deleteRequestNumber)
-    value = (value * 31) ^ hash(self.incrementRequestNumber)
-    value = (value * 31) ^ hash(self.collectedEditNumber)
-    value = (value * 31) ^ hash(self.retrievedEditNumber)
-    value = (value * 31) ^ hash(self.fullScanNumber)
-    value = (value * 31) ^ hash(self.compactionNumber)
+    value = (value * 31) ^ hash(self.partitionId)
+    value = (value * 31) ^ hash(self.startKey)
+    value = (value * 31) ^ hash(self.stopKey)
     return value
 
   def __repr__(self):
@@ -2146,9 +2520,89 @@ class PartitionInfo(object):
   def __ne__(self, other):
     return not (self == other)
 
-class SubscribeInfo(object):
+class PartitionStatistics(object):
   """
-  表分片订阅信息
+  表分区统计信息
+
+  Attributes:
+   - collectedEditNumber
+   - retrievedEditNumber
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'collectedEditNumber', None, None, ), # 1
+    (2, TType.I64, 'retrievedEditNumber', None, None, ), # 2
+  )
+
+  def __init__(self, collectedEditNumber=None, retrievedEditNumber=None,):
+    self.collectedEditNumber = collectedEditNumber
+    self.retrievedEditNumber = retrievedEditNumber
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.collectedEditNumber = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.retrievedEditNumber = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('PartitionStatistics')
+    if self.collectedEditNumber is not None:
+      oprot.writeFieldBegin('collectedEditNumber', TType.I64, 1)
+      oprot.writeI64(self.collectedEditNumber)
+      oprot.writeFieldEnd()
+    if self.retrievedEditNumber is not None:
+      oprot.writeFieldBegin('retrievedEditNumber', TType.I64, 2)
+      oprot.writeI64(self.retrievedEditNumber)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.collectedEditNumber)
+    value = (value * 31) ^ hash(self.retrievedEditNumber)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class SubscriberStatistics(object):
+  """
+  表分区订阅统计信息
 
   Attributes:
    - consumedDataNumber
@@ -2209,7 +2663,7 @@ class SubscribeInfo(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('SubscribeInfo')
+    oprot.writeStructBegin('SubscriberStatistics')
     if self.consumedDataNumber is not None:
       oprot.writeFieldBegin('consumedDataNumber', TType.I64, 1)
       oprot.writeI64(self.consumedDataNumber)
@@ -2289,22 +2743,22 @@ class GetRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.keys = {}
-          (_ktype137, _vtype138, _size136 ) = iprot.readMapBegin()
-          for _i140 in xrange(_size136):
-            _key141 = iprot.readString();
-            _val142 = Datum()
-            _val142.read(iprot)
-            self.keys[_key141] = _val142
+          (_ktype155, _vtype156, _size154 ) = iprot.readMapBegin()
+          for _i158 in xrange(_size154):
+            _key159 = iprot.readString();
+            _val160 = Datum()
+            _val160.read(iprot)
+            self.keys[_key159] = _val160
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.LIST:
           self.attributes = []
-          (_etype146, _size143) = iprot.readListBegin()
-          for _i147 in xrange(_size143):
-            _elem148 = iprot.readString();
-            self.attributes.append(_elem148)
+          (_etype164, _size161) = iprot.readListBegin()
+          for _i165 in xrange(_size161):
+            _elem166 = iprot.readString();
+            self.attributes.append(_elem166)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2325,16 +2779,16 @@ class GetRequest(object):
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.keys))
-      for kiter149,viter150 in self.keys.items():
-        oprot.writeString(kiter149)
-        viter150.write(oprot)
+      for kiter167,viter168 in self.keys.items():
+        oprot.writeString(kiter167)
+        viter168.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.attributes))
-      for iter151 in self.attributes:
-        oprot.writeString(iter151)
+      for iter169 in self.attributes:
+        oprot.writeString(iter169)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2388,12 +2842,12 @@ class GetResult(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.item = {}
-          (_ktype153, _vtype154, _size152 ) = iprot.readMapBegin()
-          for _i156 in xrange(_size152):
-            _key157 = iprot.readString();
-            _val158 = Datum()
-            _val158.read(iprot)
-            self.item[_key157] = _val158
+          (_ktype171, _vtype172, _size170 ) = iprot.readMapBegin()
+          for _i174 in xrange(_size170):
+            _key175 = iprot.readString();
+            _val176 = Datum()
+            _val176.read(iprot)
+            self.item[_key175] = _val176
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2410,9 +2864,9 @@ class GetResult(object):
     if self.item is not None:
       oprot.writeFieldBegin('item', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.item))
-      for kiter159,viter160 in self.item.items():
-        oprot.writeString(kiter159)
-        viter160.write(oprot)
+      for kiter177,viter178 in self.item.items():
+        oprot.writeString(kiter177)
+        viter178.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2475,12 +2929,12 @@ class PutRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype162, _vtype163, _size161 ) = iprot.readMapBegin()
-          for _i165 in xrange(_size161):
-            _key166 = iprot.readString();
-            _val167 = Datum()
-            _val167.read(iprot)
-            self.record[_key166] = _val167
+          (_ktype180, _vtype181, _size179 ) = iprot.readMapBegin()
+          for _i183 in xrange(_size179):
+            _key184 = iprot.readString();
+            _val185 = Datum()
+            _val185.read(iprot)
+            self.record[_key184] = _val185
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2507,9 +2961,9 @@ class PutRequest(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter168,viter169 in self.record.items():
-        oprot.writeString(kiter168)
-        viter169.write(oprot)
+      for kiter186,viter187 in self.record.items():
+        oprot.writeString(kiter186)
+        viter187.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.condition is not None:
@@ -2643,24 +3097,24 @@ class IncrementRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.keys = {}
-          (_ktype171, _vtype172, _size170 ) = iprot.readMapBegin()
-          for _i174 in xrange(_size170):
-            _key175 = iprot.readString();
-            _val176 = Datum()
-            _val176.read(iprot)
-            self.keys[_key175] = _val176
+          (_ktype189, _vtype190, _size188 ) = iprot.readMapBegin()
+          for _i192 in xrange(_size188):
+            _key193 = iprot.readString();
+            _val194 = Datum()
+            _val194.read(iprot)
+            self.keys[_key193] = _val194
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.MAP:
           self.amounts = {}
-          (_ktype178, _vtype179, _size177 ) = iprot.readMapBegin()
-          for _i181 in xrange(_size177):
-            _key182 = iprot.readString();
-            _val183 = Datum()
-            _val183.read(iprot)
-            self.amounts[_key182] = _val183
+          (_ktype196, _vtype197, _size195 ) = iprot.readMapBegin()
+          for _i199 in xrange(_size195):
+            _key200 = iprot.readString();
+            _val201 = Datum()
+            _val201.read(iprot)
+            self.amounts[_key200] = _val201
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2681,17 +3135,17 @@ class IncrementRequest(object):
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.keys))
-      for kiter184,viter185 in self.keys.items():
-        oprot.writeString(kiter184)
-        viter185.write(oprot)
+      for kiter202,viter203 in self.keys.items():
+        oprot.writeString(kiter202)
+        viter203.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.amounts is not None:
       oprot.writeFieldBegin('amounts', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.amounts))
-      for kiter186,viter187 in self.amounts.items():
-        oprot.writeString(kiter186)
-        viter187.write(oprot)
+      for kiter204,viter205 in self.amounts.items():
+        oprot.writeString(kiter204)
+        viter205.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2745,12 +3199,12 @@ class IncrementResult(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.amounts = {}
-          (_ktype189, _vtype190, _size188 ) = iprot.readMapBegin()
-          for _i192 in xrange(_size188):
-            _key193 = iprot.readString();
-            _val194 = Datum()
-            _val194.read(iprot)
-            self.amounts[_key193] = _val194
+          (_ktype207, _vtype208, _size206 ) = iprot.readMapBegin()
+          for _i210 in xrange(_size206):
+            _key211 = iprot.readString();
+            _val212 = Datum()
+            _val212.read(iprot)
+            self.amounts[_key211] = _val212
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2767,9 +3221,9 @@ class IncrementResult(object):
     if self.amounts is not None:
       oprot.writeFieldBegin('amounts', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.amounts))
-      for kiter195,viter196 in self.amounts.items():
-        oprot.writeString(kiter195)
-        viter196.write(oprot)
+      for kiter213,viter214 in self.amounts.items():
+        oprot.writeString(kiter213)
+        viter214.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2836,22 +3290,22 @@ class RemoveRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.keys = {}
-          (_ktype198, _vtype199, _size197 ) = iprot.readMapBegin()
-          for _i201 in xrange(_size197):
-            _key202 = iprot.readString();
-            _val203 = Datum()
-            _val203.read(iprot)
-            self.keys[_key202] = _val203
+          (_ktype216, _vtype217, _size215 ) = iprot.readMapBegin()
+          for _i219 in xrange(_size215):
+            _key220 = iprot.readString();
+            _val221 = Datum()
+            _val221.read(iprot)
+            self.keys[_key220] = _val221
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.LIST:
           self.attributes = []
-          (_etype207, _size204) = iprot.readListBegin()
-          for _i208 in xrange(_size204):
-            _elem209 = iprot.readString();
-            self.attributes.append(_elem209)
+          (_etype225, _size222) = iprot.readListBegin()
+          for _i226 in xrange(_size222):
+            _elem227 = iprot.readString();
+            self.attributes.append(_elem227)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2878,16 +3332,16 @@ class RemoveRequest(object):
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.keys))
-      for kiter210,viter211 in self.keys.items():
-        oprot.writeString(kiter210)
-        viter211.write(oprot)
+      for kiter228,viter229 in self.keys.items():
+        oprot.writeString(kiter228)
+        viter229.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.attributes))
-      for iter212 in self.attributes:
-        oprot.writeString(iter212)
+      for iter230 in self.attributes:
+        oprot.writeString(iter230)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.condition is not None:
@@ -3199,6 +3653,7 @@ class ScanRequest(object):
    - action: scan时的连带操作，包括COUNT，DELETE和UPDATE
    - splitIndex: 扫描表分片的索引，对salted table全局无序扫描时设置
    - initialStartKey: 查询范围开始的初始值，对salted table全局无序扫描时设置
+   - scanInOneSplit: 对salted table, 确定startKey和stopKey在同一个split内，可开启该选项加速
   """
 
   thrift_spec = (
@@ -3217,9 +3672,10 @@ class ScanRequest(object):
     (12, TType.STRUCT, 'action', (ScanAction, ScanAction.thrift_spec), None, ), # 12
     (13, TType.I32, 'splitIndex', None, -1, ), # 13
     (14, TType.MAP, 'initialStartKey', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 14
+    (15, TType.BOOL, 'scanInOneSplit', None, False, ), # 15
   )
 
-  def __init__(self, tableName=None, indexName=None, startKey=None, stopKey=None, attributes=None, condition=None, limit=thrift_spec[7][4], reverse=thrift_spec[8][4], inGlobalOrder=thrift_spec[9][4], cacheResult=thrift_spec[10][4], lookAheadStep=thrift_spec[11][4], action=None, splitIndex=thrift_spec[13][4], initialStartKey=None,):
+  def __init__(self, tableName=None, indexName=None, startKey=None, stopKey=None, attributes=None, condition=None, limit=thrift_spec[7][4], reverse=thrift_spec[8][4], inGlobalOrder=thrift_spec[9][4], cacheResult=thrift_spec[10][4], lookAheadStep=thrift_spec[11][4], action=None, splitIndex=thrift_spec[13][4], initialStartKey=None, scanInOneSplit=thrift_spec[15][4],):
     self.tableName = tableName
     self.indexName = indexName
     self.startKey = startKey
@@ -3234,6 +3690,7 @@ class ScanRequest(object):
     self.action = action
     self.splitIndex = splitIndex
     self.initialStartKey = initialStartKey
+    self.scanInOneSplit = scanInOneSplit
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -3257,34 +3714,34 @@ class ScanRequest(object):
       elif fid == 3:
         if ftype == TType.MAP:
           self.startKey = {}
-          (_ktype214, _vtype215, _size213 ) = iprot.readMapBegin()
-          for _i217 in xrange(_size213):
-            _key218 = iprot.readString();
-            _val219 = Datum()
-            _val219.read(iprot)
-            self.startKey[_key218] = _val219
+          (_ktype232, _vtype233, _size231 ) = iprot.readMapBegin()
+          for _i235 in xrange(_size231):
+            _key236 = iprot.readString();
+            _val237 = Datum()
+            _val237.read(iprot)
+            self.startKey[_key236] = _val237
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.MAP:
           self.stopKey = {}
-          (_ktype221, _vtype222, _size220 ) = iprot.readMapBegin()
-          for _i224 in xrange(_size220):
-            _key225 = iprot.readString();
-            _val226 = Datum()
-            _val226.read(iprot)
-            self.stopKey[_key225] = _val226
+          (_ktype239, _vtype240, _size238 ) = iprot.readMapBegin()
+          for _i242 in xrange(_size238):
+            _key243 = iprot.readString();
+            _val244 = Datum()
+            _val244.read(iprot)
+            self.stopKey[_key243] = _val244
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.LIST:
           self.attributes = []
-          (_etype230, _size227) = iprot.readListBegin()
-          for _i231 in xrange(_size227):
-            _elem232 = iprot.readString();
-            self.attributes.append(_elem232)
+          (_etype248, _size245) = iprot.readListBegin()
+          for _i249 in xrange(_size245):
+            _elem250 = iprot.readString();
+            self.attributes.append(_elem250)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3332,13 +3789,18 @@ class ScanRequest(object):
       elif fid == 14:
         if ftype == TType.MAP:
           self.initialStartKey = {}
-          (_ktype234, _vtype235, _size233 ) = iprot.readMapBegin()
-          for _i237 in xrange(_size233):
-            _key238 = iprot.readString();
-            _val239 = Datum()
-            _val239.read(iprot)
-            self.initialStartKey[_key238] = _val239
+          (_ktype252, _vtype253, _size251 ) = iprot.readMapBegin()
+          for _i255 in xrange(_size251):
+            _key256 = iprot.readString();
+            _val257 = Datum()
+            _val257.read(iprot)
+            self.initialStartKey[_key256] = _val257
           iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 15:
+        if ftype == TType.BOOL:
+          self.scanInOneSplit = iprot.readBool();
         else:
           iprot.skip(ftype)
       else:
@@ -3362,24 +3824,24 @@ class ScanRequest(object):
     if self.startKey is not None:
       oprot.writeFieldBegin('startKey', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
-      for kiter240,viter241 in self.startKey.items():
-        oprot.writeString(kiter240)
-        viter241.write(oprot)
+      for kiter258,viter259 in self.startKey.items():
+        oprot.writeString(kiter258)
+        viter259.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.stopKey is not None:
       oprot.writeFieldBegin('stopKey', TType.MAP, 4)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
-      for kiter242,viter243 in self.stopKey.items():
-        oprot.writeString(kiter242)
-        viter243.write(oprot)
+      for kiter260,viter261 in self.stopKey.items():
+        oprot.writeString(kiter260)
+        viter261.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.LIST, 5)
       oprot.writeListBegin(TType.STRING, len(self.attributes))
-      for iter244 in self.attributes:
-        oprot.writeString(iter244)
+      for iter262 in self.attributes:
+        oprot.writeString(iter262)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.condition is not None:
@@ -3417,10 +3879,14 @@ class ScanRequest(object):
     if self.initialStartKey is not None:
       oprot.writeFieldBegin('initialStartKey', TType.MAP, 14)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.initialStartKey))
-      for kiter245,viter246 in self.initialStartKey.items():
-        oprot.writeString(kiter245)
-        viter246.write(oprot)
+      for kiter263,viter264 in self.initialStartKey.items():
+        oprot.writeString(kiter263)
+        viter264.write(oprot)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.scanInOneSplit is not None:
+      oprot.writeFieldBegin('scanInOneSplit', TType.BOOL, 15)
+      oprot.writeBool(self.scanInOneSplit)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3445,6 +3911,7 @@ class ScanRequest(object):
     value = (value * 31) ^ hash(self.action)
     value = (value * 31) ^ hash(self.splitIndex)
     value = (value * 31) ^ hash(self.initialStartKey)
+    value = (value * 31) ^ hash(self.scanInOneSplit)
     return value
 
   def __repr__(self):
@@ -3472,10 +3939,10 @@ class ScanResult(object):
     (1, TType.MAP, 'nextStartKey', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
     (2, TType.LIST, 'records', (TType.MAP,(TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec))), None, ), # 2
     (3, TType.BOOL, 'throttled', None, None, ), # 3
-    (4, TType.I32, 'nextSplitIndex', None, None, ), # 4
+    (4, TType.I32, 'nextSplitIndex', None, -1, ), # 4
   )
 
-  def __init__(self, nextStartKey=None, records=None, throttled=None, nextSplitIndex=None,):
+  def __init__(self, nextStartKey=None, records=None, throttled=None, nextSplitIndex=thrift_spec[4][4],):
     self.nextStartKey = nextStartKey
     self.records = records
     self.throttled = throttled
@@ -3493,29 +3960,29 @@ class ScanResult(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.nextStartKey = {}
-          (_ktype248, _vtype249, _size247 ) = iprot.readMapBegin()
-          for _i251 in xrange(_size247):
-            _key252 = iprot.readString();
-            _val253 = Datum()
-            _val253.read(iprot)
-            self.nextStartKey[_key252] = _val253
+          (_ktype266, _vtype267, _size265 ) = iprot.readMapBegin()
+          for _i269 in xrange(_size265):
+            _key270 = iprot.readString();
+            _val271 = Datum()
+            _val271.read(iprot)
+            self.nextStartKey[_key270] = _val271
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.LIST:
           self.records = []
-          (_etype257, _size254) = iprot.readListBegin()
-          for _i258 in xrange(_size254):
-            _elem259 = {}
-            (_ktype261, _vtype262, _size260 ) = iprot.readMapBegin()
-            for _i264 in xrange(_size260):
-              _key265 = iprot.readString();
-              _val266 = Datum()
-              _val266.read(iprot)
-              _elem259[_key265] = _val266
+          (_etype275, _size272) = iprot.readListBegin()
+          for _i276 in xrange(_size272):
+            _elem277 = {}
+            (_ktype279, _vtype280, _size278 ) = iprot.readMapBegin()
+            for _i282 in xrange(_size278):
+              _key283 = iprot.readString();
+              _val284 = Datum()
+              _val284.read(iprot)
+              _elem277[_key283] = _val284
             iprot.readMapEnd()
-            self.records.append(_elem259)
+            self.records.append(_elem277)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3542,19 +4009,19 @@ class ScanResult(object):
     if self.nextStartKey is not None:
       oprot.writeFieldBegin('nextStartKey', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.nextStartKey))
-      for kiter267,viter268 in self.nextStartKey.items():
-        oprot.writeString(kiter267)
-        viter268.write(oprot)
+      for kiter285,viter286 in self.nextStartKey.items():
+        oprot.writeString(kiter285)
+        viter286.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.records is not None:
       oprot.writeFieldBegin('records', TType.LIST, 2)
       oprot.writeListBegin(TType.MAP, len(self.records))
-      for iter269 in self.records:
-        oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(iter269))
-        for kiter270,viter271 in iter269.items():
-          oprot.writeString(kiter270)
-          viter271.write(oprot)
+      for iter287 in self.records:
+        oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(iter287))
+        for kiter288,viter289 in iter287.items():
+          oprot.writeString(kiter288)
+          viter289.write(oprot)
         oprot.writeMapEnd()
       oprot.writeListEnd()
       oprot.writeFieldEnd()
@@ -3911,11 +4378,11 @@ class BatchRequest(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.items = []
-          (_etype275, _size272) = iprot.readListBegin()
-          for _i276 in xrange(_size272):
-            _elem277 = BatchRequestItem()
-            _elem277.read(iprot)
-            self.items.append(_elem277)
+          (_etype293, _size290) = iprot.readListBegin()
+          for _i294 in xrange(_size290):
+            _elem295 = BatchRequestItem()
+            _elem295.read(iprot)
+            self.items.append(_elem295)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3932,8 +4399,8 @@ class BatchRequest(object):
     if self.items is not None:
       oprot.writeFieldBegin('items', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.items))
-      for iter278 in self.items:
-        iter278.write(oprot)
+      for iter296 in self.items:
+        iter296.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3985,11 +4452,11 @@ class BatchResult(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.items = []
-          (_etype282, _size279) = iprot.readListBegin()
-          for _i283 in xrange(_size279):
-            _elem284 = BatchResultItem()
-            _elem284.read(iprot)
-            self.items.append(_elem284)
+          (_etype300, _size297) = iprot.readListBegin()
+          for _i301 in xrange(_size297):
+            _elem302 = BatchResultItem()
+            _elem302.read(iprot)
+            self.items.append(_elem302)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4006,8 +4473,8 @@ class BatchResult(object):
     if self.items is not None:
       oprot.writeFieldBegin('items', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.items))
-      for iter285 in self.items:
-        iter285.write(oprot)
+      for iter303 in self.items:
+        iter303.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -4122,6 +4589,7 @@ class RowEdit(object):
    - keys: 增量操作行的主键
    - edits: 增量操作行的属性
    - consumeOffset: 增量偏移
+   - deleteRow: 是否删除整行
   """
 
   thrift_spec = (
@@ -4129,12 +4597,14 @@ class RowEdit(object):
     (1, TType.MAP, 'keys', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
     (2, TType.MAP, 'edits', (TType.STRING,None,TType.STRUCT,(EditDatum, EditDatum.thrift_spec)), None, ), # 2
     (3, TType.I64, 'consumeOffset', None, None, ), # 3
+    (4, TType.BOOL, 'deleteRow', None, None, ), # 4
   )
 
-  def __init__(self, keys=None, edits=None, consumeOffset=None,):
+  def __init__(self, keys=None, edits=None, consumeOffset=None, deleteRow=None,):
     self.keys = keys
     self.edits = edits
     self.consumeOffset = consumeOffset
+    self.deleteRow = deleteRow
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -4148,30 +4618,35 @@ class RowEdit(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.keys = {}
-          (_ktype287, _vtype288, _size286 ) = iprot.readMapBegin()
-          for _i290 in xrange(_size286):
-            _key291 = iprot.readString();
-            _val292 = Datum()
-            _val292.read(iprot)
-            self.keys[_key291] = _val292
+          (_ktype305, _vtype306, _size304 ) = iprot.readMapBegin()
+          for _i308 in xrange(_size304):
+            _key309 = iprot.readString();
+            _val310 = Datum()
+            _val310.read(iprot)
+            self.keys[_key309] = _val310
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.MAP:
           self.edits = {}
-          (_ktype294, _vtype295, _size293 ) = iprot.readMapBegin()
-          for _i297 in xrange(_size293):
-            _key298 = iprot.readString();
-            _val299 = EditDatum()
-            _val299.read(iprot)
-            self.edits[_key298] = _val299
+          (_ktype312, _vtype313, _size311 ) = iprot.readMapBegin()
+          for _i315 in xrange(_size311):
+            _key316 = iprot.readString();
+            _val317 = EditDatum()
+            _val317.read(iprot)
+            self.edits[_key316] = _val317
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.I64:
           self.consumeOffset = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.BOOL:
+          self.deleteRow = iprot.readBool();
         else:
           iprot.skip(ftype)
       else:
@@ -4187,22 +4662,26 @@ class RowEdit(object):
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.keys))
-      for kiter300,viter301 in self.keys.items():
-        oprot.writeString(kiter300)
-        viter301.write(oprot)
+      for kiter318,viter319 in self.keys.items():
+        oprot.writeString(kiter318)
+        viter319.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.edits is not None:
       oprot.writeFieldBegin('edits', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.edits))
-      for kiter302,viter303 in self.edits.items():
-        oprot.writeString(kiter302)
-        viter303.write(oprot)
+      for kiter320,viter321 in self.edits.items():
+        oprot.writeString(kiter320)
+        viter321.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.consumeOffset is not None:
       oprot.writeFieldBegin('consumeOffset', TType.I64, 3)
       oprot.writeI64(self.consumeOffset)
+      oprot.writeFieldEnd()
+    if self.deleteRow is not None:
+      oprot.writeFieldBegin('deleteRow', TType.BOOL, 4)
+      oprot.writeBool(self.deleteRow)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -4216,6 +4695,7 @@ class RowEdit(object):
     value = (value * 31) ^ hash(self.keys)
     value = (value * 31) ^ hash(self.edits)
     value = (value * 31) ^ hash(self.consumeOffset)
+    value = (value * 31) ^ hash(self.deleteRow)
     return value
 
   def __repr__(self):
@@ -4235,8 +4715,8 @@ class DataConsumeRequest(object):
 
   Attributes:
    - tableName: 表名
-   - partitionId: 表分片ID
-   - subscriberId: 订阅者ID
+   - partitionId: 表分区ID
+   - subscriberName: 订阅者名字
    - consumeNumber: 消费数量
    - consumeOffset: 消费偏移
   """
@@ -4244,16 +4724,16 @@ class DataConsumeRequest(object):
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.I64, 'partitionId', None, None, ), # 2
-    (3, TType.STRING, 'subscriberId', None, None, ), # 3
+    (2, TType.I32, 'partitionId', None, None, ), # 2
+    (3, TType.STRING, 'subscriberName', None, None, ), # 3
     (4, TType.I32, 'consumeNumber', None, None, ), # 4
     (5, TType.MAP, 'consumeOffset', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 5
   )
 
-  def __init__(self, tableName=None, partitionId=None, subscriberId=None, consumeNumber=None, consumeOffset=None,):
+  def __init__(self, tableName=None, partitionId=None, subscriberName=None, consumeNumber=None, consumeOffset=None,):
     self.tableName = tableName
     self.partitionId = partitionId
-    self.subscriberId = subscriberId
+    self.subscriberName = subscriberName
     self.consumeNumber = consumeNumber
     self.consumeOffset = consumeOffset
 
@@ -4272,13 +4752,13 @@ class DataConsumeRequest(object):
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I64:
-          self.partitionId = iprot.readI64();
+        if ftype == TType.I32:
+          self.partitionId = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.subscriberId = iprot.readString();
+          self.subscriberName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -4289,12 +4769,12 @@ class DataConsumeRequest(object):
       elif fid == 5:
         if ftype == TType.MAP:
           self.consumeOffset = {}
-          (_ktype305, _vtype306, _size304 ) = iprot.readMapBegin()
-          for _i308 in xrange(_size304):
-            _key309 = iprot.readString();
-            _val310 = Datum()
-            _val310.read(iprot)
-            self.consumeOffset[_key309] = _val310
+          (_ktype323, _vtype324, _size322 ) = iprot.readMapBegin()
+          for _i326 in xrange(_size322):
+            _key327 = iprot.readString();
+            _val328 = Datum()
+            _val328.read(iprot)
+            self.consumeOffset[_key327] = _val328
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4313,12 +4793,12 @@ class DataConsumeRequest(object):
       oprot.writeString(self.tableName)
       oprot.writeFieldEnd()
     if self.partitionId is not None:
-      oprot.writeFieldBegin('partitionId', TType.I64, 2)
-      oprot.writeI64(self.partitionId)
+      oprot.writeFieldBegin('partitionId', TType.I32, 2)
+      oprot.writeI32(self.partitionId)
       oprot.writeFieldEnd()
-    if self.subscriberId is not None:
-      oprot.writeFieldBegin('subscriberId', TType.STRING, 3)
-      oprot.writeString(self.subscriberId)
+    if self.subscriberName is not None:
+      oprot.writeFieldBegin('subscriberName', TType.STRING, 3)
+      oprot.writeString(self.subscriberName)
       oprot.writeFieldEnd()
     if self.consumeNumber is not None:
       oprot.writeFieldBegin('consumeNumber', TType.I32, 4)
@@ -4327,9 +4807,9 @@ class DataConsumeRequest(object):
     if self.consumeOffset is not None:
       oprot.writeFieldBegin('consumeOffset', TType.MAP, 5)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.consumeOffset))
-      for kiter311,viter312 in self.consumeOffset.items():
-        oprot.writeString(kiter311)
-        viter312.write(oprot)
+      for kiter329,viter330 in self.consumeOffset.items():
+        oprot.writeString(kiter329)
+        viter330.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -4343,7 +4823,7 @@ class DataConsumeRequest(object):
     value = 17
     value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.partitionId)
-    value = (value * 31) ^ hash(self.subscriberId)
+    value = (value * 31) ^ hash(self.subscriberName)
     value = (value * 31) ^ hash(self.consumeNumber)
     value = (value * 31) ^ hash(self.consumeOffset)
     return value
@@ -4394,39 +4874,39 @@ class DataConsumeResult(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.nextConsumeOffset = {}
-          (_ktype314, _vtype315, _size313 ) = iprot.readMapBegin()
-          for _i317 in xrange(_size313):
-            _key318 = iprot.readString();
-            _val319 = Datum()
-            _val319.read(iprot)
-            self.nextConsumeOffset[_key318] = _val319
+          (_ktype332, _vtype333, _size331 ) = iprot.readMapBegin()
+          for _i335 in xrange(_size331):
+            _key336 = iprot.readString();
+            _val337 = Datum()
+            _val337.read(iprot)
+            self.nextConsumeOffset[_key336] = _val337
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.LIST:
           self.records = []
-          (_etype323, _size320) = iprot.readListBegin()
-          for _i324 in xrange(_size320):
-            _elem325 = {}
-            (_ktype327, _vtype328, _size326 ) = iprot.readMapBegin()
-            for _i330 in xrange(_size326):
-              _key331 = iprot.readString();
-              _val332 = Datum()
-              _val332.read(iprot)
-              _elem325[_key331] = _val332
+          (_etype341, _size338) = iprot.readListBegin()
+          for _i342 in xrange(_size338):
+            _elem343 = {}
+            (_ktype345, _vtype346, _size344 ) = iprot.readMapBegin()
+            for _i348 in xrange(_size344):
+              _key349 = iprot.readString();
+              _val350 = Datum()
+              _val350.read(iprot)
+              _elem343[_key349] = _val350
             iprot.readMapEnd()
-            self.records.append(_elem325)
+            self.records.append(_elem343)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.LIST:
           self.keys = []
-          (_etype336, _size333) = iprot.readListBegin()
-          for _i337 in xrange(_size333):
-            _elem338 = iprot.readString();
-            self.keys.append(_elem338)
+          (_etype354, _size351) = iprot.readListBegin()
+          for _i355 in xrange(_size351):
+            _elem356 = iprot.readString();
+            self.keys.append(_elem356)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4448,27 +4928,27 @@ class DataConsumeResult(object):
     if self.nextConsumeOffset is not None:
       oprot.writeFieldBegin('nextConsumeOffset', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.nextConsumeOffset))
-      for kiter339,viter340 in self.nextConsumeOffset.items():
-        oprot.writeString(kiter339)
-        viter340.write(oprot)
+      for kiter357,viter358 in self.nextConsumeOffset.items():
+        oprot.writeString(kiter357)
+        viter358.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.records is not None:
       oprot.writeFieldBegin('records', TType.LIST, 2)
       oprot.writeListBegin(TType.MAP, len(self.records))
-      for iter341 in self.records:
-        oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(iter341))
-        for kiter342,viter343 in iter341.items():
-          oprot.writeString(kiter342)
-          viter343.write(oprot)
+      for iter359 in self.records:
+        oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(iter359))
+        for kiter360,viter361 in iter359.items():
+          oprot.writeString(kiter360)
+          viter361.write(oprot)
         oprot.writeMapEnd()
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.keys))
-      for iter344 in self.keys:
-        oprot.writeString(iter344)
+      for iter362 in self.keys:
+        oprot.writeString(iter362)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.throttled is not None:
@@ -4507,8 +4987,8 @@ class EditConsumeRequest(object):
 
   Attributes:
    - tableName: 表名
-   - partitionId: 表分片ID
-   - subscriberId: 订阅者ID
+   - partitionId: 表分区ID
+   - subscriberName: 订阅者名字
    - consumeNumber: 消费数量
    - consumeOffset: 消费偏移
   """
@@ -4516,16 +4996,16 @@ class EditConsumeRequest(object):
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.I64, 'partitionId', None, None, ), # 2
-    (3, TType.STRING, 'subscriberId', None, None, ), # 3
+    (2, TType.I32, 'partitionId', None, None, ), # 2
+    (3, TType.STRING, 'subscriberName', None, None, ), # 3
     (4, TType.I32, 'consumeNumber', None, None, ), # 4
     (5, TType.I64, 'consumeOffset', None, -1, ), # 5
   )
 
-  def __init__(self, tableName=None, partitionId=None, subscriberId=None, consumeNumber=None, consumeOffset=thrift_spec[5][4],):
+  def __init__(self, tableName=None, partitionId=None, subscriberName=None, consumeNumber=None, consumeOffset=thrift_spec[5][4],):
     self.tableName = tableName
     self.partitionId = partitionId
-    self.subscriberId = subscriberId
+    self.subscriberName = subscriberName
     self.consumeNumber = consumeNumber
     self.consumeOffset = consumeOffset
 
@@ -4544,13 +5024,13 @@ class EditConsumeRequest(object):
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I64:
-          self.partitionId = iprot.readI64();
+        if ftype == TType.I32:
+          self.partitionId = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.subscriberId = iprot.readString();
+          self.subscriberName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -4578,12 +5058,12 @@ class EditConsumeRequest(object):
       oprot.writeString(self.tableName)
       oprot.writeFieldEnd()
     if self.partitionId is not None:
-      oprot.writeFieldBegin('partitionId', TType.I64, 2)
-      oprot.writeI64(self.partitionId)
+      oprot.writeFieldBegin('partitionId', TType.I32, 2)
+      oprot.writeI32(self.partitionId)
       oprot.writeFieldEnd()
-    if self.subscriberId is not None:
-      oprot.writeFieldBegin('subscriberId', TType.STRING, 3)
-      oprot.writeString(self.subscriberId)
+    if self.subscriberName is not None:
+      oprot.writeFieldBegin('subscriberName', TType.STRING, 3)
+      oprot.writeString(self.subscriberName)
       oprot.writeFieldEnd()
     if self.consumeNumber is not None:
       oprot.writeFieldBegin('consumeNumber', TType.I32, 4)
@@ -4604,7 +5084,7 @@ class EditConsumeRequest(object):
     value = 17
     value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.partitionId)
-    value = (value * 31) ^ hash(self.subscriberId)
+    value = (value * 31) ^ hash(self.subscriberName)
     value = (value * 31) ^ hash(self.consumeNumber)
     value = (value * 31) ^ hash(self.consumeOffset)
     return value
@@ -4657,11 +5137,11 @@ class EditConsumeResult(object):
       elif fid == 2:
         if ftype == TType.LIST:
           self.rowEdits = []
-          (_etype348, _size345) = iprot.readListBegin()
-          for _i349 in xrange(_size345):
-            _elem350 = RowEdit()
-            _elem350.read(iprot)
-            self.rowEdits.append(_elem350)
+          (_etype366, _size363) = iprot.readListBegin()
+          for _i367 in xrange(_size363):
+            _elem368 = RowEdit()
+            _elem368.read(iprot)
+            self.rowEdits.append(_elem368)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4687,8 +5167,8 @@ class EditConsumeResult(object):
     if self.rowEdits is not None:
       oprot.writeFieldBegin('rowEdits', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.rowEdits))
-      for iter351 in self.rowEdits:
-        iter351.write(oprot)
+      for iter369 in self.rowEdits:
+        iter369.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.throttled is not None:
@@ -4726,8 +5206,8 @@ class DataCommitRequest(object):
 
   Attributes:
    - tableName: 表名
-   - partitionId: 表分片ID
-   - subscriberId: 订阅者ID
+   - partitionId: 表分区ID
+   - subscriberName: 订阅者名字
    - lastConsumedOffset: 当前消费存量数据的最后偏移
    - commitNumber: 确认消费数量
   """
@@ -4735,16 +5215,16 @@ class DataCommitRequest(object):
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.I64, 'partitionId', None, None, ), # 2
-    (3, TType.STRING, 'subscriberId', None, None, ), # 3
+    (2, TType.I32, 'partitionId', None, None, ), # 2
+    (3, TType.STRING, 'subscriberName', None, None, ), # 3
     (4, TType.MAP, 'lastConsumedOffset', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 4
     (5, TType.I32, 'commitNumber', None, None, ), # 5
   )
 
-  def __init__(self, tableName=None, partitionId=None, subscriberId=None, lastConsumedOffset=None, commitNumber=None,):
+  def __init__(self, tableName=None, partitionId=None, subscriberName=None, lastConsumedOffset=None, commitNumber=None,):
     self.tableName = tableName
     self.partitionId = partitionId
-    self.subscriberId = subscriberId
+    self.subscriberName = subscriberName
     self.lastConsumedOffset = lastConsumedOffset
     self.commitNumber = commitNumber
 
@@ -4763,24 +5243,24 @@ class DataCommitRequest(object):
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I64:
-          self.partitionId = iprot.readI64();
+        if ftype == TType.I32:
+          self.partitionId = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.subscriberId = iprot.readString();
+          self.subscriberName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.MAP:
           self.lastConsumedOffset = {}
-          (_ktype353, _vtype354, _size352 ) = iprot.readMapBegin()
-          for _i356 in xrange(_size352):
-            _key357 = iprot.readString();
-            _val358 = Datum()
-            _val358.read(iprot)
-            self.lastConsumedOffset[_key357] = _val358
+          (_ktype371, _vtype372, _size370 ) = iprot.readMapBegin()
+          for _i374 in xrange(_size370):
+            _key375 = iprot.readString();
+            _val376 = Datum()
+            _val376.read(iprot)
+            self.lastConsumedOffset[_key375] = _val376
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4804,19 +5284,19 @@ class DataCommitRequest(object):
       oprot.writeString(self.tableName)
       oprot.writeFieldEnd()
     if self.partitionId is not None:
-      oprot.writeFieldBegin('partitionId', TType.I64, 2)
-      oprot.writeI64(self.partitionId)
+      oprot.writeFieldBegin('partitionId', TType.I32, 2)
+      oprot.writeI32(self.partitionId)
       oprot.writeFieldEnd()
-    if self.subscriberId is not None:
-      oprot.writeFieldBegin('subscriberId', TType.STRING, 3)
-      oprot.writeString(self.subscriberId)
+    if self.subscriberName is not None:
+      oprot.writeFieldBegin('subscriberName', TType.STRING, 3)
+      oprot.writeString(self.subscriberName)
       oprot.writeFieldEnd()
     if self.lastConsumedOffset is not None:
       oprot.writeFieldBegin('lastConsumedOffset', TType.MAP, 4)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.lastConsumedOffset))
-      for kiter359,viter360 in self.lastConsumedOffset.items():
-        oprot.writeString(kiter359)
-        viter360.write(oprot)
+      for kiter377,viter378 in self.lastConsumedOffset.items():
+        oprot.writeString(kiter377)
+        viter378.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.commitNumber is not None:
@@ -4834,7 +5314,7 @@ class DataCommitRequest(object):
     value = 17
     value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.partitionId)
-    value = (value * 31) ^ hash(self.subscriberId)
+    value = (value * 31) ^ hash(self.subscriberName)
     value = (value * 31) ^ hash(self.lastConsumedOffset)
     value = (value * 31) ^ hash(self.commitNumber)
     return value
@@ -4921,8 +5401,8 @@ class EditCommitRequest(object):
 
   Attributes:
    - tableName: 表名
-   - partitionId: 表分片ID
-   - subscriberId: 订阅者ID
+   - partitionId: 表分区ID
+   - subscriberName: 订阅者名字
    - lastConsumedOffset: 当前消费增量数据的最后偏移
    - commitNumber: 确认消费数量
   """
@@ -4930,16 +5410,16 @@ class EditCommitRequest(object):
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.I64, 'partitionId', None, None, ), # 2
-    (3, TType.STRING, 'subscriberId', None, None, ), # 3
+    (2, TType.I32, 'partitionId', None, None, ), # 2
+    (3, TType.STRING, 'subscriberName', None, None, ), # 3
     (4, TType.I64, 'lastConsumedOffset', None, None, ), # 4
     (5, TType.I32, 'commitNumber', None, None, ), # 5
   )
 
-  def __init__(self, tableName=None, partitionId=None, subscriberId=None, lastConsumedOffset=None, commitNumber=None,):
+  def __init__(self, tableName=None, partitionId=None, subscriberName=None, lastConsumedOffset=None, commitNumber=None,):
     self.tableName = tableName
     self.partitionId = partitionId
-    self.subscriberId = subscriberId
+    self.subscriberName = subscriberName
     self.lastConsumedOffset = lastConsumedOffset
     self.commitNumber = commitNumber
 
@@ -4958,13 +5438,13 @@ class EditCommitRequest(object):
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I64:
-          self.partitionId = iprot.readI64();
+        if ftype == TType.I32:
+          self.partitionId = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.subscriberId = iprot.readString();
+          self.subscriberName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -4992,12 +5472,12 @@ class EditCommitRequest(object):
       oprot.writeString(self.tableName)
       oprot.writeFieldEnd()
     if self.partitionId is not None:
-      oprot.writeFieldBegin('partitionId', TType.I64, 2)
-      oprot.writeI64(self.partitionId)
+      oprot.writeFieldBegin('partitionId', TType.I32, 2)
+      oprot.writeI32(self.partitionId)
       oprot.writeFieldEnd()
-    if self.subscriberId is not None:
-      oprot.writeFieldBegin('subscriberId', TType.STRING, 3)
-      oprot.writeString(self.subscriberId)
+    if self.subscriberName is not None:
+      oprot.writeFieldBegin('subscriberName', TType.STRING, 3)
+      oprot.writeString(self.subscriberName)
       oprot.writeFieldEnd()
     if self.lastConsumedOffset is not None:
       oprot.writeFieldBegin('lastConsumedOffset', TType.I64, 4)
@@ -5018,7 +5498,7 @@ class EditCommitRequest(object):
     value = 17
     value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.partitionId)
-    value = (value * 31) ^ hash(self.subscriberId)
+    value = (value * 31) ^ hash(self.subscriberName)
     value = (value * 31) ^ hash(self.lastConsumedOffset)
     value = (value * 31) ^ hash(self.commitNumber)
     return value
@@ -5086,6 +5566,210 @@ class EditCommitResult(object):
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.success)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ConsumedOffset(object):
+  """
+  Attributes:
+   - consumedDataOffset: 当前存量数据的消费偏移
+   - dataConsumeFinished: 存量数据是否消费完毕
+   - consumedEditOffset: 当前增量数据的消费偏移
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.MAP, 'consumedDataOffset', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
+    (2, TType.BOOL, 'dataConsumeFinished', None, None, ), # 2
+    (3, TType.I64, 'consumedEditOffset', None, None, ), # 3
+  )
+
+  def __init__(self, consumedDataOffset=None, dataConsumeFinished=None, consumedEditOffset=None,):
+    self.consumedDataOffset = consumedDataOffset
+    self.dataConsumeFinished = dataConsumeFinished
+    self.consumedEditOffset = consumedEditOffset
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.MAP:
+          self.consumedDataOffset = {}
+          (_ktype380, _vtype381, _size379 ) = iprot.readMapBegin()
+          for _i383 in xrange(_size379):
+            _key384 = iprot.readString();
+            _val385 = Datum()
+            _val385.read(iprot)
+            self.consumedDataOffset[_key384] = _val385
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.BOOL:
+          self.dataConsumeFinished = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.consumedEditOffset = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ConsumedOffset')
+    if self.consumedDataOffset is not None:
+      oprot.writeFieldBegin('consumedDataOffset', TType.MAP, 1)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.consumedDataOffset))
+      for kiter386,viter387 in self.consumedDataOffset.items():
+        oprot.writeString(kiter386)
+        viter387.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.dataConsumeFinished is not None:
+      oprot.writeFieldBegin('dataConsumeFinished', TType.BOOL, 2)
+      oprot.writeBool(self.dataConsumeFinished)
+      oprot.writeFieldEnd()
+    if self.consumedEditOffset is not None:
+      oprot.writeFieldBegin('consumedEditOffset', TType.I64, 3)
+      oprot.writeI64(self.consumedEditOffset)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.consumedDataOffset)
+    value = (value * 31) ^ hash(self.dataConsumeFinished)
+    value = (value * 31) ^ hash(self.consumedEditOffset)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class CommittedOffset(object):
+  """
+  Attributes:
+   - committedDataOffset: 当前存量数据已确认的消费偏移
+   - dataCommitFinished: 存量数据是否确认消费完毕
+   - committedEditOffset: 当前增量数据已确认的消费偏移
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.MAP, 'committedDataOffset', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
+    (2, TType.BOOL, 'dataCommitFinished', None, None, ), # 2
+    (3, TType.I64, 'committedEditOffset', None, None, ), # 3
+  )
+
+  def __init__(self, committedDataOffset=None, dataCommitFinished=None, committedEditOffset=None,):
+    self.committedDataOffset = committedDataOffset
+    self.dataCommitFinished = dataCommitFinished
+    self.committedEditOffset = committedEditOffset
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.MAP:
+          self.committedDataOffset = {}
+          (_ktype389, _vtype390, _size388 ) = iprot.readMapBegin()
+          for _i392 in xrange(_size388):
+            _key393 = iprot.readString();
+            _val394 = Datum()
+            _val394.read(iprot)
+            self.committedDataOffset[_key393] = _val394
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.BOOL:
+          self.dataCommitFinished = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.committedEditOffset = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('CommittedOffset')
+    if self.committedDataOffset is not None:
+      oprot.writeFieldBegin('committedDataOffset', TType.MAP, 1)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.committedDataOffset))
+      for kiter395,viter396 in self.committedDataOffset.items():
+        oprot.writeString(kiter395)
+        viter396.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.dataCommitFinished is not None:
+      oprot.writeFieldBegin('dataCommitFinished', TType.BOOL, 2)
+      oprot.writeBool(self.dataCommitFinished)
+      oprot.writeFieldEnd()
+    if self.committedEditOffset is not None:
+      oprot.writeFieldBegin('committedEditOffset', TType.I64, 3)
+      oprot.writeI64(self.committedEditOffset)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.committedDataOffset)
+    value = (value * 31) ^ hash(self.dataCommitFinished)
+    value = (value * 31) ^ hash(self.committedEditOffset)
     return value
 
   def __repr__(self):

@@ -26,17 +26,20 @@ class ThriftProtocol(object):
   TCOMPACT = 0
   TJSON = 1
   TBINARY = 2
+  TBINARYACCELERATED = 3
 
   _VALUES_TO_NAMES = {
     0: "TCOMPACT",
     1: "TJSON",
     2: "TBINARY",
+    3: "TBINARYACCELERATED",
   }
 
   _NAMES_TO_VALUES = {
     "TCOMPACT": 0,
     "TJSON": 1,
     "TBINARY": 2,
+    "TBINARYACCELERATED": 3,
   }
 
 
@@ -55,7 +58,7 @@ class Version(object):
     None, # 0
     (1, TType.I32, 'major', None, 1, ), # 1
     (2, TType.I32, 'minor', None, 0, ), # 2
-    (3, TType.STRING, 'patch', None, "f517e5c6", ), # 3
+    (3, TType.STRING, 'patch', None, "e0652168", ), # 3
     (4, TType.STRING, 'comments', None, "", ), # 4
   )
 

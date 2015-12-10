@@ -781,3 +781,287 @@ class TimeSeriesData(object):
 
   def __ne__(self, other):
     return not (self == other)
+
+class Snapshot(object):
+  """
+  表快照
+
+  Attributes:
+   - snapshotName: 快照名
+   - snapshotState: 快照状态
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'snapshotName', None, None, ), # 1
+    (2, TType.I32, 'snapshotState', None, None, ), # 2
+  )
+
+  def __init__(self, snapshotName=None, snapshotState=None,):
+    self.snapshotName = snapshotName
+    self.snapshotState = snapshotState
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.snapshotName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.snapshotState = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('Snapshot')
+    if self.snapshotName is not None:
+      oprot.writeFieldBegin('snapshotName', TType.STRING, 1)
+      oprot.writeString(self.snapshotName)
+      oprot.writeFieldEnd()
+    if self.snapshotState is not None:
+      oprot.writeFieldBegin('snapshotState', TType.I32, 2)
+      oprot.writeI32(self.snapshotState)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.snapshotName)
+    value = (value * 31) ^ hash(self.snapshotState)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class TableSnapshots(object):
+  """
+  表的所有快照
+
+  Attributes:
+   - tableName: 表名
+   - sysSnapshots: 系统自动生成的快照
+   - userSnapshots: 用户生成的快照
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.LIST, 'sysSnapshots', (TType.STRUCT,(Snapshot, Snapshot.thrift_spec)), None, ), # 2
+    (3, TType.LIST, 'userSnapshots', (TType.STRUCT,(Snapshot, Snapshot.thrift_spec)), None, ), # 3
+  )
+
+  def __init__(self, tableName=None, sysSnapshots=None, userSnapshots=None,):
+    self.tableName = tableName
+    self.sysSnapshots = sysSnapshots
+    self.userSnapshots = userSnapshots
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.LIST:
+          self.sysSnapshots = []
+          (_etype37, _size34) = iprot.readListBegin()
+          for _i38 in xrange(_size34):
+            _elem39 = Snapshot()
+            _elem39.read(iprot)
+            self.sysSnapshots.append(_elem39)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.LIST:
+          self.userSnapshots = []
+          (_etype43, _size40) = iprot.readListBegin()
+          for _i44 in xrange(_size40):
+            _elem45 = Snapshot()
+            _elem45.read(iprot)
+            self.userSnapshots.append(_elem45)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('TableSnapshots')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.sysSnapshots is not None:
+      oprot.writeFieldBegin('sysSnapshots', TType.LIST, 2)
+      oprot.writeListBegin(TType.STRUCT, len(self.sysSnapshots))
+      for iter46 in self.sysSnapshots:
+        iter46.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.userSnapshots is not None:
+      oprot.writeFieldBegin('userSnapshots', TType.LIST, 3)
+      oprot.writeListBegin(TType.STRUCT, len(self.userSnapshots))
+      for iter47 in self.userSnapshots:
+        iter47.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.sysSnapshots)
+    value = (value * 31) ^ hash(self.userSnapshots)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class SnapshotTableView(object):
+  """
+  存在快照的表视图
+
+  Attributes:
+   - tableName: 表名
+   - tableExist: 表是否存在
+   - deleteTime: 表的删除时间
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.BOOL, 'tableExist', None, None, ), # 2
+    (3, TType.I64, 'deleteTime', None, None, ), # 3
+  )
+
+  def __init__(self, tableName=None, tableExist=None, deleteTime=None,):
+    self.tableName = tableName
+    self.tableExist = tableExist
+    self.deleteTime = deleteTime
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.BOOL:
+          self.tableExist = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.deleteTime = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('SnapshotTableView')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.tableExist is not None:
+      oprot.writeFieldBegin('tableExist', TType.BOOL, 2)
+      oprot.writeBool(self.tableExist)
+      oprot.writeFieldEnd()
+    if self.deleteTime is not None:
+      oprot.writeFieldBegin('deleteTime', TType.I64, 3)
+      oprot.writeI64(self.deleteTime)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.tableExist)
+    value = (value * 31) ^ hash(self.deleteTime)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)

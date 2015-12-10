@@ -50,6 +50,27 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   listSubscribedPhone(string tableName)')
   print('   listSubscribedEmail(string tableName)')
   print('   getTableHistorySize(string tableName, i64 startDate, i64 stopDate)')
+  print('  Subscriber createSubscriber(string tableName, string subscriberName)')
+  print('  void deleteSubscriber(string tableName, string subscriberName)')
+  print('  Subscriber getSubscriber(string tableName, string subscriberName)')
+  print('   getSubscribers(string tableName)')
+  print('   getPartitions(string tableName)')
+  print('  Partition getPartition(string tableName, i32 partitionId)')
+  print('  ConsumedOffset getPartitionConsumedOffset(string tableName, i32 partitionId, string subscriberName)')
+  print('  CommittedOffset getPartitionCommittedOffset(string tableName, i32 partitionId, string subscriberName)')
+  print('  Sinker createSinker(string subscribedTableName, string subscriberName, string sinkedTableName, string endpoint)')
+  print('  void deleteSinker(string tableName)')
+  print('  Sinker getSinker(string tableName)')
+  print('  PartitionStatistics getPartitionStatistics(string tableName, i32 partitionId)')
+  print('  SubscriberStatistics getSubscriberStatistics(string tableName, i32 partitionId, string subscriberName)')
+  print('  void renameTable(string srcName, string destName)')
+  print('  TableSnapshots listSnapshots(string tableName)')
+  print('  void snapshotTable(string tableName, string snapshotName)')
+  print('  void deleteSnapshot(string tableName, string snapshotName)')
+  print('  void restoreSnapshot(string tableName, string snapshotName, string destTableName, bool isSystem)')
+  print('   listAllSnapshots()')
+  print('  void cancelSnapshotTable(string tableName, string snapshotName)')
+  print('  SnapshotState getSnapshotState(string tableName, string snapshotName)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
   print('  i64 getServerTime()')
@@ -264,6 +285,132 @@ elif cmd == 'getTableHistorySize':
     print('getTableHistorySize requires 3 args')
     sys.exit(1)
   pp.pprint(client.getTableHistorySize(args[0],eval(args[1]),eval(args[2]),))
+
+elif cmd == 'createSubscriber':
+  if len(args) != 2:
+    print('createSubscriber requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.createSubscriber(args[0],args[1],))
+
+elif cmd == 'deleteSubscriber':
+  if len(args) != 2:
+    print('deleteSubscriber requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.deleteSubscriber(args[0],args[1],))
+
+elif cmd == 'getSubscriber':
+  if len(args) != 2:
+    print('getSubscriber requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getSubscriber(args[0],args[1],))
+
+elif cmd == 'getSubscribers':
+  if len(args) != 1:
+    print('getSubscribers requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getSubscribers(args[0],))
+
+elif cmd == 'getPartitions':
+  if len(args) != 1:
+    print('getPartitions requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getPartitions(args[0],))
+
+elif cmd == 'getPartition':
+  if len(args) != 2:
+    print('getPartition requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getPartition(args[0],eval(args[1]),))
+
+elif cmd == 'getPartitionConsumedOffset':
+  if len(args) != 3:
+    print('getPartitionConsumedOffset requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getPartitionConsumedOffset(args[0],eval(args[1]),args[2],))
+
+elif cmd == 'getPartitionCommittedOffset':
+  if len(args) != 3:
+    print('getPartitionCommittedOffset requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getPartitionCommittedOffset(args[0],eval(args[1]),args[2],))
+
+elif cmd == 'createSinker':
+  if len(args) != 4:
+    print('createSinker requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.createSinker(args[0],args[1],args[2],args[3],))
+
+elif cmd == 'deleteSinker':
+  if len(args) != 1:
+    print('deleteSinker requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.deleteSinker(args[0],))
+
+elif cmd == 'getSinker':
+  if len(args) != 1:
+    print('getSinker requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getSinker(args[0],))
+
+elif cmd == 'getPartitionStatistics':
+  if len(args) != 2:
+    print('getPartitionStatistics requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getPartitionStatistics(args[0],eval(args[1]),))
+
+elif cmd == 'getSubscriberStatistics':
+  if len(args) != 3:
+    print('getSubscriberStatistics requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getSubscriberStatistics(args[0],eval(args[1]),args[2],))
+
+elif cmd == 'renameTable':
+  if len(args) != 2:
+    print('renameTable requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.renameTable(args[0],args[1],))
+
+elif cmd == 'listSnapshots':
+  if len(args) != 1:
+    print('listSnapshots requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.listSnapshots(args[0],))
+
+elif cmd == 'snapshotTable':
+  if len(args) != 2:
+    print('snapshotTable requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.snapshotTable(args[0],args[1],))
+
+elif cmd == 'deleteSnapshot':
+  if len(args) != 2:
+    print('deleteSnapshot requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.deleteSnapshot(args[0],args[1],))
+
+elif cmd == 'restoreSnapshot':
+  if len(args) != 4:
+    print('restoreSnapshot requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.restoreSnapshot(args[0],args[1],args[2],eval(args[3]),))
+
+elif cmd == 'listAllSnapshots':
+  if len(args) != 0:
+    print('listAllSnapshots requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.listAllSnapshots())
+
+elif cmd == 'cancelSnapshotTable':
+  if len(args) != 2:
+    print('cancelSnapshotTable requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.cancelSnapshotTable(args[0],args[1],))
+
+elif cmd == 'getSnapshotState':
+  if len(args) != 2:
+    print('getSnapshotState requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getSnapshotState(args[0],args[1],))
 
 elif cmd == 'getServerVersion':
   if len(args) != 0:

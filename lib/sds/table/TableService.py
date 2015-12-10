@@ -78,6 +78,42 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
+  def consumePartitionData(self, request):
+    """
+    存量数据的消费操作
+
+    Parameters:
+     - request
+    """
+    pass
+
+  def consumePartitionEdit(self, request):
+    """
+    增量数据的消费操作
+
+    Parameters:
+     - request
+    """
+    pass
+
+  def commitConsumedPartitionData(self, request):
+    """
+    存量数据的消费回执操作
+
+    Parameters:
+     - request
+    """
+    pass
+
+  def commitConsumedPartitionEdit(self, request):
+    """
+    增量数据的消费回执操作
+
+    Parameters:
+     - request
+    """
+    pass
+
 
 class Client(sds.common.BaseService.Client, Iface):
   """
@@ -297,6 +333,146 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "batch failed: unknown result");
 
+  def consumePartitionData(self, request):
+    """
+    存量数据的消费操作
+
+    Parameters:
+     - request
+    """
+    self.send_consumePartitionData(request)
+    return self.recv_consumePartitionData()
+
+  def send_consumePartitionData(self, request):
+    self._oprot.writeMessageBegin('consumePartitionData', TMessageType.CALL, self._seqid)
+    args = consumePartitionData_args()
+    args.request = request
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_consumePartitionData(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = consumePartitionData_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "consumePartitionData failed: unknown result");
+
+  def consumePartitionEdit(self, request):
+    """
+    增量数据的消费操作
+
+    Parameters:
+     - request
+    """
+    self.send_consumePartitionEdit(request)
+    return self.recv_consumePartitionEdit()
+
+  def send_consumePartitionEdit(self, request):
+    self._oprot.writeMessageBegin('consumePartitionEdit', TMessageType.CALL, self._seqid)
+    args = consumePartitionEdit_args()
+    args.request = request
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_consumePartitionEdit(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = consumePartitionEdit_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "consumePartitionEdit failed: unknown result");
+
+  def commitConsumedPartitionData(self, request):
+    """
+    存量数据的消费回执操作
+
+    Parameters:
+     - request
+    """
+    self.send_commitConsumedPartitionData(request)
+    return self.recv_commitConsumedPartitionData()
+
+  def send_commitConsumedPartitionData(self, request):
+    self._oprot.writeMessageBegin('commitConsumedPartitionData', TMessageType.CALL, self._seqid)
+    args = commitConsumedPartitionData_args()
+    args.request = request
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_commitConsumedPartitionData(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = commitConsumedPartitionData_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "commitConsumedPartitionData failed: unknown result");
+
+  def commitConsumedPartitionEdit(self, request):
+    """
+    增量数据的消费回执操作
+
+    Parameters:
+     - request
+    """
+    self.send_commitConsumedPartitionEdit(request)
+    return self.recv_commitConsumedPartitionEdit()
+
+  def send_commitConsumedPartitionEdit(self, request):
+    self._oprot.writeMessageBegin('commitConsumedPartitionEdit', TMessageType.CALL, self._seqid)
+    args = commitConsumedPartitionEdit_args()
+    args.request = request
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_commitConsumedPartitionEdit(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = commitConsumedPartitionEdit_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "commitConsumedPartitionEdit failed: unknown result");
+
 
 class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -307,6 +483,10 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["remove"] = Processor.process_remove
     self._processMap["scan"] = Processor.process_scan
     self._processMap["batch"] = Processor.process_batch
+    self._processMap["consumePartitionData"] = Processor.process_consumePartitionData
+    self._processMap["consumePartitionEdit"] = Processor.process_consumePartitionEdit
+    self._processMap["commitConsumedPartitionData"] = Processor.process_commitConsumedPartitionData
+    self._processMap["commitConsumedPartitionEdit"] = Processor.process_commitConsumedPartitionEdit
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -403,6 +583,62 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("batch", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_consumePartitionData(self, seqid, iprot, oprot):
+    args = consumePartitionData_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = consumePartitionData_result()
+    try:
+      result.success = self._handler.consumePartitionData(args.request)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("consumePartitionData", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_consumePartitionEdit(self, seqid, iprot, oprot):
+    args = consumePartitionEdit_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = consumePartitionEdit_result()
+    try:
+      result.success = self._handler.consumePartitionEdit(args.request)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("consumePartitionEdit", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_commitConsumedPartitionData(self, seqid, iprot, oprot):
+    args = commitConsumedPartitionData_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = commitConsumedPartitionData_result()
+    try:
+      result.success = self._handler.commitConsumedPartitionData(args.request)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("commitConsumedPartitionData", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_commitConsumedPartitionEdit(self, seqid, iprot, oprot):
+    args = commitConsumedPartitionEdit_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = commitConsumedPartitionEdit_result()
+    try:
+      result.success = self._handler.commitConsumedPartitionEdit(args.request)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("commitConsumedPartitionEdit", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -1248,6 +1484,587 @@ class batch_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('batch_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class consumePartitionData_args(object):
+  """
+  Attributes:
+   - request
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'request', (DataConsumeRequest, DataConsumeRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, request=None,):
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.request = DataConsumeRequest()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('consumePartitionData_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 1)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class consumePartitionData_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (DataConsumeResult, DataConsumeResult.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = DataConsumeResult()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('consumePartitionData_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class consumePartitionEdit_args(object):
+  """
+  Attributes:
+   - request
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'request', (EditConsumeRequest, EditConsumeRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, request=None,):
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.request = EditConsumeRequest()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('consumePartitionEdit_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 1)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class consumePartitionEdit_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (EditConsumeResult, EditConsumeResult.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = EditConsumeResult()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('consumePartitionEdit_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class commitConsumedPartitionData_args(object):
+  """
+  Attributes:
+   - request
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'request', (DataCommitRequest, DataCommitRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, request=None,):
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.request = DataCommitRequest()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('commitConsumedPartitionData_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 1)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class commitConsumedPartitionData_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (DataCommitResult, DataCommitResult.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = DataCommitResult()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('commitConsumedPartitionData_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class commitConsumedPartitionEdit_args(object):
+  """
+  Attributes:
+   - request
+  """
+
+  thrift_spec = (
+    None, # 0
+    None, # 1
+    (2, TType.STRUCT, 'request', (EditCommitRequest, EditCommitRequest.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, request=None,):
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 2:
+        if ftype == TType.STRUCT:
+          self.request = EditCommitRequest()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('commitConsumedPartitionEdit_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 2)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class commitConsumedPartitionEdit_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (EditCommitResult, EditCommitResult.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = EditCommitResult()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('commitConsumedPartitionEdit_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
