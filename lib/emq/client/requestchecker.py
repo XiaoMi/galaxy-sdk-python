@@ -16,7 +16,8 @@ from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, Change
   DeleteMessageRequest, SendMessageBatchRequest, SendMessageBatchRequestEntry, ChangeMessageVisibilityBatchRequestEntry, \
   ChangeMessageVisibilityBatchRequest, DeleteMessageBatchRequest
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
-  RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota
+  RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota, CreateTagRequest, \
+  DeleteTagRequest, GetTagInfoRequest, ListTagRequest
 
 
 class RequestChecker(object):
@@ -53,6 +54,25 @@ class RequestChecker(object):
     elif isinstance(request, QueryPermissionForIdRequest):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.developerId, "developerId")
+    elif isinstance(request, CreateTagRequest):
+      self.validate_queue_name(request.queueName)
+      self.validate_queue_name(request.tagName, False, False, "tag name")
+      if request.attributeName:
+        self.validate_not_empty(request.attributeName, "attributeName")
+        self.check_message_attribute(request.attributeValue)
+      if request.userAttributes:
+        self.validate_user_attribute(request.userAttributes)
+      if request.readQPSQuota:
+        self.validate_readQps(request.readQPSQuota)
+    elif isinstance(request, DeleteTagRequest):
+      self.validate_queue_name(request.queueName)
+      self.validate_queue_name(request.tagName, False, False, "tag name")
+    elif isinstance(request, GetTagInfoRequest):
+      self.validate_queue_name(request.queueName)
+      if request.tagName is not None:
+        self.validate_queue_name(request.tagName, False, False, "tag name")
+    elif isinstance(request, ListTagRequest):
+      self.validate_queue_name(request.queueName)
     elif isinstance(request, SendMessageRequest):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.messageBody, "messageBody")
@@ -72,6 +92,8 @@ class RequestChecker(object):
       if request.attributeName is not None:
         self.validate_not_empty(request.attributeName, "attributeName")
         self.check_message_attribute(request.attributeValue)
+      if request.tagName is not None:
+        self.validate_queue_name(request.tagName, False, False, "tag name")
     elif isinstance(request, ChangeMessageVisibilityRequest):
       self.validate_queue_name(request.queueName)
       if request.invisibilitySeconds is not None:
@@ -200,6 +222,13 @@ class RequestChecker(object):
       self.validate_messageMaximumBytes(queue_attribute.messageMaximumBytes)
     if queue_attribute.partitionNumber:
       self.validate_partitionNumber(queue_attribute.partitionNumber)
+    if queue_attribute.userAttributes:
+      self.validate_user_attribute(queue_attribute.userAttributes)
+
+  def validate_user_attribute(self, attribute):
+    for key, value in attribute.items():
+      self.validate_not_empty(key, "user attribute name")
+      self.validate_not_empty(value, "user attribute value for \"" + key + "\"")
 
   def validate_queue_quota(self, queue_quota):
     if not queue_quota:

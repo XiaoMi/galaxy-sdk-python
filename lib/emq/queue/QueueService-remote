@@ -36,6 +36,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  QueryPermissionResponse queryPermission(QueryPermissionRequest request)')
   print('  QueryPermissionForIdResponse queryPermissionForId(QueryPermissionForIdRequest request)')
   print('  ListPermissionsResponse listPermissions(ListPermissionsRequest request)')
+  print('  CreateTagResponse createTag(CreateTagRequest request)')
+  print('  void deleteTag(DeleteTagRequest request)')
+  print('  GetTagInfoResponse getTagInfo(GetTagInfoRequest request)')
+  print('  ListTagResponse listTag(ListTagRequest request)')
+  print('  TimeSeriesData queryMetric(QueryMetricRequest request)')
   print('  Version getServiceVersion()')
   print('  void validClientVersion(Version clientVersion)')
   print('')
@@ -165,6 +170,36 @@ elif cmd == 'listPermissions':
     print('listPermissions requires 1 args')
     sys.exit(1)
   pp.pprint(client.listPermissions(eval(args[0]),))
+
+elif cmd == 'createTag':
+  if len(args) != 1:
+    print('createTag requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.createTag(eval(args[0]),))
+
+elif cmd == 'deleteTag':
+  if len(args) != 1:
+    print('deleteTag requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.deleteTag(eval(args[0]),))
+
+elif cmd == 'getTagInfo':
+  if len(args) != 1:
+    print('getTagInfo requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getTagInfo(eval(args[0]),))
+
+elif cmd == 'listTag':
+  if len(args) != 1:
+    print('listTag requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.listTag(eval(args[0]),))
+
+elif cmd == 'queryMetric':
+  if len(args) != 1:
+    print('queryMetric requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.queryMetric(eval(args[0]),))
 
 elif cmd == 'getServiceVersion':
   if len(args) != 0:

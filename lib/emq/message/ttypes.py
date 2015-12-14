@@ -929,6 +929,8 @@ class ReceiveMessageRequest(object):
    - attributeValue: Attribute value to match, corresponding to attributeName
   case-sensitive
 
+   - tagName: If this field is not_set/null/empty, default queue tag will be used
+
   """
 
   thrift_spec = (
@@ -938,14 +940,16 @@ class ReceiveMessageRequest(object):
     (3, TType.I32, 'maxReceiveMessageWaitSeconds', None, 0, ), # 3
     (4, TType.STRING, 'attributeName', None, None, ), # 4
     (5, TType.STRUCT, 'attributeValue', (MessageAttribute, MessageAttribute.thrift_spec), None, ), # 5
+    (6, TType.STRING, 'tagName', None, None, ), # 6
   )
 
-  def __init__(self, queueName=None, maxReceiveMessageNumber=thrift_spec[2][4], maxReceiveMessageWaitSeconds=thrift_spec[3][4], attributeName=None, attributeValue=None,):
+  def __init__(self, queueName=None, maxReceiveMessageNumber=thrift_spec[2][4], maxReceiveMessageWaitSeconds=thrift_spec[3][4], attributeName=None, attributeValue=None, tagName=None,):
     self.queueName = queueName
     self.maxReceiveMessageNumber = maxReceiveMessageNumber
     self.maxReceiveMessageWaitSeconds = maxReceiveMessageWaitSeconds
     self.attributeName = attributeName
     self.attributeValue = attributeValue
+    self.tagName = tagName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -982,6 +986,11 @@ class ReceiveMessageRequest(object):
           self.attributeValue.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.tagName = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1012,6 +1021,10 @@ class ReceiveMessageRequest(object):
       oprot.writeFieldBegin('attributeValue', TType.STRUCT, 5)
       self.attributeValue.write(oprot)
       oprot.writeFieldEnd()
+    if self.tagName is not None:
+      oprot.writeFieldBegin('tagName', TType.STRING, 6)
+      oprot.writeString(self.tagName)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1028,6 +1041,7 @@ class ReceiveMessageRequest(object):
     value = (value * 31) ^ hash(self.maxReceiveMessageWaitSeconds)
     value = (value * 31) ^ hash(self.attributeName)
     value = (value * 31) ^ hash(self.attributeValue)
+    value = (value * 31) ^ hash(self.tagName)
     return value
 
   def __repr__(self):
