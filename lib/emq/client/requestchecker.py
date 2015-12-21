@@ -59,7 +59,7 @@ class RequestChecker(object):
       self.validate_queue_name(request.tagName, False, False, "tag name")
       if request.attributeName:
         self.validate_not_empty(request.attributeName, "attributeName")
-        self.check_message_attribute(request.attributeValue)
+        self.check_message_attribute(request.attributeValue, True)
       if request.userAttributes:
         self.validate_user_attribute(request.userAttributes)
       if request.readQPSQuota:
@@ -78,7 +78,7 @@ class RequestChecker(object):
       self.validate_not_none(request.messageBody, "messageBody")
       if request.messageAttributes is not None:
         for attribute in request.messageAttributes.values():
-          self.check_message_attribute(attribute)
+          self.check_message_attribute(attribute, False)
       if request.delaySeconds is not None:
         self.validate_delaySeconds(request.delaySeconds)
       if request.invisibilitySeconds is not None:
@@ -91,7 +91,7 @@ class RequestChecker(object):
         self.validate_receiveMessageWaitSeconds(request.maxReceiveMessageWaitSeconds)
       if request.attributeName is not None:
         self.validate_not_empty(request.attributeName, "attributeName")
-        self.check_message_attribute(request.attributeValue)
+        self.check_message_attribute(request.attributeValue, True)
       if request.tagName is not None:
         self.validate_queue_name(request.tagName, False, False, "tag name")
     elif isinstance(request, ChangeMessageVisibilityRequest):
@@ -148,9 +148,9 @@ class RequestChecker(object):
       self.validate_invisibilitySeconds(send_entry.invisibilitySeconds)
     if send_entry.messageAttributes is not None:
       for attribute in send_entry.messageAttributes.values():
-        self.check_message_attribute(attribute)
+        self.check_message_attribute(attribute, False)
 
-  def check_message_attribute(self, attribute):
+  def check_message_attribute(self, attribute, allow_empty):
     self.validate_not_none(attribute, "messageAttribute")
     if attribute.type.lower().startswith("string"):
       if attribute.stringValue is None:
@@ -158,6 +158,8 @@ class RequestChecker(object):
     elif attribute.type.lower().startswith("binary"):
       if attribute.binaryValue is None:
         raise GalaxyEmqServiceException(errMsg="binaryValue cannot be None when type is BINARY")
+    elif allow_empty and attribute.type.lower() == "empty":
+      return
     else:
       raise GalaxyEmqServiceException(errMsg="Attribute type must start with \"STRING\" or \"BINARY\"")
     for c in attribute.type:
