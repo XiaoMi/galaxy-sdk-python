@@ -18,6 +18,8 @@ from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, Change
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
   RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota, CreateTagRequest, \
   DeleteTagRequest, GetTagInfoRequest, ListTagRequest
+from emq.statistics.ttypes import SetUserQuotaRequest, GetUserQuotaRequest, GetUserUsedQuotaRequest, SetUserInfoRequest, \
+  GetUserInfoRequest
 
 
 class RequestChecker(object):
@@ -137,6 +139,10 @@ class RequestChecker(object):
         self.validate_not_empty(k.receiptHandle, "receiptHandle")
         receipt_handle_list.append(k.receiptHandle)
       self.check_list_duplicate(receipt_handle_list, "receiptHandle")
+    elif (isinstance(request, SetUserQuotaRequest) or isinstance(request, GetUserQuotaRequest)
+      or isinstance(request, GetUserUsedQuotaRequest) or isinstance(request, SetUserInfoRequest)
+      or isinstance(request, GetUserInfoRequest)):
+      pass
     else:
       self.validate_queue_name(request.queueName)
 
@@ -235,10 +241,6 @@ class RequestChecker(object):
   def validate_queue_quota(self, queue_quota):
     if not queue_quota:
       return
-    if not queue_quota.spaceQuota:
-      return
-    if queue_quota.spaceQuota.size:
-      self.validate_spaceQuota(queue_quota.spaceQuota.size)
     if not queue_quota.throughput:
       return
     if queue_quota.throughput.readQps:

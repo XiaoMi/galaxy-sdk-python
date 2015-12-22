@@ -455,89 +455,20 @@ class Throughput(object):
   def __ne__(self, other):
     return not (self == other)
 
-class SpaceQuota(object):
-  """
-  Attributes:
-   - size: Queue read qps;
-
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.I64, 'size', None, None, ), # 1
-  )
-
-  def __init__(self, size=None,):
-    self.size = size
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.I64:
-          self.size = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('SpaceQuota')
-    if self.size is not None:
-      oprot.writeFieldBegin('size', TType.I64, 1)
-      oprot.writeI64(self.size)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.size)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class QueueQuota(object):
   """
   Attributes:
-   - spaceQuota: Queue space quota;
-
    - throughput: Queue read and qps;
 
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'spaceQuota', (SpaceQuota, SpaceQuota.thrift_spec), None, ), # 1
+    None, # 1
     (2, TType.STRUCT, 'throughput', (Throughput, Throughput.thrift_spec), None, ), # 2
   )
 
-  def __init__(self, spaceQuota=None, throughput=None,):
-    self.spaceQuota = spaceQuota
+  def __init__(self, throughput=None,):
     self.throughput = throughput
 
   def read(self, iprot):
@@ -549,13 +480,7 @@ class QueueQuota(object):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.spaceQuota = SpaceQuota()
-          self.spaceQuota.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
+      if fid == 2:
         if ftype == TType.STRUCT:
           self.throughput = Throughput()
           self.throughput.read(iprot)
@@ -571,10 +496,6 @@ class QueueQuota(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('QueueQuota')
-    if self.spaceQuota is not None:
-      oprot.writeFieldBegin('spaceQuota', TType.STRUCT, 1)
-      self.spaceQuota.write(oprot)
-      oprot.writeFieldEnd()
     if self.throughput is not None:
       oprot.writeFieldBegin('throughput', TType.STRUCT, 2)
       self.throughput.write(oprot)
@@ -588,7 +509,6 @@ class QueueQuota(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.spaceQuota)
     value = (value * 31) ^ hash(self.throughput)
     return value
 

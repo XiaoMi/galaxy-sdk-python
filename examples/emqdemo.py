@@ -5,8 +5,8 @@ from emq.common.ttypes import GalaxyEmqServiceException
 from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, ChangeMessageVisibilityRequest, \
   DeleteMessageBatchRequestEntry, DeleteMessageBatchRequest, ChangeMessageVisibilityBatchRequestEntry, \
   ChangeMessageVisibilityBatchRequest
-from emq.queue.ttypes import QueueAttribute, CreateQueueRequest, ListQueueRequest, DeleteQueueRequest, QueueQuota, \
-  SpaceQuota, Throughput, SetQueueQuotaRequest, CreateTagRequest, DeleteTagRequest
+from emq.queue.ttypes import QueueAttribute, CreateQueueRequest, ListQueueRequest, DeleteQueueRequest, QueueQuota,\
+  Throughput, SetQueueQuotaRequest, CreateTagRequest, DeleteTagRequest
 from rpc.auth.ttypes import Credential, UserType
 
 
@@ -89,8 +89,7 @@ if entryList:
 print "\n== QUOTA OPERATION =="
 
 set_quota_request = SetQueueQuotaRequest(queueName=queue_name,
-                                         queueQuota=QueueQuota(spaceQuota=SpaceQuota(size=200),
-                                                               throughput=Throughput(readQps=200, writeQps=200)))
+                                         queueQuota=QueueQuota(throughput=Throughput(readQps=200, writeQps=200)))
 try:
   response = queue_client.setQueueQuota(set_quota_request)
   pprint(vars(response))
