@@ -11,13 +11,15 @@ from emq.range.constants import GALAXY_EMQ_QUEUE_DELAY_SECONDS_MINIMAL, GALAXY_E
   GALAXY_EMQ_MESSAGE_DELAY_SECONDS_MAXIMAL, GALAXY_EMQ_MESSAGE_DELAY_SECONDS_MINIMAL, \
   GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MAXIMAL, GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MINIMAL, \
   GALAXY_EMQ_QUEUE_WRITE_QPS_MINIMAL, GALAXY_EMQ_QUEUE_WRITE_QPS_MAXIMAL, GALAXY_EMQ_QUEUE_READ_QPS_MINIMAL, \
-  GALAXY_EMQ_QUEUE_READ_QPS_MAXIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MINIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MAXIMAL
+  GALAXY_EMQ_QUEUE_READ_QPS_MAXIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MINIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MAXIMAL, \
+  GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MINIMAL, GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MAXIMAL
 from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, ChangeMessageVisibilityRequest, \
   DeleteMessageRequest, SendMessageBatchRequest, SendMessageBatchRequestEntry, ChangeMessageVisibilityBatchRequestEntry, \
   ChangeMessageVisibilityBatchRequest, DeleteMessageBatchRequest
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
   RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota, CreateTagRequest, \
-  DeleteTagRequest, GetTagInfoRequest, ListTagRequest
+  DeleteTagRequest, GetTagInfoRequest, ListTagRequest, SetQueueRedrivePolicyRequest, RemoveQueueRedrivePolicyRequest, \
+  ListDeadLetterSourceQueuesRequest
 from emq.statistics.ttypes import SetUserQuotaRequest, GetUserQuotaRequest, GetUserUsedQuotaRequest, SetUserInfoRequest, \
   GetUserInfoRequest
 
@@ -46,6 +48,13 @@ class RequestChecker(object):
     elif isinstance(request, SetQueueQuotaRequest):
       self.validate_queue_name(request.queueName)
       self.validate_queue_quota(request.queueQuota)
+    elif isinstance(request, SetQueueRedrivePolicyRequest):
+      self.validate_queue_name(request.queueName)
+      self.validate_redrivePolcy(request.redrivePolicy)
+    elif isinstance(request, RemoveQueueRedrivePolicyRequest):
+      self.validate_queue_name(request.queueName)
+    elif isinstance(request, ListDeadLetterSourceQueuesRequest):
+      self.validate_queue_name(request.dlqName)
     elif isinstance(request, SetPermissionRequest):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.developerId, "developerId")
@@ -330,6 +339,11 @@ class RequestChecker(object):
                            GALAXY_EMQ_QUEUE_WRITE_QPS_MINIMAL,
                            GALAXY_EMQ_QUEUE_WRITE_QPS_MAXIMAL,
                            "writeQps")
+  def validate_redrivePolcy(self, redrivePolicy):
+    self.validate_queue_name(redrivePolicy.dlqName)
+    self.check_filed_range(redrivePolicy.maxReceiveTime,
+                           GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MINIMAL,
+                           GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MAXIMAL)
 
   def validate_not_none(self, param, name):
     if param is None:
