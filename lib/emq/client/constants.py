@@ -24,6 +24,7 @@ DEFAULT_CLIENT_CONN_TIMEOUT = 30000
 
 QUEUE_SERVICE_PATH = "/v1/api/queue"
 MESSAGE_SERVICE_PATH = "/v1/api/message"
+STATISTICS_SERVICE_PATH = "/v1/api/statistics"
 
 DEFAULT_SERVICE_ENDPOINT = "http://emq.api.xiaomi.com"
 DEFAULT_SECURE_SERVICE_ENDPOINT = "https://emq.api.xiaomi.com"

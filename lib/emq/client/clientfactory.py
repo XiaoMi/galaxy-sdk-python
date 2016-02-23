@@ -13,6 +13,7 @@ from emq.common.constants import ERROR_BACKOFF, MAX_RETRY, ERROR_RETRY_TYPE
 from emq.common.ttypes import Version, GalaxyEmqServiceException
 from emq.message import MessageService
 from emq.queue import QueueService
+from emq.statistics import StatisticsService
 from rpc.common.ttypes import ThriftProtocol
 
 
@@ -39,6 +40,12 @@ class ClientFactory:
                      timeout=DEFAULT_CLIENT_CONN_TIMEOUT, is_retry=False, max_retry=MAX_RETRY):
     url = endpoint + MESSAGE_SERVICE_PATH
     client = self.get_client(MessageService.Client, url, timeout)
+    return RetryableClient(client, is_retry, max_retry)
+
+  def statistics_client(self, endpoint=DEFAULT_SECURE_SERVICE_ENDPOINT,
+                     timeout=DEFAULT_CLIENT_CONN_TIMEOUT, is_retry=False, max_retry=MAX_RETRY):
+    url = endpoint + STATISTICS_SERVICE_PATH
+    client = self.get_client(StatisticsService.Client, url, timeout)
     return RetryableClient(client, is_retry, max_retry)
 
   def get_client(self, clazz, url, timeout):

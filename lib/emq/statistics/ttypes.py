@@ -20,50 +20,56 @@ except:
   fastbinary = None
 
 
-class OPERATION(object):
-  SEND = 0
-  RECEIVE = 1
-  CHANGE = 2
-  DELETE = 3
-  SINGLE_SEND = 4
-  BATCH_SEND = 5
-  SHORT_RECEIVE = 6
-  LONG_RECEIVE = 7
+class ALERT_TYPE(object):
+  SEND_REQUEST = 0
+  RECEIVE_REQUEST = 1
+  CHANGE_REQUEST = 2
+  DELETE_REQUEST = 3
+  SINGLE_SEND_REQUEST = 4
+  BATCH_SEND_REQUEST = 5
+  SHORT_RECEIVE_REQUEST = 6
+  LONG_RECEIVE_REQUEST = 7
+  QUEUE_MESSAGE_NUMBER = 8
 
   _VALUES_TO_NAMES = {
-    0: "SEND",
-    1: "RECEIVE",
-    2: "CHANGE",
-    3: "DELETE",
-    4: "SINGLE_SEND",
-    5: "BATCH_SEND",
-    6: "SHORT_RECEIVE",
-    7: "LONG_RECEIVE",
+    0: "SEND_REQUEST",
+    1: "RECEIVE_REQUEST",
+    2: "CHANGE_REQUEST",
+    3: "DELETE_REQUEST",
+    4: "SINGLE_SEND_REQUEST",
+    5: "BATCH_SEND_REQUEST",
+    6: "SHORT_RECEIVE_REQUEST",
+    7: "LONG_RECEIVE_REQUEST",
+    8: "QUEUE_MESSAGE_NUMBER",
   }
 
   _NAMES_TO_VALUES = {
-    "SEND": 0,
-    "RECEIVE": 1,
-    "CHANGE": 2,
-    "DELETE": 3,
-    "SINGLE_SEND": 4,
-    "BATCH_SEND": 5,
-    "SHORT_RECEIVE": 6,
-    "LONG_RECEIVE": 7,
+    "SEND_REQUEST": 0,
+    "RECEIVE_REQUEST": 1,
+    "CHANGE_REQUEST": 2,
+    "DELETE_REQUEST": 3,
+    "SINGLE_SEND_REQUEST": 4,
+    "BATCH_SEND_REQUEST": 5,
+    "SHORT_RECEIVE_REQUEST": 6,
+    "LONG_RECEIVE_REQUEST": 7,
+    "QUEUE_MESSAGE_NUMBER": 8,
   }
 
 class MEASUREMENT(object):
   LATENCY = 0
   LATENCY_P999 = 1
+  COUNT = 2
 
   _VALUES_TO_NAMES = {
     0: "LATENCY",
     1: "LATENCY_P999",
+    2: "COUNT",
   }
 
   _NAMES_TO_VALUES = {
     "LATENCY": 0,
     "LATENCY_P999": 1,
+    "COUNT": 2,
   }
 
 
@@ -741,7 +747,7 @@ class GetUserInfoResponse(object):
 class AlertPolicy(object):
   """
   Attributes:
-   - operation: The operation to be monitored;
+   - type: The operation to be monitored;
    
    - measurement: The measurement to be monitored;
    
@@ -752,13 +758,13 @@ class AlertPolicy(object):
 
   thrift_spec = (
     None, # 0
-    (1, TType.I32, 'operation', None, None, ), # 1
+    (1, TType.I32, 'type', None, None, ), # 1
     (2, TType.I32, 'measurement', None, None, ), # 2
     (3, TType.DOUBLE, 'threshold', None, None, ), # 3
   )
 
-  def __init__(self, operation=None, measurement=None, threshold=None,):
-    self.operation = operation
+  def __init__(self, type=None, measurement=None, threshold=None,):
+    self.type = type
     self.measurement = measurement
     self.threshold = threshold
 
@@ -773,7 +779,7 @@ class AlertPolicy(object):
         break
       if fid == 1:
         if ftype == TType.I32:
-          self.operation = iprot.readI32();
+          self.type = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -796,9 +802,9 @@ class AlertPolicy(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('AlertPolicy')
-    if self.operation is not None:
-      oprot.writeFieldBegin('operation', TType.I32, 1)
-      oprot.writeI32(self.operation)
+    if self.type is not None:
+      oprot.writeFieldBegin('type', TType.I32, 1)
+      oprot.writeI32(self.type)
       oprot.writeFieldEnd()
     if self.measurement is not None:
       oprot.writeFieldBegin('measurement', TType.I32, 2)
@@ -812,8 +818,8 @@ class AlertPolicy(object):
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.operation is None:
-      raise TProtocol.TProtocolException(message='Required field operation is unset!')
+    if self.type is None:
+      raise TProtocol.TProtocolException(message='Required field type is unset!')
     if self.measurement is None:
       raise TProtocol.TProtocolException(message='Required field measurement is unset!')
     return
@@ -821,7 +827,7 @@ class AlertPolicy(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.operation)
+    value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.measurement)
     value = (value * 31) ^ hash(self.threshold)
     return value
