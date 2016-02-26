@@ -6,7 +6,7 @@ import time
 import socket
 import uuid
 from emq.client.constants import THRIFT_PROTOCOL_MAP, DEFAULT_SECURE_SERVICE_ENDPOINT, QUEUE_SERVICE_PATH, \
-  DEFAULT_CLIENT_TIMEOUT, DEFAULT_CLIENT_CONN_TIMEOUT, MESSAGE_SERVICE_PATH
+  DEFAULT_CLIENT_TIMEOUT, DEFAULT_CLIENT_CONN_TIMEOUT, MESSAGE_SERVICE_PATH, STATISTICS_SERVICE_PATH
 from emq.client.requestchecker import RequestChecker
 from emq.client.thttpclient import THttpClient
 from emq.common.constants import ERROR_BACKOFF, MAX_RETRY, ERROR_RETRY_TYPE
