@@ -34,6 +34,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  EditConsumeResult consumePartitionEdit(EditConsumeRequest request)')
   print('  DataCommitResult commitConsumedPartitionData(DataCommitRequest request)')
   print('  EditCommitResult commitConsumedPartitionEdit(EditCommitRequest request)')
+  print('  PutResult putToRebuildIndex(PutRequest request)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
   print('  i64 getServerTime()')
@@ -152,6 +153,12 @@ elif cmd == 'commitConsumedPartitionEdit':
     print('commitConsumedPartitionEdit requires 1 args')
     sys.exit(1)
   pp.pprint(client.commitConsumedPartitionEdit(eval(args[0]),))
+
+elif cmd == 'putToRebuildIndex':
+  if len(args) != 1:
+    print('putToRebuildIndex requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.putToRebuildIndex(eval(args[0]),))
 
 elif cmd == 'getServerVersion':
   if len(args) != 0:

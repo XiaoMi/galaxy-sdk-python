@@ -11,7 +11,6 @@ from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import sds.errors.ttypes
 import sds.common.ttypes
 import sds.auth.ttypes
-import rpc.Authorization.ttypes
 
 
 from thrift.transport import TTransport
@@ -1324,6 +1323,180 @@ class TableSchema(object):
   def __ne__(self, other):
     return not (self == other)
 
+class ReplicationProvisionThroughput(object):
+  """
+  远程复制吞吐量配额
+
+  Attributes:
+   - consumeCapacity
+   - commitCapacity
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'consumeCapacity', None, None, ), # 1
+    (2, TType.I64, 'commitCapacity', None, None, ), # 2
+  )
+
+  def __init__(self, consumeCapacity=None, commitCapacity=None,):
+    self.consumeCapacity = consumeCapacity
+    self.commitCapacity = commitCapacity
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.consumeCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.commitCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ReplicationProvisionThroughput')
+    if self.consumeCapacity is not None:
+      oprot.writeFieldBegin('consumeCapacity', TType.I64, 1)
+      oprot.writeI64(self.consumeCapacity)
+      oprot.writeFieldEnd()
+    if self.commitCapacity is not None:
+      oprot.writeFieldBegin('commitCapacity', TType.I64, 2)
+      oprot.writeI64(self.commitCapacity)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.consumeCapacity)
+    value = (value * 31) ^ hash(self.commitCapacity)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ReplicationSpec(object):
+  """
+  远程复制定义
+
+  Attributes:
+   - enableReplication: 是否做增量复制
+   - throughput: 吞吐量配额
+   - maxSubscribers: 订阅者的最大数量
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.BOOL, 'enableReplication', None, None, ), # 1
+    (2, TType.STRUCT, 'throughput', (ReplicationProvisionThroughput, ReplicationProvisionThroughput.thrift_spec), None, ), # 2
+    (3, TType.I32, 'maxSubscribers', None, None, ), # 3
+  )
+
+  def __init__(self, enableReplication=None, throughput=None, maxSubscribers=None,):
+    self.enableReplication = enableReplication
+    self.throughput = throughput
+    self.maxSubscribers = maxSubscribers
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.BOOL:
+          self.enableReplication = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.throughput = ReplicationProvisionThroughput()
+          self.throughput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.maxSubscribers = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ReplicationSpec')
+    if self.enableReplication is not None:
+      oprot.writeFieldBegin('enableReplication', TType.BOOL, 1)
+      oprot.writeBool(self.enableReplication)
+      oprot.writeFieldEnd()
+    if self.throughput is not None:
+      oprot.writeFieldBegin('throughput', TType.STRUCT, 2)
+      self.throughput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.maxSubscribers is not None:
+      oprot.writeFieldBegin('maxSubscribers', TType.I32, 3)
+      oprot.writeI32(self.maxSubscribers)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.enableReplication)
+    value = (value * 31) ^ hash(self.throughput)
+    value = (value * 31) ^ hash(self.maxSubscribers)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class TableMetadata(object):
   """
   表元信息
@@ -1587,180 +1760,6 @@ class TableSpec(object):
     value = 17
     value = (value * 31) ^ hash(self.schema)
     value = (value * 31) ^ hash(self.metadata)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class ReplicationProvisionThroughput(object):
-  """
-  远程复制吞吐量配额
-
-  Attributes:
-   - consumeCapacity
-   - commitCapacity
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.I64, 'consumeCapacity', None, None, ), # 1
-    (2, TType.I64, 'commitCapacity', None, None, ), # 2
-  )
-
-  def __init__(self, consumeCapacity=None, commitCapacity=None,):
-    self.consumeCapacity = consumeCapacity
-    self.commitCapacity = commitCapacity
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.I64:
-          self.consumeCapacity = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I64:
-          self.commitCapacity = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('ReplicationProvisionThroughput')
-    if self.consumeCapacity is not None:
-      oprot.writeFieldBegin('consumeCapacity', TType.I64, 1)
-      oprot.writeI64(self.consumeCapacity)
-      oprot.writeFieldEnd()
-    if self.commitCapacity is not None:
-      oprot.writeFieldBegin('commitCapacity', TType.I64, 2)
-      oprot.writeI64(self.commitCapacity)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.consumeCapacity)
-    value = (value * 31) ^ hash(self.commitCapacity)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class ReplicationSpec(object):
-  """
-  远程复制定义
-
-  Attributes:
-   - enableReplication: 是否做增量复制
-   - throughput: 吞吐量配额
-   - maxSubscribers: 订阅者的最大数量
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.BOOL, 'enableReplication', None, None, ), # 1
-    (2, TType.STRUCT, 'throughput', (ReplicationProvisionThroughput, ReplicationProvisionThroughput.thrift_spec), None, ), # 2
-    (3, TType.I32, 'maxSubscribers', None, None, ), # 3
-  )
-
-  def __init__(self, enableReplication=None, throughput=None, maxSubscribers=None,):
-    self.enableReplication = enableReplication
-    self.throughput = throughput
-    self.maxSubscribers = maxSubscribers
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.BOOL:
-          self.enableReplication = iprot.readBool();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.throughput = ReplicationProvisionThroughput()
-          self.throughput.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.I32:
-          self.maxSubscribers = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('ReplicationSpec')
-    if self.enableReplication is not None:
-      oprot.writeFieldBegin('enableReplication', TType.BOOL, 1)
-      oprot.writeBool(self.enableReplication)
-      oprot.writeFieldEnd()
-    if self.throughput is not None:
-      oprot.writeFieldBegin('throughput', TType.STRUCT, 2)
-      self.throughput.write(oprot)
-      oprot.writeFieldEnd()
-    if self.maxSubscribers is not None:
-      oprot.writeFieldBegin('maxSubscribers', TType.I32, 3)
-      oprot.writeI32(self.maxSubscribers)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.enableReplication)
-    value = (value * 31) ^ hash(self.throughput)
-    value = (value * 31) ^ hash(self.maxSubscribers)
     return value
 
   def __repr__(self):

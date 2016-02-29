@@ -43,7 +43,7 @@ class ClientFactory:
     return RetryableClient(client, is_retry, max_retry)
 
   def statistics_client(self, endpoint=DEFAULT_SECURE_SERVICE_ENDPOINT,
-                     timeout=DEFAULT_CLIENT_CONN_TIMEOUT, is_retry=False, max_retry=MAX_RETRY):
+                        timeout=DEFAULT_CLIENT_CONN_TIMEOUT, is_retry=False, max_retry=MAX_RETRY):
     url = endpoint + STATISTICS_SERVICE_PATH
     client = self.get_client(StatisticsService.Client, url, timeout)
     return RetryableClient(client, is_retry, max_retry)
@@ -79,6 +79,8 @@ class RetryableClient:
             retry += 1
           else:
             raise se
+        except socket.error:
+          break
 
     return __call_with_retries
 
