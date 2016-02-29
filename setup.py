@@ -11,7 +11,7 @@ README = load_file('README.md')
 
 setup(
     name='galaxy-sdk-python',
-    version="0.2.8",
+    version="0.2.9",
     author='Xiaomi Technology Co.',
     author_email='heliangliang@xiaomi.com',
     url='http://dev.mi.com',
