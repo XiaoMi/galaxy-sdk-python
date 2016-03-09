@@ -11,6 +11,7 @@ from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import sds.errors.ttypes
 import sds.common.ttypes
 import sds.auth.ttypes
+import rpc.authorization.ttypes
 
 
 from thrift.transport import TTransport

@@ -4,7 +4,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:new_style
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -17,7 +17,7 @@ except:
   fastbinary = None
 
 
-class HttpStatusCode:
+class HttpStatusCode(object):
   """
   HTTP状态码列表，用于传输层，签名错误等
   """
@@ -43,7 +43,7 @@ class HttpStatusCode:
     "INTERNAL_ERROR": 500,
   }
 
-class ErrorCode:
+class ErrorCode(object):
   """
   错误码列表，用于逻辑层错误
   """
@@ -117,7 +117,7 @@ class ErrorCode:
     "REQUEST_TIMEOUT": 37,
   }
 
-class RetryType:
+class RetryType(object):
   SAFE = 0
   UNSAFE = 1
 

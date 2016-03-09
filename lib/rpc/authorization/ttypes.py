@@ -8,8 +8,6 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-import rpc.errors.ttypes
-
 
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -19,51 +17,43 @@ except:
   fastbinary = None
 
 
-class ThriftProtocol(object):
-  """
-  thrift传输协议
-  """
-  TCOMPACT = 0
-  TJSON = 1
-  TBINARY = 2
+class GrantType(object):
+  DEVELOPER = 1
+  APP_ROOT = 2
+  APP_USER = 3
+  GUEST = 4
 
   _VALUES_TO_NAMES = {
-    0: "TCOMPACT",
-    1: "TJSON",
-    2: "TBINARY",
+    1: "DEVELOPER",
+    2: "APP_ROOT",
+    3: "APP_USER",
+    4: "GUEST",
   }
 
   _NAMES_TO_VALUES = {
-    "TCOMPACT": 0,
-    "TJSON": 1,
-    "TBINARY": 2,
+    "DEVELOPER": 1,
+    "APP_ROOT": 2,
+    "APP_USER": 3,
+    "GUEST": 4,
   }
 
 
-class Version(object):
+class Grantee(object):
   """
-  版本号，规则详见http://semver.org
-
   Attributes:
-   - major: 主版本号，不同版本号之间不兼容
-   - minor: 次版本号，不同版本号之间向后兼容
-   - patch: 构建版本号，不同版本之间互相兼容
-   - comments: 附加信息
+   - type: 被授权者类型
+   - identifier: 被授权者唯一标识，若 GrantType 为 DEV 即 developerId， 其它则为appId
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.I32, 'major', None, 1, ), # 1
-    (2, TType.I32, 'minor', None, 0, ), # 2
-    (3, TType.STRING, 'patch', None, "1da06945", ), # 3
-    (4, TType.STRING, 'comments', None, "", ), # 4
+    (1, TType.I32, 'type', None, None, ), # 1
+    (2, TType.STRING, 'identifier', None, None, ), # 2
   )
 
-  def __init__(self, major=thrift_spec[1][4], minor=thrift_spec[2][4], patch=thrift_spec[3][4], comments=thrift_spec[4][4],):
-    self.major = major
-    self.minor = minor
-    self.patch = patch
-    self.comments = comments
+  def __init__(self, type=None, identifier=None,):
+    self.type = type
+    self.identifier = identifier
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -76,22 +66,12 @@ class Version(object):
         break
       if fid == 1:
         if ftype == TType.I32:
-          self.major = iprot.readI32();
+          self.type = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I32:
-          self.minor = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
         if ftype == TType.STRING:
-          self.patch = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.comments = iprot.readString();
+          self.identifier = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -103,22 +83,14 @@ class Version(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('Version')
-    if self.major is not None:
-      oprot.writeFieldBegin('major', TType.I32, 1)
-      oprot.writeI32(self.major)
+    oprot.writeStructBegin('Grantee')
+    if self.type is not None:
+      oprot.writeFieldBegin('type', TType.I32, 1)
+      oprot.writeI32(self.type)
       oprot.writeFieldEnd()
-    if self.minor is not None:
-      oprot.writeFieldBegin('minor', TType.I32, 2)
-      oprot.writeI32(self.minor)
-      oprot.writeFieldEnd()
-    if self.patch is not None:
-      oprot.writeFieldBegin('patch', TType.STRING, 3)
-      oprot.writeString(self.patch)
-      oprot.writeFieldEnd()
-    if self.comments is not None:
-      oprot.writeFieldBegin('comments', TType.STRING, 4)
-      oprot.writeString(self.comments)
+    if self.identifier is not None:
+      oprot.writeFieldBegin('identifier', TType.STRING, 2)
+      oprot.writeString(self.identifier)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -129,10 +101,8 @@ class Version(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.major)
-    value = (value * 31) ^ hash(self.minor)
-    value = (value * 31) ^ hash(self.patch)
-    value = (value * 31) ^ hash(self.comments)
+    value = (value * 31) ^ hash(self.type)
+    value = (value * 31) ^ hash(self.identifier)
     return value
 
   def __repr__(self):

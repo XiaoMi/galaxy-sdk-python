@@ -4,7 +4,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:new_style
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -20,7 +20,7 @@ except:
   fastbinary = None
 
 
-class UserType:
+class UserType(object):
   """
   小米存储系统认证信息类型
   """
@@ -49,7 +49,7 @@ class UserType:
     "APP_ANONYMOUS": 13,
   }
 
-class MacAlgorithm:
+class MacAlgorithm(object):
   """
   签名使用的HMMAC算法
   """
@@ -69,7 +69,7 @@ class MacAlgorithm:
     "HmacSHA256": 3,
   }
 
-class AppUserAuthProvider:
+class AppUserAuthProvider(object):
   """
   第三方身份认证提供方，用于认证应用用户(非开发者)。
   目前提供小米SSO和几种常见OAuth系统
@@ -97,7 +97,7 @@ class AppUserAuthProvider:
   }
 
 
-class Credential:
+class Credential(object):
   """
   小米存储系统认证信息
 
@@ -193,7 +193,7 @@ class Credential:
   def __ne__(self, other):
     return not (self == other)
 
-class HttpAuthorizationHeader:
+class HttpAuthorizationHeader(object):
   """
   Authorization头包含的内容
 

@@ -4,7 +4,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:new_style
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -119,7 +119,7 @@ class Processor(rpc.common.BaseService.Processor, Iface, TProcessor):
 
 # HELPER FUNCTIONS AND STRUCTURES
 
-class createCredential_args:
+class createCredential_args(object):
   """
   Attributes:
    - xiaomiAppId
@@ -210,7 +210,7 @@ class createCredential_args:
   def __ne__(self, other):
     return not (self == other)
 
-class createCredential_result:
+class createCredential_result(object):
   """
   Attributes:
    - success

@@ -4,7 +4,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:new_style
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -18,7 +18,7 @@ except:
   fastbinary = None
 
 
-class Iface:
+class Iface(object):
   """
   基础接口
   """
@@ -213,7 +213,7 @@ class Processor(Iface, TProcessor):
 
 # HELPER FUNCTIONS AND STRUCTURES
 
-class getServerVersion_args:
+class getServerVersion_args(object):
 
   thrift_spec = (
   )
@@ -259,7 +259,7 @@ class getServerVersion_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getServerVersion_result:
+class getServerVersion_result(object):
   """
   Attributes:
    - success
@@ -338,7 +338,7 @@ class getServerVersion_result:
   def __ne__(self, other):
     return not (self == other)
 
-class validateClientVersion_args:
+class validateClientVersion_args(object):
   """
   Attributes:
    - clientVersion
@@ -404,7 +404,7 @@ class validateClientVersion_args:
   def __ne__(self, other):
     return not (self == other)
 
-class validateClientVersion_result:
+class validateClientVersion_result(object):
   """
   Attributes:
    - se
@@ -470,7 +470,7 @@ class validateClientVersion_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getServerTime_args:
+class getServerTime_args(object):
 
   thrift_spec = (
   )
@@ -516,7 +516,7 @@ class getServerTime_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getServerTime_result:
+class getServerTime_result(object):
   """
   Attributes:
    - success

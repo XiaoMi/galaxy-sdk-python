@@ -4,7 +4,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:new_style
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -18,13 +18,12 @@ SIGNATURE_SUPPORT = {
     12 : False,
     13 : False,
 }
-HK_HOST = "host".lower()
-HK_TIMESTAMP = "x-xiaomi-Timestamp".lower()
-HK_CONTENT_MD5 = "X-Xiaomi-Content-MD5".lower()
-HK_AUTHORIZATION = "Authorization".lower()
-MI_DATE = "X-Xiaomi-date".lower()
+HK_HOST = "Host"
+HK_TIMESTAMP = "X-Xiaomi-Timestamp"
+HK_CONTENT_MD5 = "X-Xiaomi-Content-MD5"
+HK_AUTHORIZATION = "Authorization"
 SUGGESTED_SIGNATURE_HEADERS = [
-  "Host".lower(),
-  "X-Xiaomi-Timestamp".lower(),
-  "X-Xiaomi-Content-MD5".lower(),
+  "Host",
+  "X-Xiaomi-Timestamp",
+  "X-Xiaomi-Content-MD5",
 ]
