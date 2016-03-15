@@ -1355,7 +1355,7 @@ class addQueueAlertPolicy_args(object):
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'request', (AddAlertPolicyRequest, AddAlertPolicyRequest.thrift_spec), None, ), # 1
+    (1, TType.STRUCT, 'request', (AddQueueAlertPolicyRequest, AddQueueAlertPolicyRequest.thrift_spec), None, ), # 1
   )
 
   def __init__(self, request=None,):
@@ -1372,7 +1372,7 @@ class addQueueAlertPolicy_args(object):
         break
       if fid == 1:
         if ftype == TType.STRUCT:
-          self.request = AddAlertPolicyRequest()
+          self.request = AddQueueAlertPolicyRequest()
           self.request.read(iprot)
         else:
           iprot.skip(ftype)
@@ -1487,7 +1487,7 @@ class deleteQueueAlertPolicy_args(object):
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'request', (DeleteAlertPolicyRequest, DeleteAlertPolicyRequest.thrift_spec), None, ), # 1
+    (1, TType.STRUCT, 'request', (DeleteQueueAlertPolicyRequest, DeleteQueueAlertPolicyRequest.thrift_spec), None, ), # 1
   )
 
   def __init__(self, request=None,):
@@ -1504,7 +1504,7 @@ class deleteQueueAlertPolicy_args(object):
         break
       if fid == 1:
         if ftype == TType.STRUCT:
-          self.request = DeleteAlertPolicyRequest()
+          self.request = DeleteQueueAlertPolicyRequest()
           self.request.read(iprot)
         else:
           iprot.skip(ftype)

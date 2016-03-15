@@ -843,7 +843,7 @@ class AlertPolicy(object):
   def __ne__(self, other):
     return not (self == other)
 
-class AddAlertPolicyRequest(object):
+class AddQueueAlertPolicyRequest(object):
   """
   Attributes:
    - queueName: Queue name;
@@ -891,7 +891,7 @@ class AddAlertPolicyRequest(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('AddAlertPolicyRequest')
+    oprot.writeStructBegin('AddQueueAlertPolicyRequest')
     if self.queueName is not None:
       oprot.writeFieldBegin('queueName', TType.STRING, 1)
       oprot.writeString(self.queueName)
@@ -928,7 +928,7 @@ class AddAlertPolicyRequest(object):
   def __ne__(self, other):
     return not (self == other)
 
-class DeleteAlertPolicyRequest(object):
+class DeleteQueueAlertPolicyRequest(object):
   """
   Attributes:
    - queueName: Queue name;
@@ -976,7 +976,7 @@ class DeleteAlertPolicyRequest(object):
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('DeleteAlertPolicyRequest')
+    oprot.writeStructBegin('DeleteQueueAlertPolicyRequest')
     if self.queueName is not None:
       oprot.writeFieldBegin('queueName', TType.STRING, 1)
       oprot.writeString(self.queueName)
