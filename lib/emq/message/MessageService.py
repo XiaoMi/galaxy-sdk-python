@@ -90,6 +90,26 @@ class Iface(emq.common.EMQBaseService.Iface):
     """
     pass
 
+  def deadMessage(self, deadMessageRequest):
+    """
+    Dead message;
+
+
+    Parameters:
+     - deadMessageRequest
+    """
+    pass
+
+  def deadMessageBatch(self, deadMessageBatchRequest):
+    """
+    Dead message batch;
+
+
+    Parameters:
+     - deadMessageBatchRequest
+    """
+    pass
+
 
 class Client(emq.common.EMQBaseService.Client, Iface):
   def __init__(self, iprot, oprot=None):
@@ -343,6 +363,76 @@ class Client(emq.common.EMQBaseService.Client, Iface):
       raise result.e
     raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteMessageBatch failed: unknown result");
 
+  def deadMessage(self, deadMessageRequest):
+    """
+    Dead message;
+
+
+    Parameters:
+     - deadMessageRequest
+    """
+    self.send_deadMessage(deadMessageRequest)
+    self.recv_deadMessage()
+
+  def send_deadMessage(self, deadMessageRequest):
+    self._oprot.writeMessageBegin('deadMessage', TMessageType.CALL, self._seqid)
+    args = deadMessage_args()
+    args.deadMessageRequest = deadMessageRequest
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_deadMessage(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = deadMessage_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.e is not None:
+      raise result.e
+    return
+
+  def deadMessageBatch(self, deadMessageBatchRequest):
+    """
+    Dead message batch;
+
+
+    Parameters:
+     - deadMessageBatchRequest
+    """
+    self.send_deadMessageBatch(deadMessageBatchRequest)
+    return self.recv_deadMessageBatch()
+
+  def send_deadMessageBatch(self, deadMessageBatchRequest):
+    self._oprot.writeMessageBegin('deadMessageBatch', TMessageType.CALL, self._seqid)
+    args = deadMessageBatch_args()
+    args.deadMessageBatchRequest = deadMessageBatchRequest
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_deadMessageBatch(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = deadMessageBatch_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.e is not None:
+      raise result.e
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "deadMessageBatch failed: unknown result");
+
 
 class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -354,6 +444,8 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     self._processMap["changeMessageVisibilitySecondsBatch"] = Processor.process_changeMessageVisibilitySecondsBatch
     self._processMap["deleteMessage"] = Processor.process_deleteMessage
     self._processMap["deleteMessageBatch"] = Processor.process_deleteMessageBatch
+    self._processMap["deadMessage"] = Processor.process_deadMessage
+    self._processMap["deadMessageBatch"] = Processor.process_deadMessageBatch
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -464,6 +556,34 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     except emq.common.ttypes.GalaxyEmqServiceException, e:
       result.e = e
     oprot.writeMessageBegin("deleteMessageBatch", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_deadMessage(self, seqid, iprot, oprot):
+    args = deadMessage_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = deadMessage_result()
+    try:
+      self._handler.deadMessage(args.deadMessageRequest)
+    except emq.common.ttypes.GalaxyEmqServiceException, e:
+      result.e = e
+    oprot.writeMessageBegin("deadMessage", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_deadMessageBatch(self, seqid, iprot, oprot):
+    args = deadMessageBatch_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = deadMessageBatch_result()
+    try:
+      result.success = self._handler.deadMessageBatch(args.deadMessageBatchRequest)
+    except emq.common.ttypes.GalaxyEmqServiceException, e:
+      result.e = e
+    oprot.writeMessageBegin("deadMessageBatch", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -855,11 +975,11 @@ class receiveMessage_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype102, _size99) = iprot.readListBegin()
-          for _i103 in xrange(_size99):
-            _elem104 = ReceiveMessageResponse()
-            _elem104.read(iprot)
-            self.success.append(_elem104)
+          (_etype123, _size120) = iprot.readListBegin()
+          for _i124 in xrange(_size120):
+            _elem125 = ReceiveMessageResponse()
+            _elem125.read(iprot)
+            self.success.append(_elem125)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -882,8 +1002,8 @@ class receiveMessage_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter105 in self.success:
-        iter105.write(oprot)
+      for iter126 in self.success:
+        iter126.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.e is not None:
@@ -1436,6 +1556,283 @@ class deleteMessageBatch_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('deleteMessageBatch_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deadMessage_args(object):
+  """
+  Attributes:
+   - deadMessageRequest
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'deadMessageRequest', (DeadMessageRequest, DeadMessageRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, deadMessageRequest=None,):
+    self.deadMessageRequest = deadMessageRequest
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.deadMessageRequest = DeadMessageRequest()
+          self.deadMessageRequest.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deadMessage_args')
+    if self.deadMessageRequest is not None:
+      oprot.writeFieldBegin('deadMessageRequest', TType.STRUCT, 1)
+      self.deadMessageRequest.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.deadMessageRequest)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deadMessage_result(object):
+  """
+  Attributes:
+   - e
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'e', (emq.common.ttypes.GalaxyEmqServiceException, emq.common.ttypes.GalaxyEmqServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, e=None,):
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = emq.common.ttypes.GalaxyEmqServiceException()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deadMessage_result')
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deadMessageBatch_args(object):
+  """
+  Attributes:
+   - deadMessageBatchRequest
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'deadMessageBatchRequest', (DeadMessageBatchRequest, DeadMessageBatchRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, deadMessageBatchRequest=None,):
+    self.deadMessageBatchRequest = deadMessageBatchRequest
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.deadMessageBatchRequest = DeadMessageBatchRequest()
+          self.deadMessageBatchRequest.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deadMessageBatch_args')
+    if self.deadMessageBatchRequest is not None:
+      oprot.writeFieldBegin('deadMessageBatchRequest', TType.STRUCT, 1)
+      self.deadMessageBatchRequest.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.deadMessageBatchRequest)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deadMessageBatch_result(object):
+  """
+  Attributes:
+   - success
+   - e
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (DeadMessageBatchResponse, DeadMessageBatchResponse.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'e', (emq.common.ttypes.GalaxyEmqServiceException, emq.common.ttypes.GalaxyEmqServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, e=None,):
+    self.success = success
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = DeadMessageBatchResponse()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = emq.common.ttypes.GalaxyEmqServiceException()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deadMessageBatch_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)

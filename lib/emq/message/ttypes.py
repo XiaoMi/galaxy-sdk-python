@@ -1080,6 +1080,7 @@ class ReceiveMessageResponse(object):
   - sourceTag
   - deadTimestamp
   - originalMessageID
+  - originalReceiveCount
 
 
    - messageAttributes: User-defined attributes attached to message
@@ -1912,6 +1913,349 @@ class DeleteMessageBatchResponse(object):
       oprot.writeListBegin(TType.STRUCT, len(self.failed))
       for iter98 in self.failed:
         iter98.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.successful)
+    value = (value * 31) ^ hash(self.failed)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class DeadMessageRequest(object):
+  """
+  Attributes:
+   - queueName: Queue name;
+
+   - receiptHandle: receipt handle of message to die;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+    (2, TType.STRING, 'receiptHandle', None, None, ), # 2
+  )
+
+  def __init__(self, queueName=None, receiptHandle=None,):
+    self.queueName = queueName
+    self.receiptHandle = receiptHandle
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.receiptHandle = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('DeadMessageRequest')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    if self.receiptHandle is not None:
+      oprot.writeFieldBegin('receiptHandle', TType.STRING, 2)
+      oprot.writeString(self.receiptHandle)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueName is None:
+      raise TProtocol.TProtocolException(message='Required field queueName is unset!')
+    if self.receiptHandle is None:
+      raise TProtocol.TProtocolException(message='Required field receiptHandle is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    value = (value * 31) ^ hash(self.receiptHandle)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class DeadMessageBatchRequestEntry(object):
+  """
+  Attributes:
+   - receiptHandle: receipt handle of message to die;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'receiptHandle', None, None, ), # 1
+  )
+
+  def __init__(self, receiptHandle=None,):
+    self.receiptHandle = receiptHandle
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.receiptHandle = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('DeadMessageBatchRequestEntry')
+    if self.receiptHandle is not None:
+      oprot.writeFieldBegin('receiptHandle', TType.STRING, 1)
+      oprot.writeString(self.receiptHandle)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.receiptHandle is None:
+      raise TProtocol.TProtocolException(message='Required field receiptHandle is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.receiptHandle)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class DeadMessageBatchRequest(object):
+  """
+  Attributes:
+   - queueName: Queue name;
+
+   - deadMessageBatchRequestEntryList: List of DeadMessageBatchRequestEntry;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+    (2, TType.LIST, 'deadMessageBatchRequestEntryList', (TType.STRUCT,(DeadMessageBatchRequestEntry, DeadMessageBatchRequestEntry.thrift_spec)), None, ), # 2
+  )
+
+  def __init__(self, queueName=None, deadMessageBatchRequestEntryList=None,):
+    self.queueName = queueName
+    self.deadMessageBatchRequestEntryList = deadMessageBatchRequestEntryList
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.LIST:
+          self.deadMessageBatchRequestEntryList = []
+          (_etype102, _size99) = iprot.readListBegin()
+          for _i103 in xrange(_size99):
+            _elem104 = DeadMessageBatchRequestEntry()
+            _elem104.read(iprot)
+            self.deadMessageBatchRequestEntryList.append(_elem104)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('DeadMessageBatchRequest')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    if self.deadMessageBatchRequestEntryList is not None:
+      oprot.writeFieldBegin('deadMessageBatchRequestEntryList', TType.LIST, 2)
+      oprot.writeListBegin(TType.STRUCT, len(self.deadMessageBatchRequestEntryList))
+      for iter105 in self.deadMessageBatchRequestEntryList:
+        iter105.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueName is None:
+      raise TProtocol.TProtocolException(message='Required field queueName is unset!')
+    if self.deadMessageBatchRequestEntryList is None:
+      raise TProtocol.TProtocolException(message='Required field deadMessageBatchRequestEntryList is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    value = (value * 31) ^ hash(self.deadMessageBatchRequestEntryList)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class DeadMessageBatchResponse(object):
+  """
+  Attributes:
+   - successful: The successful receipt handle;
+
+   - failed: Failed results list;
+  Using receipt handle to index
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.LIST, 'successful', (TType.STRING,None), None, ), # 1
+    (2, TType.LIST, 'failed', (TType.STRUCT,(MessageBatchErrorEntry, MessageBatchErrorEntry.thrift_spec)), None, ), # 2
+  )
+
+  def __init__(self, successful=None, failed=None,):
+    self.successful = successful
+    self.failed = failed
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.LIST:
+          self.successful = []
+          (_etype109, _size106) = iprot.readListBegin()
+          for _i110 in xrange(_size106):
+            _elem111 = iprot.readString();
+            self.successful.append(_elem111)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.LIST:
+          self.failed = []
+          (_etype115, _size112) = iprot.readListBegin()
+          for _i116 in xrange(_size112):
+            _elem117 = MessageBatchErrorEntry()
+            _elem117.read(iprot)
+            self.failed.append(_elem117)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('DeadMessageBatchResponse')
+    if self.successful is not None:
+      oprot.writeFieldBegin('successful', TType.LIST, 1)
+      oprot.writeListBegin(TType.STRING, len(self.successful))
+      for iter118 in self.successful:
+        oprot.writeString(iter118)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.failed is not None:
+      oprot.writeFieldBegin('failed', TType.LIST, 2)
+      oprot.writeListBegin(TType.STRUCT, len(self.failed))
+      for iter119 in self.failed:
+        iter119.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

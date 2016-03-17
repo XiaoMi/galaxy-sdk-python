@@ -15,7 +15,7 @@ from emq.range.constants import GALAXY_EMQ_QUEUE_DELAY_SECONDS_MINIMAL, GALAXY_E
   GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MINIMAL, GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MAXIMAL
 from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, ChangeMessageVisibilityRequest, \
   DeleteMessageRequest, SendMessageBatchRequest, SendMessageBatchRequestEntry, ChangeMessageVisibilityBatchRequestEntry, \
-  ChangeMessageVisibilityBatchRequest, DeleteMessageBatchRequest
+  ChangeMessageVisibilityBatchRequest, DeleteMessageBatchRequest, DeadMessageBatchRequest, DeadMessageRequest
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
   RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota, CreateTagRequest, \
   DeleteTagRequest, GetTagInfoRequest, ListTagRequest, SetQueueRedrivePolicyRequest, RemoveQueueRedrivePolicyRequest, \
@@ -115,6 +115,10 @@ class RequestChecker(object):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.receiptHandle, "receiptHandle")
       self.validate_not_empty(request.receiptHandle, "receiptHandle")
+    elif isinstance(request, DeadMessageRequest):
+      self.validate_queue_name(request.queueName)
+      self.validate_not_none(request.receiptHandle, "receiptHandle")
+      self.validate_not_empty(request.receiptHandle, "receiptHandle")
     elif isinstance(request, SendMessageBatchRequest):
       self.validate_queue_name(request.queueName)
       sendMessageBatchRequestEntryList = request.sendMessageBatchRequestEntryList
@@ -148,9 +152,19 @@ class RequestChecker(object):
         self.validate_not_empty(k.receiptHandle, "receiptHandle")
         receipt_handle_list.append(k.receiptHandle)
       self.check_list_duplicate(receipt_handle_list, "receiptHandle")
+    elif isinstance(request, DeadMessageBatchRequest):
+      self.validate_queue_name(request.queueName)
+      deadMessageBatchRequestEntryList = request.deadMessageBatchRequestEntryList
+      self.validate_not_empty(deadMessageBatchRequestEntryList, "deadMessageBatchRequestEntryList")
+      receipt_handle_list = []
+      for k in deadMessageBatchRequestEntryList:
+        self.validate_not_none(k.receiptHandle, "receiptHandle")
+        self.validate_not_empty(k.receiptHandle, "receiptHandle")
+        receipt_handle_list.append(k.receiptHandle)
+      self.check_list_duplicate(receipt_handle_list, "receiptHandle")
     elif (isinstance(request, SetUserQuotaRequest) or isinstance(request, GetUserQuotaRequest)
-      or isinstance(request, GetUserUsedQuotaRequest) or isinstance(request, SetUserInfoRequest)
-      or isinstance(request, GetUserInfoRequest)):
+          or isinstance(request, GetUserUsedQuotaRequest) or isinstance(request, SetUserInfoRequest)
+          or isinstance(request, GetUserInfoRequest)):
       pass
     else:
       self.validate_queue_name(request.queueName)
@@ -339,6 +353,7 @@ class RequestChecker(object):
                            GALAXY_EMQ_QUEUE_WRITE_QPS_MINIMAL,
                            GALAXY_EMQ_QUEUE_WRITE_QPS_MAXIMAL,
                            "writeQps")
+
   def validate_redrivePolcy(self, redrivePolicy):
     self.validate_queue_name(redrivePolicy.dlqName)
     self.check_filed_range(redrivePolicy.maxReceiveTime,

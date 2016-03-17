@@ -31,6 +31,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  ChangeMessageVisibilityBatchResponse changeMessageVisibilitySecondsBatch(ChangeMessageVisibilityBatchRequest changeMessageVisibilityBatchRequest)')
   print('  void deleteMessage(DeleteMessageRequest deleteMessageRequest)')
   print('  DeleteMessageBatchResponse deleteMessageBatch(DeleteMessageBatchRequest deleteMessageBatchRequest)')
+  print('  void deadMessage(DeadMessageRequest deadMessageRequest)')
+  print('  DeadMessageBatchResponse deadMessageBatch(DeadMessageBatchRequest deadMessageBatchRequest)')
   print('  Version getServiceVersion()')
   print('  void validClientVersion(Version clientVersion)')
   print('')
@@ -130,6 +132,18 @@ elif cmd == 'deleteMessageBatch':
     print('deleteMessageBatch requires 1 args')
     sys.exit(1)
   pp.pprint(client.deleteMessageBatch(eval(args[0]),))
+
+elif cmd == 'deadMessage':
+  if len(args) != 1:
+    print('deadMessage requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.deadMessage(eval(args[0]),))
+
+elif cmd == 'deadMessageBatch':
+  if len(args) != 1:
+    print('deadMessageBatch requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.deadMessageBatch(eval(args[0]),))
 
 elif cmd == 'getServiceVersion':
   if len(args) != 0:
