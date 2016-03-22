@@ -13,6 +13,7 @@ from sds.metrics.Common import EXCUTION_TIME
 from sds.metrics.metricscollector import MetricsCollector
 from sds.metrics.requestmetrics import RequestMetrics
 from sds.table import TableService
+from sds.table.ttypes import BatchOp
 from sds.client.sdsthttpclient import SdsTHttpClient
 from sds.common.constants import DEFAULT_SERVICE_ENDPOINT
 from sds.common.constants import DEFAULT_ADMIN_CLIENT_TIMEOUT
@@ -117,8 +118,8 @@ class ThreadSafeClient:
     global request_metrics
 
     def __call_with_new_client(*args):
-      requestId = self.generateRandomId(8)
-      uri = '%s?id=%s&type=%s' % (self.url, requestId, item)
+      query = self.getQuery(item, *args)
+      uri = '%s?%s' % (self.url, query)
       http_client = SdsTHttpClient(self.credential, uri, self.timeout, self.protocol)
       http_client.setCustomHeaders({'User-Agent': self.agent})
 
@@ -142,3 +143,26 @@ class ThreadSafeClient:
   def generateRandomId(self, length):
     requestId = str(uuid.uuid4())
     return requestId[0:8]
+
+  def getQuery(self, item, *args):
+    requestId = self.generateRandomId(8)
+    requestType = item
+    if item == 'get' or item == 'put' or item == 'increment' or item == 'scan' or item == 'remove' or item == 'putToRebuildIndex':
+      return 'id=%s&type=%s&name=%s' % (requestId, requestType, args[0].tableName)
+    elif item == 'batch':
+      batchItems = args[0].items
+      action = batchItems[0].action
+      request = batchItems[0].request
+      if action == BatchOp.PUT:
+        tableName = request.putRequest.tableName
+      elif action == BatchOp.GET:
+        tableName = request.getRequest.tableName
+      elif action == BatchOp.REMOVE:
+        tableName = request.removeRequest.tableName
+      elif action == BatchOp.INCREMENT:
+        tableName = request.incrementRequest.tableName
+      else:
+        raise Exception("Unknown batch action: %s" % action)
+      return 'id=%s&type=%s&name=%s' % (requestId, requestType, tableName)
+    else:
+      return 'id=%s&type=%s' % (requestId, requestType)
