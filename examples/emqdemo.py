@@ -11,15 +11,15 @@ from rpc.auth.ttypes import Credential, UserType
 
 
 # Please set your AppKey and AppSecret
-app_key = ""
-app_secret = ""
+app_key = "" # Set your AppKey, like "5521728135794"
+app_secret = "" # Set your AppSecret, like "K7czwCuHttwZD49DD/qKzg==" 
 
 print "\n== CREATE OPERATION =="
 
 credential = Credential(UserType.APP_SECRET, app_key, app_secret)
 client_factory = ClientFactory(credential)
-queue_client = client_factory.queue_client()
-message_client = client_factory.message_client()
+queue_client = client_factory.queue_client("http://awsbj0.emq.api.xiaomi.com")
+message_client = client_factory.message_client("http://awsbj0.emq.api.xiaomi.com")
 queue_name = "testPythonExampleQueue"
 
 queue_attribute = QueueAttribute()
