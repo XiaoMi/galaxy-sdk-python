@@ -137,6 +137,8 @@ class SendMessageRequest(object):
 
    - messageAttributes: User-defined attributes attached to message
 
+   - topic: Topic of this message
+
   """
 
   thrift_spec = (
@@ -146,14 +148,16 @@ class SendMessageRequest(object):
     (3, TType.I32, 'delaySeconds', None, None, ), # 3
     (4, TType.I32, 'invisibilitySeconds', None, None, ), # 4
     (5, TType.MAP, 'messageAttributes', (TType.STRING,None,TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
+    (6, TType.STRING, 'topic', None, None, ), # 6
   )
 
-  def __init__(self, queueName=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None,):
+  def __init__(self, queueName=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None, topic=None,):
     self.queueName = queueName
     self.messageBody = messageBody
     self.delaySeconds = delaySeconds
     self.invisibilitySeconds = invisibilitySeconds
     self.messageAttributes = messageAttributes
+    self.topic = topic
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -196,6 +200,11 @@ class SendMessageRequest(object):
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.topic = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -230,6 +239,10 @@ class SendMessageRequest(object):
         viter8.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
+    if self.topic is not None:
+      oprot.writeFieldBegin('topic', TType.STRING, 6)
+      oprot.writeString(self.topic)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -248,6 +261,7 @@ class SendMessageRequest(object):
     value = (value * 31) ^ hash(self.delaySeconds)
     value = (value * 31) ^ hash(self.invisibilitySeconds)
     value = (value * 31) ^ hash(self.messageAttributes)
+    value = (value * 31) ^ hash(self.topic)
     return value
 
   def __repr__(self):
@@ -519,17 +533,21 @@ class SendMessageBatchRequest(object):
 
    - sendMessageBatchRequestEntryList: List of SendMessageBatchRequestEntry;
 
+   - topic: Topic of this message-list
+
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'queueName', None, None, ), # 1
     (2, TType.LIST, 'sendMessageBatchRequestEntryList', (TType.STRUCT,(SendMessageBatchRequestEntry, SendMessageBatchRequestEntry.thrift_spec)), None, ), # 2
+    (3, TType.STRING, 'topic', None, None, ), # 3
   )
 
-  def __init__(self, queueName=None, sendMessageBatchRequestEntryList=None,):
+  def __init__(self, queueName=None, sendMessageBatchRequestEntryList=None, topic=None,):
     self.queueName = queueName
     self.sendMessageBatchRequestEntryList = sendMessageBatchRequestEntryList
+    self.topic = topic
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -556,6 +574,11 @@ class SendMessageBatchRequest(object):
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.topic = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -577,6 +600,10 @@ class SendMessageBatchRequest(object):
         iter24.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.topic is not None:
+      oprot.writeFieldBegin('topic', TType.STRING, 3)
+      oprot.writeString(self.topic)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -592,6 +619,7 @@ class SendMessageBatchRequest(object):
     value = 17
     value = (value * 31) ^ hash(self.queueName)
     value = (value * 31) ^ hash(self.sendMessageBatchRequestEntryList)
+    value = (value * 31) ^ hash(self.topic)
     return value
 
   def __repr__(self):
@@ -1082,6 +1110,8 @@ class ReceiveMessageResponse(object):
   - originalMessageID
   - originalReceiveCount
 
+  If the message has been set topic
+  - topic
 
    - messageAttributes: User-defined attributes attached to message
 
