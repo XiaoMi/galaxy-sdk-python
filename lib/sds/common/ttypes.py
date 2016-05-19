@@ -58,7 +58,7 @@ class Version(object):
     None, # 0
     (1, TType.I32, 'major', None, 1, ), # 1
     (2, TType.I32, 'minor', None, 0, ), # 2
-    (3, TType.STRING, 'patch', None, "91caa8a2", ), # 3
+    (3, TType.STRING, 'patch', None, "a68612c7", ), # 3
     (4, TType.STRING, 'comments', None, "", ), # 4
   )
 

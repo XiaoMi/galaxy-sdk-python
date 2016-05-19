@@ -191,61 +191,51 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def subscribePhoneAlert(self, tableName, phoneNumber):
+  def subscribePhoneAlert(self, phoneNumber):
     """
     添加关注电话
 
     Parameters:
-     - tableName
      - phoneNumber
     """
     pass
 
-  def unsubscribePhoneAlert(self, tableName, phoneNumber):
+  def unsubscribePhoneAlert(self, phoneNumber):
     """
     取消关注电话
 
     Parameters:
-     - tableName
      - phoneNumber
     """
     pass
 
-  def subscribeEmailAlert(self, tableName, email):
+  def subscribeEmailAlert(self, email):
     """
     添加关注邮箱
 
     Parameters:
-     - tableName
      - email
     """
     pass
 
-  def unsubscribeEmailAlert(self, tableName, email):
+  def unsubscribeEmailAlert(self, email):
     """
     取消关注邮箱
 
     Parameters:
-     - tableName
      - email
     """
     pass
 
-  def listSubscribedPhone(self, tableName):
+  def listSubscribedPhone(self):
     """
-    查看关注某个表的电话
-
-    Parameters:
-     - tableName
+    查看所有关注电话
     """
     pass
 
-  def listSubscribedEmail(self, tableName):
+  def listSubscribedEmail(self):
     """
-    查看关注某个表的邮箱地址
-
-    Parameters:
-     - tableName
+    查看所有关注邮箱地址
     """
     pass
 
@@ -257,45 +247,6 @@ class Iface(sds.common.BaseService.Iface):
      - tableName
      - startDate
      - stopDate
-    """
-    pass
-
-  def createSubscriber(self, tableName, subscriberName):
-    """
-    创建订阅者
-
-    Parameters:
-     - tableName
-     - subscriberName
-    """
-    pass
-
-  def deleteSubscriber(self, tableName, subscriberName):
-    """
-    删除订阅者
-
-    Parameters:
-     - tableName
-     - subscriberName
-    """
-    pass
-
-  def getSubscriber(self, tableName, subscriberName):
-    """
-    获取订阅者信息
-
-    Parameters:
-     - tableName
-     - subscriberName
-    """
-    pass
-
-  def getSubscribers(self, tableName):
-    """
-    获取表所有的订阅者信息
-
-    Parameters:
-     - tableName
     """
     pass
 
@@ -318,58 +269,6 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def getPartitionConsumedOffset(self, tableName, partitionId, subscriberName):
-    """
-    获取表分区的消费偏移
-
-    Parameters:
-     - tableName
-     - partitionId
-     - subscriberName
-    """
-    pass
-
-  def getPartitionCommittedOffset(self, tableName, partitionId, subscriberName):
-    """
-    获取表分区已确认的消费偏移
-
-    Parameters:
-     - tableName
-     - partitionId
-     - subscriberName
-    """
-    pass
-
-  def createSinker(self, subscribedTableName, subscriberName, sinkedTableName, endpoint):
-    """
-    创建主集群表的sinker（备集群接口）
-
-    Parameters:
-     - subscribedTableName
-     - subscriberName
-     - sinkedTableName
-     - endpoint
-    """
-    pass
-
-  def deleteSinker(self, tableName):
-    """
-    删除主集群表的sinker（备集群接口）
-
-    Parameters:
-     - tableName
-    """
-    pass
-
-  def getSinker(self, tableName):
-    """
-    获取sinker信息（备集群接口）
-
-    Parameters:
-     - tableName
-    """
-    pass
-
   def getPartitionStatistics(self, tableName, partitionId):
     """
     获取表分区的统计数据
@@ -377,17 +276,6 @@ class Iface(sds.common.BaseService.Iface):
     Parameters:
      - tableName
      - partitionId
-    """
-    pass
-
-  def getSubscriberStatistics(self, tableName, partitionId, subscriberName):
-    """
-    获取表分区某个订阅的统计数据
-
-    Parameters:
-     - tableName
-     - partitionId
-     - subscriberName
     """
     pass
 
@@ -465,6 +353,12 @@ class Iface(sds.common.BaseService.Iface):
     Parameters:
      - tableName
      - snapshotName
+    """
+    pass
+
+  def getQuotaInfo(self):
+    """
+    查询用户各种quota的使用情况
     """
     pass
 
@@ -1127,21 +1021,19 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
-  def subscribePhoneAlert(self, tableName, phoneNumber):
+  def subscribePhoneAlert(self, phoneNumber):
     """
     添加关注电话
 
     Parameters:
-     - tableName
      - phoneNumber
     """
-    self.send_subscribePhoneAlert(tableName, phoneNumber)
+    self.send_subscribePhoneAlert(phoneNumber)
     self.recv_subscribePhoneAlert()
 
-  def send_subscribePhoneAlert(self, tableName, phoneNumber):
+  def send_subscribePhoneAlert(self, phoneNumber):
     self._oprot.writeMessageBegin('subscribePhoneAlert', TMessageType.CALL, self._seqid)
     args = subscribePhoneAlert_args()
-    args.tableName = tableName
     args.phoneNumber = phoneNumber
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -1162,21 +1054,19 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
-  def unsubscribePhoneAlert(self, tableName, phoneNumber):
+  def unsubscribePhoneAlert(self, phoneNumber):
     """
     取消关注电话
 
     Parameters:
-     - tableName
      - phoneNumber
     """
-    self.send_unsubscribePhoneAlert(tableName, phoneNumber)
+    self.send_unsubscribePhoneAlert(phoneNumber)
     self.recv_unsubscribePhoneAlert()
 
-  def send_unsubscribePhoneAlert(self, tableName, phoneNumber):
+  def send_unsubscribePhoneAlert(self, phoneNumber):
     self._oprot.writeMessageBegin('unsubscribePhoneAlert', TMessageType.CALL, self._seqid)
     args = unsubscribePhoneAlert_args()
-    args.tableName = tableName
     args.phoneNumber = phoneNumber
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -1197,21 +1087,19 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
-  def subscribeEmailAlert(self, tableName, email):
+  def subscribeEmailAlert(self, email):
     """
     添加关注邮箱
 
     Parameters:
-     - tableName
      - email
     """
-    self.send_subscribeEmailAlert(tableName, email)
+    self.send_subscribeEmailAlert(email)
     self.recv_subscribeEmailAlert()
 
-  def send_subscribeEmailAlert(self, tableName, email):
+  def send_subscribeEmailAlert(self, email):
     self._oprot.writeMessageBegin('subscribeEmailAlert', TMessageType.CALL, self._seqid)
     args = subscribeEmailAlert_args()
-    args.tableName = tableName
     args.email = email
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -1232,21 +1120,19 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
-  def unsubscribeEmailAlert(self, tableName, email):
+  def unsubscribeEmailAlert(self, email):
     """
     取消关注邮箱
 
     Parameters:
-     - tableName
      - email
     """
-    self.send_unsubscribeEmailAlert(tableName, email)
+    self.send_unsubscribeEmailAlert(email)
     self.recv_unsubscribeEmailAlert()
 
-  def send_unsubscribeEmailAlert(self, tableName, email):
+  def send_unsubscribeEmailAlert(self, email):
     self._oprot.writeMessageBegin('unsubscribeEmailAlert', TMessageType.CALL, self._seqid)
     args = unsubscribeEmailAlert_args()
-    args.tableName = tableName
     args.email = email
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -1267,20 +1153,16 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
-  def listSubscribedPhone(self, tableName):
+  def listSubscribedPhone(self):
     """
-    查看关注某个表的电话
-
-    Parameters:
-     - tableName
+    查看所有关注电话
     """
-    self.send_listSubscribedPhone(tableName)
+    self.send_listSubscribedPhone()
     return self.recv_listSubscribedPhone()
 
-  def send_listSubscribedPhone(self, tableName):
+  def send_listSubscribedPhone(self):
     self._oprot.writeMessageBegin('listSubscribedPhone', TMessageType.CALL, self._seqid)
     args = listSubscribedPhone_args()
-    args.tableName = tableName
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -1302,20 +1184,16 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "listSubscribedPhone failed: unknown result");
 
-  def listSubscribedEmail(self, tableName):
+  def listSubscribedEmail(self):
     """
-    查看关注某个表的邮箱地址
-
-    Parameters:
-     - tableName
+    查看所有关注邮箱地址
     """
-    self.send_listSubscribedEmail(tableName)
+    self.send_listSubscribedEmail()
     return self.recv_listSubscribedEmail()
 
-  def send_listSubscribedEmail(self, tableName):
+  def send_listSubscribedEmail(self):
     self._oprot.writeMessageBegin('listSubscribedEmail', TMessageType.CALL, self._seqid)
     args = listSubscribedEmail_args()
-    args.tableName = tableName
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -1375,150 +1253,6 @@ class Client(sds.common.BaseService.Client, Iface):
     if result.se is not None:
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableHistorySize failed: unknown result");
-
-  def createSubscriber(self, tableName, subscriberName):
-    """
-    创建订阅者
-
-    Parameters:
-     - tableName
-     - subscriberName
-    """
-    self.send_createSubscriber(tableName, subscriberName)
-    return self.recv_createSubscriber()
-
-  def send_createSubscriber(self, tableName, subscriberName):
-    self._oprot.writeMessageBegin('createSubscriber', TMessageType.CALL, self._seqid)
-    args = createSubscriber_args()
-    args.tableName = tableName
-    args.subscriberName = subscriberName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_createSubscriber(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = createSubscriber_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "createSubscriber failed: unknown result");
-
-  def deleteSubscriber(self, tableName, subscriberName):
-    """
-    删除订阅者
-
-    Parameters:
-     - tableName
-     - subscriberName
-    """
-    self.send_deleteSubscriber(tableName, subscriberName)
-    self.recv_deleteSubscriber()
-
-  def send_deleteSubscriber(self, tableName, subscriberName):
-    self._oprot.writeMessageBegin('deleteSubscriber', TMessageType.CALL, self._seqid)
-    args = deleteSubscriber_args()
-    args.tableName = tableName
-    args.subscriberName = subscriberName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_deleteSubscriber(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = deleteSubscriber_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.se is not None:
-      raise result.se
-    return
-
-  def getSubscriber(self, tableName, subscriberName):
-    """
-    获取订阅者信息
-
-    Parameters:
-     - tableName
-     - subscriberName
-    """
-    self.send_getSubscriber(tableName, subscriberName)
-    return self.recv_getSubscriber()
-
-  def send_getSubscriber(self, tableName, subscriberName):
-    self._oprot.writeMessageBegin('getSubscriber', TMessageType.CALL, self._seqid)
-    args = getSubscriber_args()
-    args.tableName = tableName
-    args.subscriberName = subscriberName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getSubscriber(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getSubscriber_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getSubscriber failed: unknown result");
-
-  def getSubscribers(self, tableName):
-    """
-    获取表所有的订阅者信息
-
-    Parameters:
-     - tableName
-    """
-    self.send_getSubscribers(tableName)
-    return self.recv_getSubscribers()
-
-  def send_getSubscribers(self, tableName):
-    self._oprot.writeMessageBegin('getSubscribers', TMessageType.CALL, self._seqid)
-    args = getSubscribers_args()
-    args.tableName = tableName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getSubscribers(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getSubscribers_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getSubscribers failed: unknown result");
 
   def getPartitions(self, tableName):
     """
@@ -1592,193 +1326,6 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getPartition failed: unknown result");
 
-  def getPartitionConsumedOffset(self, tableName, partitionId, subscriberName):
-    """
-    获取表分区的消费偏移
-
-    Parameters:
-     - tableName
-     - partitionId
-     - subscriberName
-    """
-    self.send_getPartitionConsumedOffset(tableName, partitionId, subscriberName)
-    return self.recv_getPartitionConsumedOffset()
-
-  def send_getPartitionConsumedOffset(self, tableName, partitionId, subscriberName):
-    self._oprot.writeMessageBegin('getPartitionConsumedOffset', TMessageType.CALL, self._seqid)
-    args = getPartitionConsumedOffset_args()
-    args.tableName = tableName
-    args.partitionId = partitionId
-    args.subscriberName = subscriberName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getPartitionConsumedOffset(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getPartitionConsumedOffset_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getPartitionConsumedOffset failed: unknown result");
-
-  def getPartitionCommittedOffset(self, tableName, partitionId, subscriberName):
-    """
-    获取表分区已确认的消费偏移
-
-    Parameters:
-     - tableName
-     - partitionId
-     - subscriberName
-    """
-    self.send_getPartitionCommittedOffset(tableName, partitionId, subscriberName)
-    return self.recv_getPartitionCommittedOffset()
-
-  def send_getPartitionCommittedOffset(self, tableName, partitionId, subscriberName):
-    self._oprot.writeMessageBegin('getPartitionCommittedOffset', TMessageType.CALL, self._seqid)
-    args = getPartitionCommittedOffset_args()
-    args.tableName = tableName
-    args.partitionId = partitionId
-    args.subscriberName = subscriberName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getPartitionCommittedOffset(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getPartitionCommittedOffset_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getPartitionCommittedOffset failed: unknown result");
-
-  def createSinker(self, subscribedTableName, subscriberName, sinkedTableName, endpoint):
-    """
-    创建主集群表的sinker（备集群接口）
-
-    Parameters:
-     - subscribedTableName
-     - subscriberName
-     - sinkedTableName
-     - endpoint
-    """
-    self.send_createSinker(subscribedTableName, subscriberName, sinkedTableName, endpoint)
-    return self.recv_createSinker()
-
-  def send_createSinker(self, subscribedTableName, subscriberName, sinkedTableName, endpoint):
-    self._oprot.writeMessageBegin('createSinker', TMessageType.CALL, self._seqid)
-    args = createSinker_args()
-    args.subscribedTableName = subscribedTableName
-    args.subscriberName = subscriberName
-    args.sinkedTableName = sinkedTableName
-    args.endpoint = endpoint
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_createSinker(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = createSinker_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "createSinker failed: unknown result");
-
-  def deleteSinker(self, tableName):
-    """
-    删除主集群表的sinker（备集群接口）
-
-    Parameters:
-     - tableName
-    """
-    self.send_deleteSinker(tableName)
-    self.recv_deleteSinker()
-
-  def send_deleteSinker(self, tableName):
-    self._oprot.writeMessageBegin('deleteSinker', TMessageType.CALL, self._seqid)
-    args = deleteSinker_args()
-    args.tableName = tableName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_deleteSinker(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = deleteSinker_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.se is not None:
-      raise result.se
-    return
-
-  def getSinker(self, tableName):
-    """
-    获取sinker信息（备集群接口）
-
-    Parameters:
-     - tableName
-    """
-    self.send_getSinker(tableName)
-    return self.recv_getSinker()
-
-  def send_getSinker(self, tableName):
-    self._oprot.writeMessageBegin('getSinker', TMessageType.CALL, self._seqid)
-    args = getSinker_args()
-    args.tableName = tableName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getSinker(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getSinker_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getSinker failed: unknown result");
-
   def getPartitionStatistics(self, tableName, partitionId):
     """
     获取表分区的统计数据
@@ -1815,45 +1362,6 @@ class Client(sds.common.BaseService.Client, Iface):
     if result.se is not None:
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getPartitionStatistics failed: unknown result");
-
-  def getSubscriberStatistics(self, tableName, partitionId, subscriberName):
-    """
-    获取表分区某个订阅的统计数据
-
-    Parameters:
-     - tableName
-     - partitionId
-     - subscriberName
-    """
-    self.send_getSubscriberStatistics(tableName, partitionId, subscriberName)
-    return self.recv_getSubscriberStatistics()
-
-  def send_getSubscriberStatistics(self, tableName, partitionId, subscriberName):
-    self._oprot.writeMessageBegin('getSubscriberStatistics', TMessageType.CALL, self._seqid)
-    args = getSubscriberStatistics_args()
-    args.tableName = tableName
-    args.partitionId = partitionId
-    args.subscriberName = subscriberName
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getSubscriberStatistics(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getSubscriberStatistics_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getSubscriberStatistics failed: unknown result");
 
   def renameTable(self, srcName, destName):
     """
@@ -2137,6 +1645,37 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getSnapshotState failed: unknown result");
 
+  def getQuotaInfo(self):
+    """
+    查询用户各种quota的使用情况
+    """
+    self.send_getQuotaInfo()
+    return self.recv_getQuotaInfo()
+
+  def send_getQuotaInfo(self):
+    self._oprot.writeMessageBegin('getQuotaInfo', TMessageType.CALL, self._seqid)
+    args = getQuotaInfo_args()
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getQuotaInfo(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getQuotaInfo_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getQuotaInfo failed: unknown result");
+
 
 class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -2167,19 +1706,9 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["listSubscribedPhone"] = Processor.process_listSubscribedPhone
     self._processMap["listSubscribedEmail"] = Processor.process_listSubscribedEmail
     self._processMap["getTableHistorySize"] = Processor.process_getTableHistorySize
-    self._processMap["createSubscriber"] = Processor.process_createSubscriber
-    self._processMap["deleteSubscriber"] = Processor.process_deleteSubscriber
-    self._processMap["getSubscriber"] = Processor.process_getSubscriber
-    self._processMap["getSubscribers"] = Processor.process_getSubscribers
     self._processMap["getPartitions"] = Processor.process_getPartitions
     self._processMap["getPartition"] = Processor.process_getPartition
-    self._processMap["getPartitionConsumedOffset"] = Processor.process_getPartitionConsumedOffset
-    self._processMap["getPartitionCommittedOffset"] = Processor.process_getPartitionCommittedOffset
-    self._processMap["createSinker"] = Processor.process_createSinker
-    self._processMap["deleteSinker"] = Processor.process_deleteSinker
-    self._processMap["getSinker"] = Processor.process_getSinker
     self._processMap["getPartitionStatistics"] = Processor.process_getPartitionStatistics
-    self._processMap["getSubscriberStatistics"] = Processor.process_getSubscriberStatistics
     self._processMap["renameTable"] = Processor.process_renameTable
     self._processMap["listSnapshots"] = Processor.process_listSnapshots
     self._processMap["snapshotTable"] = Processor.process_snapshotTable
@@ -2188,6 +1717,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["listAllSnapshots"] = Processor.process_listAllSnapshots
     self._processMap["cancelSnapshotTable"] = Processor.process_cancelSnapshotTable
     self._processMap["getSnapshotState"] = Processor.process_getSnapshotState
+    self._processMap["getQuotaInfo"] = Processor.process_getQuotaInfo
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -2476,7 +2006,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = subscribePhoneAlert_result()
     try:
-      self._handler.subscribePhoneAlert(args.tableName, args.phoneNumber)
+      self._handler.subscribePhoneAlert(args.phoneNumber)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("subscribePhoneAlert", TMessageType.REPLY, seqid)
@@ -2490,7 +2020,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = unsubscribePhoneAlert_result()
     try:
-      self._handler.unsubscribePhoneAlert(args.tableName, args.phoneNumber)
+      self._handler.unsubscribePhoneAlert(args.phoneNumber)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("unsubscribePhoneAlert", TMessageType.REPLY, seqid)
@@ -2504,7 +2034,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = subscribeEmailAlert_result()
     try:
-      self._handler.subscribeEmailAlert(args.tableName, args.email)
+      self._handler.subscribeEmailAlert(args.email)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("subscribeEmailAlert", TMessageType.REPLY, seqid)
@@ -2518,7 +2048,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = unsubscribeEmailAlert_result()
     try:
-      self._handler.unsubscribeEmailAlert(args.tableName, args.email)
+      self._handler.unsubscribeEmailAlert(args.email)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("unsubscribeEmailAlert", TMessageType.REPLY, seqid)
@@ -2532,7 +2062,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = listSubscribedPhone_result()
     try:
-      result.success = self._handler.listSubscribedPhone(args.tableName)
+      result.success = self._handler.listSubscribedPhone()
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("listSubscribedPhone", TMessageType.REPLY, seqid)
@@ -2546,7 +2076,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = listSubscribedEmail_result()
     try:
-      result.success = self._handler.listSubscribedEmail(args.tableName)
+      result.success = self._handler.listSubscribedEmail()
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("listSubscribedEmail", TMessageType.REPLY, seqid)
@@ -2564,62 +2094,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("getTableHistorySize", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_createSubscriber(self, seqid, iprot, oprot):
-    args = createSubscriber_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = createSubscriber_result()
-    try:
-      result.success = self._handler.createSubscriber(args.tableName, args.subscriberName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("createSubscriber", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_deleteSubscriber(self, seqid, iprot, oprot):
-    args = deleteSubscriber_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = deleteSubscriber_result()
-    try:
-      self._handler.deleteSubscriber(args.tableName, args.subscriberName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("deleteSubscriber", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getSubscriber(self, seqid, iprot, oprot):
-    args = getSubscriber_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getSubscriber_result()
-    try:
-      result.success = self._handler.getSubscriber(args.tableName, args.subscriberName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("getSubscriber", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getSubscribers(self, seqid, iprot, oprot):
-    args = getSubscribers_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getSubscribers_result()
-    try:
-      result.success = self._handler.getSubscribers(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("getSubscribers", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -2652,76 +2126,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getPartitionConsumedOffset(self, seqid, iprot, oprot):
-    args = getPartitionConsumedOffset_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getPartitionConsumedOffset_result()
-    try:
-      result.success = self._handler.getPartitionConsumedOffset(args.tableName, args.partitionId, args.subscriberName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("getPartitionConsumedOffset", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getPartitionCommittedOffset(self, seqid, iprot, oprot):
-    args = getPartitionCommittedOffset_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getPartitionCommittedOffset_result()
-    try:
-      result.success = self._handler.getPartitionCommittedOffset(args.tableName, args.partitionId, args.subscriberName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("getPartitionCommittedOffset", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_createSinker(self, seqid, iprot, oprot):
-    args = createSinker_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = createSinker_result()
-    try:
-      result.success = self._handler.createSinker(args.subscribedTableName, args.subscriberName, args.sinkedTableName, args.endpoint)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("createSinker", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_deleteSinker(self, seqid, iprot, oprot):
-    args = deleteSinker_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = deleteSinker_result()
-    try:
-      self._handler.deleteSinker(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("deleteSinker", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getSinker(self, seqid, iprot, oprot):
-    args = getSinker_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getSinker_result()
-    try:
-      result.success = self._handler.getSinker(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("getSinker", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
   def process_getPartitionStatistics(self, seqid, iprot, oprot):
     args = getPartitionStatistics_args()
     args.read(iprot)
@@ -2732,20 +2136,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("getPartitionStatistics", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getSubscriberStatistics(self, seqid, iprot, oprot):
-    args = getSubscriberStatistics_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getSubscriberStatistics_result()
-    try:
-      result.success = self._handler.getSubscriberStatistics(args.tableName, args.partitionId, args.subscriberName)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("getSubscriberStatistics", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -2858,6 +2248,20 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("getSnapshotState", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getQuotaInfo(self, seqid, iprot, oprot):
+    args = getQuotaInfo_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getQuotaInfo_result()
+    try:
+      result.success = self._handler.getQuotaInfo()
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("getQuotaInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -5608,18 +5012,15 @@ class putClientMetrics_result(object):
 class subscribePhoneAlert_args(object):
   """
   Attributes:
-   - tableName
    - phoneNumber
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.STRING, 'phoneNumber', None, None, ), # 2
+    (1, TType.STRING, 'phoneNumber', None, None, ), # 1
   )
 
-  def __init__(self, tableName=None, phoneNumber=None,):
-    self.tableName = tableName
+  def __init__(self, phoneNumber=None,):
     self.phoneNumber = phoneNumber
 
   def read(self, iprot):
@@ -5632,11 +5033,6 @@ class subscribePhoneAlert_args(object):
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
         if ftype == TType.STRING:
           self.phoneNumber = iprot.readString();
         else:
@@ -5651,12 +5047,8 @@ class subscribePhoneAlert_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('subscribePhoneAlert_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
     if self.phoneNumber is not None:
-      oprot.writeFieldBegin('phoneNumber', TType.STRING, 2)
+      oprot.writeFieldBegin('phoneNumber', TType.STRING, 1)
       oprot.writeString(self.phoneNumber)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -5668,7 +5060,6 @@ class subscribePhoneAlert_args(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.phoneNumber)
     return value
 
@@ -5752,18 +5143,15 @@ class subscribePhoneAlert_result(object):
 class unsubscribePhoneAlert_args(object):
   """
   Attributes:
-   - tableName
    - phoneNumber
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.STRING, 'phoneNumber', None, None, ), # 2
+    (1, TType.STRING, 'phoneNumber', None, None, ), # 1
   )
 
-  def __init__(self, tableName=None, phoneNumber=None,):
-    self.tableName = tableName
+  def __init__(self, phoneNumber=None,):
     self.phoneNumber = phoneNumber
 
   def read(self, iprot):
@@ -5776,11 +5164,6 @@ class unsubscribePhoneAlert_args(object):
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
         if ftype == TType.STRING:
           self.phoneNumber = iprot.readString();
         else:
@@ -5795,12 +5178,8 @@ class unsubscribePhoneAlert_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('unsubscribePhoneAlert_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
     if self.phoneNumber is not None:
-      oprot.writeFieldBegin('phoneNumber', TType.STRING, 2)
+      oprot.writeFieldBegin('phoneNumber', TType.STRING, 1)
       oprot.writeString(self.phoneNumber)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -5812,7 +5191,6 @@ class unsubscribePhoneAlert_args(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.phoneNumber)
     return value
 
@@ -5896,18 +5274,15 @@ class unsubscribePhoneAlert_result(object):
 class subscribeEmailAlert_args(object):
   """
   Attributes:
-   - tableName
    - email
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.STRING, 'email', None, None, ), # 2
+    (1, TType.STRING, 'email', None, None, ), # 1
   )
 
-  def __init__(self, tableName=None, email=None,):
-    self.tableName = tableName
+  def __init__(self, email=None,):
     self.email = email
 
   def read(self, iprot):
@@ -5920,11 +5295,6 @@ class subscribeEmailAlert_args(object):
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
         if ftype == TType.STRING:
           self.email = iprot.readString();
         else:
@@ -5939,12 +5309,8 @@ class subscribeEmailAlert_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('subscribeEmailAlert_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
     if self.email is not None:
-      oprot.writeFieldBegin('email', TType.STRING, 2)
+      oprot.writeFieldBegin('email', TType.STRING, 1)
       oprot.writeString(self.email)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -5956,7 +5322,6 @@ class subscribeEmailAlert_args(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.email)
     return value
 
@@ -6040,18 +5405,15 @@ class subscribeEmailAlert_result(object):
 class unsubscribeEmailAlert_args(object):
   """
   Attributes:
-   - tableName
    - email
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.STRING, 'email', None, None, ), # 2
+    (1, TType.STRING, 'email', None, None, ), # 1
   )
 
-  def __init__(self, tableName=None, email=None,):
-    self.tableName = tableName
+  def __init__(self, email=None,):
     self.email = email
 
   def read(self, iprot):
@@ -6064,11 +5426,6 @@ class unsubscribeEmailAlert_args(object):
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
         if ftype == TType.STRING:
           self.email = iprot.readString();
         else:
@@ -6083,12 +5440,8 @@ class unsubscribeEmailAlert_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('unsubscribeEmailAlert_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
     if self.email is not None:
-      oprot.writeFieldBegin('email', TType.STRING, 2)
+      oprot.writeFieldBegin('email', TType.STRING, 1)
       oprot.writeString(self.email)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -6100,7 +5453,6 @@ class unsubscribeEmailAlert_args(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.email)
     return value
 
@@ -6182,18 +5534,9 @@ class unsubscribeEmailAlert_result(object):
     return not (self == other)
 
 class listSubscribedPhone_args(object):
-  """
-  Attributes:
-   - tableName
-  """
 
   thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
   )
-
-  def __init__(self, tableName=None,):
-    self.tableName = tableName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -6204,11 +5547,6 @@ class listSubscribedPhone_args(object):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -6219,10 +5557,6 @@ class listSubscribedPhone_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('listSubscribedPhone_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -6232,7 +5566,6 @@ class listSubscribedPhone_args(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.tableName)
     return value
 
   def __repr__(self):
@@ -6333,18 +5666,9 @@ class listSubscribedPhone_result(object):
     return not (self == other)
 
 class listSubscribedEmail_args(object):
-  """
-  Attributes:
-   - tableName
-  """
 
   thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
   )
-
-  def __init__(self, tableName=None,):
-    self.tableName = tableName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -6355,11 +5679,6 @@ class listSubscribedEmail_args(object):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -6370,10 +5689,6 @@ class listSubscribedEmail_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('listSubscribedEmail_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -6383,7 +5698,6 @@ class listSubscribedEmail_args(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.tableName)
     return value
 
   def __repr__(self):
@@ -6662,616 +5976,6 @@ class getTableHistorySize_result(object):
   def __ne__(self, other):
     return not (self == other)
 
-class createSubscriber_args(object):
-  """
-  Attributes:
-   - tableName
-   - subscriberName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.STRING, 'subscriberName', None, None, ), # 2
-  )
-
-  def __init__(self, tableName=None, subscriberName=None,):
-    self.tableName = tableName
-    self.subscriberName = subscriberName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.subscriberName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('createSubscriber_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    if self.subscriberName is not None:
-      oprot.writeFieldBegin('subscriberName', TType.STRING, 2)
-      oprot.writeString(self.subscriberName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.subscriberName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class createSubscriber_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (sds.table.ttypes.Subscriber, sds.table.ttypes.Subscriber.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = sds.table.ttypes.Subscriber()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('createSubscriber_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class deleteSubscriber_args(object):
-  """
-  Attributes:
-   - tableName
-   - subscriberName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.STRING, 'subscriberName', None, None, ), # 2
-  )
-
-  def __init__(self, tableName=None, subscriberName=None,):
-    self.tableName = tableName
-    self.subscriberName = subscriberName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.subscriberName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('deleteSubscriber_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    if self.subscriberName is not None:
-      oprot.writeFieldBegin('subscriberName', TType.STRING, 2)
-      oprot.writeString(self.subscriberName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.subscriberName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class deleteSubscriber_result(object):
-  """
-  Attributes:
-   - se
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, se=None,):
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('deleteSubscriber_result')
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSubscriber_args(object):
-  """
-  Attributes:
-   - tableName
-   - subscriberName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.STRING, 'subscriberName', None, None, ), # 2
-  )
-
-  def __init__(self, tableName=None, subscriberName=None,):
-    self.tableName = tableName
-    self.subscriberName = subscriberName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.subscriberName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSubscriber_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    if self.subscriberName is not None:
-      oprot.writeFieldBegin('subscriberName', TType.STRING, 2)
-      oprot.writeString(self.subscriberName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.subscriberName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSubscriber_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (sds.table.ttypes.Subscriber, sds.table.ttypes.Subscriber.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = sds.table.ttypes.Subscriber()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSubscriber_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSubscribers_args(object):
-  """
-  Attributes:
-   - tableName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-  )
-
-  def __init__(self, tableName=None,):
-    self.tableName = tableName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSubscribers_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSubscribers_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(sds.table.ttypes.Subscriber, sds.table.ttypes.Subscriber.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype134, _size131) = iprot.readListBegin()
-          for _i135 in xrange(_size131):
-            _elem136 = sds.table.ttypes.Subscriber()
-            _elem136.read(iprot)
-            self.success.append(_elem136)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSubscribers_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter137 in self.success:
-        iter137.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class getPartitions_args(object):
   """
   Attributes:
@@ -7365,11 +6069,11 @@ class getPartitions_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype141, _size138) = iprot.readListBegin()
-          for _i142 in xrange(_size138):
-            _elem143 = sds.table.ttypes.Partition()
-            _elem143.read(iprot)
-            self.success.append(_elem143)
+          (_etype134, _size131) = iprot.readListBegin()
+          for _i135 in xrange(_size131):
+            _elem136 = sds.table.ttypes.Partition()
+            _elem136.read(iprot)
+            self.success.append(_elem136)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -7392,8 +6096,8 @@ class getPartitions_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter144 in self.success:
-        iter144.write(oprot)
+      for iter137 in self.success:
+        iter137.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -7581,804 +6285,6 @@ class getPartition_result(object):
   def __ne__(self, other):
     return not (self == other)
 
-class getPartitionConsumedOffset_args(object):
-  """
-  Attributes:
-   - tableName
-   - partitionId
-   - subscriberName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.I32, 'partitionId', None, None, ), # 2
-    (3, TType.STRING, 'subscriberName', None, None, ), # 3
-  )
-
-  def __init__(self, tableName=None, partitionId=None, subscriberName=None,):
-    self.tableName = tableName
-    self.partitionId = partitionId
-    self.subscriberName = subscriberName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.partitionId = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.subscriberName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getPartitionConsumedOffset_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    if self.partitionId is not None:
-      oprot.writeFieldBegin('partitionId', TType.I32, 2)
-      oprot.writeI32(self.partitionId)
-      oprot.writeFieldEnd()
-    if self.subscriberName is not None:
-      oprot.writeFieldBegin('subscriberName', TType.STRING, 3)
-      oprot.writeString(self.subscriberName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.partitionId)
-    value = (value * 31) ^ hash(self.subscriberName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getPartitionConsumedOffset_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (sds.table.ttypes.ConsumedOffset, sds.table.ttypes.ConsumedOffset.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = sds.table.ttypes.ConsumedOffset()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getPartitionConsumedOffset_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getPartitionCommittedOffset_args(object):
-  """
-  Attributes:
-   - tableName
-   - partitionId
-   - subscriberName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.I32, 'partitionId', None, None, ), # 2
-    (3, TType.STRING, 'subscriberName', None, None, ), # 3
-  )
-
-  def __init__(self, tableName=None, partitionId=None, subscriberName=None,):
-    self.tableName = tableName
-    self.partitionId = partitionId
-    self.subscriberName = subscriberName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.partitionId = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.subscriberName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getPartitionCommittedOffset_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    if self.partitionId is not None:
-      oprot.writeFieldBegin('partitionId', TType.I32, 2)
-      oprot.writeI32(self.partitionId)
-      oprot.writeFieldEnd()
-    if self.subscriberName is not None:
-      oprot.writeFieldBegin('subscriberName', TType.STRING, 3)
-      oprot.writeString(self.subscriberName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.partitionId)
-    value = (value * 31) ^ hash(self.subscriberName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getPartitionCommittedOffset_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (sds.table.ttypes.CommittedOffset, sds.table.ttypes.CommittedOffset.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = sds.table.ttypes.CommittedOffset()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getPartitionCommittedOffset_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class createSinker_args(object):
-  """
-  Attributes:
-   - subscribedTableName
-   - subscriberName
-   - sinkedTableName
-   - endpoint
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'subscribedTableName', None, None, ), # 1
-    (2, TType.STRING, 'subscriberName', None, None, ), # 2
-    (3, TType.STRING, 'sinkedTableName', None, None, ), # 3
-    (4, TType.STRING, 'endpoint', None, None, ), # 4
-  )
-
-  def __init__(self, subscribedTableName=None, subscriberName=None, sinkedTableName=None, endpoint=None,):
-    self.subscribedTableName = subscribedTableName
-    self.subscriberName = subscriberName
-    self.sinkedTableName = sinkedTableName
-    self.endpoint = endpoint
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.subscribedTableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.subscriberName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.sinkedTableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.endpoint = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('createSinker_args')
-    if self.subscribedTableName is not None:
-      oprot.writeFieldBegin('subscribedTableName', TType.STRING, 1)
-      oprot.writeString(self.subscribedTableName)
-      oprot.writeFieldEnd()
-    if self.subscriberName is not None:
-      oprot.writeFieldBegin('subscriberName', TType.STRING, 2)
-      oprot.writeString(self.subscriberName)
-      oprot.writeFieldEnd()
-    if self.sinkedTableName is not None:
-      oprot.writeFieldBegin('sinkedTableName', TType.STRING, 3)
-      oprot.writeString(self.sinkedTableName)
-      oprot.writeFieldEnd()
-    if self.endpoint is not None:
-      oprot.writeFieldBegin('endpoint', TType.STRING, 4)
-      oprot.writeString(self.endpoint)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.subscribedTableName)
-    value = (value * 31) ^ hash(self.subscriberName)
-    value = (value * 31) ^ hash(self.sinkedTableName)
-    value = (value * 31) ^ hash(self.endpoint)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class createSinker_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (sds.table.ttypes.Sinker, sds.table.ttypes.Sinker.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = sds.table.ttypes.Sinker()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('createSinker_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class deleteSinker_args(object):
-  """
-  Attributes:
-   - tableName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-  )
-
-  def __init__(self, tableName=None,):
-    self.tableName = tableName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('deleteSinker_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class deleteSinker_result(object):
-  """
-  Attributes:
-   - se
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, se=None,):
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('deleteSinker_result')
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSinker_args(object):
-  """
-  Attributes:
-   - tableName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-  )
-
-  def __init__(self, tableName=None,):
-    self.tableName = tableName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSinker_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSinker_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (sds.table.ttypes.Sinker, sds.table.ttypes.Sinker.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = sds.table.ttypes.Sinker()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSinker_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class getPartitionStatistics_args(object):
   """
   Attributes:
@@ -8504,176 +6410,6 @@ class getPartitionStatistics_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getPartitionStatistics_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSubscriberStatistics_args(object):
-  """
-  Attributes:
-   - tableName
-   - partitionId
-   - subscriberName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'tableName', None, None, ), # 1
-    (2, TType.I32, 'partitionId', None, None, ), # 2
-    (3, TType.STRING, 'subscriberName', None, None, ), # 3
-  )
-
-  def __init__(self, tableName=None, partitionId=None, subscriberName=None,):
-    self.tableName = tableName
-    self.partitionId = partitionId
-    self.subscriberName = subscriberName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.tableName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I32:
-          self.partitionId = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.subscriberName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSubscriberStatistics_args')
-    if self.tableName is not None:
-      oprot.writeFieldBegin('tableName', TType.STRING, 1)
-      oprot.writeString(self.tableName)
-      oprot.writeFieldEnd()
-    if self.partitionId is not None:
-      oprot.writeFieldBegin('partitionId', TType.I32, 2)
-      oprot.writeI32(self.partitionId)
-      oprot.writeFieldEnd()
-    if self.subscriberName is not None:
-      oprot.writeFieldBegin('subscriberName', TType.STRING, 3)
-      oprot.writeString(self.subscriberName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.tableName)
-    value = (value * 31) ^ hash(self.partitionId)
-    value = (value * 31) ^ hash(self.subscriberName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getSubscriberStatistics_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (sds.table.ttypes.SubscriberStatistics, sds.table.ttypes.SubscriberStatistics.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = sds.table.ttypes.SubscriberStatistics()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getSubscriberStatistics_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
@@ -9526,11 +7262,11 @@ class listAllSnapshots_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype148, _size145) = iprot.readListBegin()
-          for _i149 in xrange(_size145):
-            _elem150 = SnapshotTableView()
-            _elem150.read(iprot)
-            self.success.append(_elem150)
+          (_etype141, _size138) = iprot.readListBegin()
+          for _i142 in xrange(_size138):
+            _elem143 = SnapshotTableView()
+            _elem143.read(iprot)
+            self.success.append(_elem143)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -9553,8 +7289,8 @@ class listAllSnapshots_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter151 in self.success:
-        iter151.write(oprot)
+      for iter144 in self.success:
+        iter144.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -9856,6 +7592,131 @@ class getSnapshotState_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.I32, 0)
       oprot.writeI32(self.success)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getQuotaInfo_args(object):
+
+  thrift_spec = (
+  )
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getQuotaInfo_args')
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getQuotaInfo_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (QuotaInfo, QuotaInfo.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = QuotaInfo()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getQuotaInfo_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
       oprot.writeFieldEnd()
     if self.se is not None:
       oprot.writeFieldBegin('se', TType.STRUCT, 1)

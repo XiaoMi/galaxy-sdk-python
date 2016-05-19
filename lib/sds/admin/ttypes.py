@@ -1065,3 +1065,172 @@ class SnapshotTableView(object):
 
   def __ne__(self, other):
     return not (self == other)
+
+class QuotaInfo(object):
+  """
+  Attributes:
+   - accountId: 用户AccountId
+   - tableNum: 表数量限制
+   - tableNumUsed: 已存在表数量
+   - space: 用户总的空间quota限制
+   - spaceUsed: 已使用空间quota
+   - readCapacity: 用户总的读quota限制
+   - readCapacityUsed: 已使用读quota
+   - writeCapacity: 用户总的写quota限制
+   - writeCapacityUsed: 已使用写quota
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'accountId', None, None, ), # 1
+    (2, TType.I32, 'tableNum', None, None, ), # 2
+    (3, TType.I32, 'tableNumUsed', None, None, ), # 3
+    (4, TType.I64, 'space', None, None, ), # 4
+    (5, TType.I64, 'spaceUsed', None, None, ), # 5
+    (6, TType.I64, 'readCapacity', None, None, ), # 6
+    (7, TType.I64, 'readCapacityUsed', None, None, ), # 7
+    (8, TType.I64, 'writeCapacity', None, None, ), # 8
+    (9, TType.I64, 'writeCapacityUsed', None, None, ), # 9
+  )
+
+  def __init__(self, accountId=None, tableNum=None, tableNumUsed=None, space=None, spaceUsed=None, readCapacity=None, readCapacityUsed=None, writeCapacity=None, writeCapacityUsed=None,):
+    self.accountId = accountId
+    self.tableNum = tableNum
+    self.tableNumUsed = tableNumUsed
+    self.space = space
+    self.spaceUsed = spaceUsed
+    self.readCapacity = readCapacity
+    self.readCapacityUsed = readCapacityUsed
+    self.writeCapacity = writeCapacity
+    self.writeCapacityUsed = writeCapacityUsed
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.accountId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.tableNum = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.tableNumUsed = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.space = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.I64:
+          self.spaceUsed = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.I64:
+          self.readCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.I64:
+          self.readCapacityUsed = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.I64:
+          self.writeCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.I64:
+          self.writeCapacityUsed = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('QuotaInfo')
+    if self.accountId is not None:
+      oprot.writeFieldBegin('accountId', TType.STRING, 1)
+      oprot.writeString(self.accountId)
+      oprot.writeFieldEnd()
+    if self.tableNum is not None:
+      oprot.writeFieldBegin('tableNum', TType.I32, 2)
+      oprot.writeI32(self.tableNum)
+      oprot.writeFieldEnd()
+    if self.tableNumUsed is not None:
+      oprot.writeFieldBegin('tableNumUsed', TType.I32, 3)
+      oprot.writeI32(self.tableNumUsed)
+      oprot.writeFieldEnd()
+    if self.space is not None:
+      oprot.writeFieldBegin('space', TType.I64, 4)
+      oprot.writeI64(self.space)
+      oprot.writeFieldEnd()
+    if self.spaceUsed is not None:
+      oprot.writeFieldBegin('spaceUsed', TType.I64, 5)
+      oprot.writeI64(self.spaceUsed)
+      oprot.writeFieldEnd()
+    if self.readCapacity is not None:
+      oprot.writeFieldBegin('readCapacity', TType.I64, 6)
+      oprot.writeI64(self.readCapacity)
+      oprot.writeFieldEnd()
+    if self.readCapacityUsed is not None:
+      oprot.writeFieldBegin('readCapacityUsed', TType.I64, 7)
+      oprot.writeI64(self.readCapacityUsed)
+      oprot.writeFieldEnd()
+    if self.writeCapacity is not None:
+      oprot.writeFieldBegin('writeCapacity', TType.I64, 8)
+      oprot.writeI64(self.writeCapacity)
+      oprot.writeFieldEnd()
+    if self.writeCapacityUsed is not None:
+      oprot.writeFieldBegin('writeCapacityUsed', TType.I64, 9)
+      oprot.writeI64(self.writeCapacityUsed)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.accountId)
+    value = (value * 31) ^ hash(self.tableNum)
+    value = (value * 31) ^ hash(self.tableNumUsed)
+    value = (value * 31) ^ hash(self.space)
+    value = (value * 31) ^ hash(self.spaceUsed)
+    value = (value * 31) ^ hash(self.readCapacity)
+    value = (value * 31) ^ hash(self.readCapacityUsed)
+    value = (value * 31) ^ hash(self.writeCapacity)
+    value = (value * 31) ^ hash(self.writeCapacityUsed)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
