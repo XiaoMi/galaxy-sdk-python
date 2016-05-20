@@ -534,6 +534,8 @@ class CreateQueueRequest(object):
 
    - deadLetterQueue: Set the queue be a dead letter queue or not;
 
+   - enablePriority: Set the queue using priority of not;
+
    - topicQueue: Set the queue be a topic queue or not;
   All messages with the same topic in topic queue will be received one by one
   Default: false
@@ -552,17 +554,18 @@ class CreateQueueRequest(object):
     (2, TType.STRUCT, 'queueAttribute', (QueueAttribute, QueueAttribute.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 3
     (4, TType.BOOL, 'deadLetterQueue', None, None, ), # 4
-    None, # 5
+    (5, TType.BOOL, 'enablePriority', None, None, ), # 5
     (6, TType.BOOL, 'topicQueue', None, None, ), # 6
     (7, TType.BOOL, 'deleteMessageForce', None, True, ), # 7
     (8, TType.STRING, 'defaultTagName', None, None, ), # 8
   )
 
-  def __init__(self, queueName=None, queueAttribute=None, queueQuota=None, deadLetterQueue=None, topicQueue=None, deleteMessageForce=thrift_spec[7][4], defaultTagName=None,):
+  def __init__(self, queueName=None, queueAttribute=None, queueQuota=None, deadLetterQueue=None, enablePriority=None, topicQueue=None, deleteMessageForce=thrift_spec[7][4], defaultTagName=None,):
     self.queueName = queueName
     self.queueAttribute = queueAttribute
     self.queueQuota = queueQuota
     self.deadLetterQueue = deadLetterQueue
+    self.enablePriority = enablePriority
     self.topicQueue = topicQueue
     self.deleteMessageForce = deleteMessageForce
     self.defaultTagName = defaultTagName
@@ -596,6 +599,11 @@ class CreateQueueRequest(object):
       elif fid == 4:
         if ftype == TType.BOOL:
           self.deadLetterQueue = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.BOOL:
+          self.enablePriority = iprot.readBool();
         else:
           iprot.skip(ftype)
       elif fid == 6:
@@ -639,6 +647,10 @@ class CreateQueueRequest(object):
       oprot.writeFieldBegin('deadLetterQueue', TType.BOOL, 4)
       oprot.writeBool(self.deadLetterQueue)
       oprot.writeFieldEnd()
+    if self.enablePriority is not None:
+      oprot.writeFieldBegin('enablePriority', TType.BOOL, 5)
+      oprot.writeBool(self.enablePriority)
+      oprot.writeFieldEnd()
     if self.topicQueue is not None:
       oprot.writeFieldBegin('topicQueue', TType.BOOL, 6)
       oprot.writeBool(self.topicQueue)
@@ -666,6 +678,7 @@ class CreateQueueRequest(object):
     value = (value * 31) ^ hash(self.queueAttribute)
     value = (value * 31) ^ hash(self.queueQuota)
     value = (value * 31) ^ hash(self.deadLetterQueue)
+    value = (value * 31) ^ hash(self.enablePriority)
     value = (value * 31) ^ hash(self.topicQueue)
     value = (value * 31) ^ hash(self.deleteMessageForce)
     value = (value * 31) ^ hash(self.defaultTagName)
@@ -695,6 +708,8 @@ class CreateQueueResponse(object):
 
    - deadLetterQueue: The queue is a dead letter queue or not;
 
+   - enablePriority: The queue is using priority of not;
+
    - topicQueue: Set the queue be a topic queue or not;
 
    - deleteMessageForce: Purge expired messages even if they have not been received by users
@@ -708,17 +723,18 @@ class CreateQueueResponse(object):
     (2, TType.STRUCT, 'queueAttribute', (QueueAttribute, QueueAttribute.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 3
     (4, TType.BOOL, 'deadLetterQueue', None, None, ), # 4
-    None, # 5
+    (5, TType.BOOL, 'enablePriority', None, None, ), # 5
     (6, TType.BOOL, 'topicQueue', None, None, ), # 6
     (7, TType.BOOL, 'deleteMessageForce', None, None, ), # 7
     (8, TType.STRING, 'defaultTagName', None, None, ), # 8
   )
 
-  def __init__(self, queueName=None, queueAttribute=None, queueQuota=None, deadLetterQueue=None, topicQueue=None, deleteMessageForce=None, defaultTagName=None,):
+  def __init__(self, queueName=None, queueAttribute=None, queueQuota=None, deadLetterQueue=None, enablePriority=None, topicQueue=None, deleteMessageForce=None, defaultTagName=None,):
     self.queueName = queueName
     self.queueAttribute = queueAttribute
     self.queueQuota = queueQuota
     self.deadLetterQueue = deadLetterQueue
+    self.enablePriority = enablePriority
     self.topicQueue = topicQueue
     self.deleteMessageForce = deleteMessageForce
     self.defaultTagName = defaultTagName
@@ -752,6 +768,11 @@ class CreateQueueResponse(object):
       elif fid == 4:
         if ftype == TType.BOOL:
           self.deadLetterQueue = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.BOOL:
+          self.enablePriority = iprot.readBool();
         else:
           iprot.skip(ftype)
       elif fid == 6:
@@ -795,6 +816,10 @@ class CreateQueueResponse(object):
       oprot.writeFieldBegin('deadLetterQueue', TType.BOOL, 4)
       oprot.writeBool(self.deadLetterQueue)
       oprot.writeFieldEnd()
+    if self.enablePriority is not None:
+      oprot.writeFieldBegin('enablePriority', TType.BOOL, 5)
+      oprot.writeBool(self.enablePriority)
+      oprot.writeFieldEnd()
     if self.topicQueue is not None:
       oprot.writeFieldBegin('topicQueue', TType.BOOL, 6)
       oprot.writeBool(self.topicQueue)
@@ -824,6 +849,7 @@ class CreateQueueResponse(object):
     value = (value * 31) ^ hash(self.queueAttribute)
     value = (value * 31) ^ hash(self.queueQuota)
     value = (value * 31) ^ hash(self.deadLetterQueue)
+    value = (value * 31) ^ hash(self.enablePriority)
     value = (value * 31) ^ hash(self.topicQueue)
     value = (value * 31) ^ hash(self.deleteMessageForce)
     value = (value * 31) ^ hash(self.defaultTagName)
@@ -1477,6 +1503,8 @@ class GetQueueInfoResponse(object):
 
    - redrivePolicy: The queue redrive policy, dead letter queue doesn't have redrive policy;
 
+   - enablePriority: The queue using priority of not;
+
    - topicQueue: Set the queue be a topic queue or not;
 
    - deleteMessageForce: Purge expired messages even if they have not been received by users
@@ -1492,19 +1520,20 @@ class GetQueueInfoResponse(object):
     (4, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 4
     (5, TType.BOOL, 'isDeadLetterQueue', None, None, ), # 5
     (6, TType.STRUCT, 'redrivePolicy', (RedrivePolicy, RedrivePolicy.thrift_spec), None, ), # 6
-    None, # 7
+    (7, TType.BOOL, 'enablePriority', None, None, ), # 7
     (8, TType.BOOL, 'topicQueue', None, None, ), # 8
     (9, TType.BOOL, 'deleteMessageForce', None, None, ), # 9
     (10, TType.STRING, 'defaultTagName', None, None, ), # 10
   )
 
-  def __init__(self, queueName=None, queueAttribute=None, queueState=None, queueQuota=None, isDeadLetterQueue=None, redrivePolicy=None, topicQueue=None, deleteMessageForce=None, defaultTagName=None,):
+  def __init__(self, queueName=None, queueAttribute=None, queueState=None, queueQuota=None, isDeadLetterQueue=None, redrivePolicy=None, enablePriority=None, topicQueue=None, deleteMessageForce=None, defaultTagName=None,):
     self.queueName = queueName
     self.queueAttribute = queueAttribute
     self.queueState = queueState
     self.queueQuota = queueQuota
     self.isDeadLetterQueue = isDeadLetterQueue
     self.redrivePolicy = redrivePolicy
+    self.enablePriority = enablePriority
     self.topicQueue = topicQueue
     self.deleteMessageForce = deleteMessageForce
     self.defaultTagName = defaultTagName
@@ -1550,6 +1579,11 @@ class GetQueueInfoResponse(object):
         if ftype == TType.STRUCT:
           self.redrivePolicy = RedrivePolicy()
           self.redrivePolicy.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.BOOL:
+          self.enablePriority = iprot.readBool();
         else:
           iprot.skip(ftype)
       elif fid == 8:
@@ -1601,6 +1635,10 @@ class GetQueueInfoResponse(object):
       oprot.writeFieldBegin('redrivePolicy', TType.STRUCT, 6)
       self.redrivePolicy.write(oprot)
       oprot.writeFieldEnd()
+    if self.enablePriority is not None:
+      oprot.writeFieldBegin('enablePriority', TType.BOOL, 7)
+      oprot.writeBool(self.enablePriority)
+      oprot.writeFieldEnd()
     if self.topicQueue is not None:
       oprot.writeFieldBegin('topicQueue', TType.BOOL, 8)
       oprot.writeBool(self.topicQueue)
@@ -1634,6 +1672,7 @@ class GetQueueInfoResponse(object):
     value = (value * 31) ^ hash(self.queueQuota)
     value = (value * 31) ^ hash(self.isDeadLetterQueue)
     value = (value * 31) ^ hash(self.redrivePolicy)
+    value = (value * 31) ^ hash(self.enablePriority)
     value = (value * 31) ^ hash(self.topicQueue)
     value = (value * 31) ^ hash(self.deleteMessageForce)
     value = (value * 31) ^ hash(self.defaultTagName)

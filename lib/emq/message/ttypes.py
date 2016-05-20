@@ -139,6 +139,8 @@ class SendMessageRequest(object):
 
    - topic: Topic of this message
 
+   - priority: The priority of the message, default 8 (1 ~ 16);
+
   """
 
   thrift_spec = (
@@ -149,15 +151,17 @@ class SendMessageRequest(object):
     (4, TType.I32, 'invisibilitySeconds', None, None, ), # 4
     (5, TType.MAP, 'messageAttributes', (TType.STRING,None,TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
     (6, TType.STRING, 'topic', None, None, ), # 6
+    (7, TType.I32, 'priority', None, None, ), # 7
   )
 
-  def __init__(self, queueName=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None, topic=None,):
+  def __init__(self, queueName=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None, topic=None, priority=None,):
     self.queueName = queueName
     self.messageBody = messageBody
     self.delaySeconds = delaySeconds
     self.invisibilitySeconds = invisibilitySeconds
     self.messageAttributes = messageAttributes
     self.topic = topic
+    self.priority = priority
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -205,6 +209,11 @@ class SendMessageRequest(object):
           self.topic = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.I32:
+          self.priority = iprot.readI32();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -243,6 +252,10 @@ class SendMessageRequest(object):
       oprot.writeFieldBegin('topic', TType.STRING, 6)
       oprot.writeString(self.topic)
       oprot.writeFieldEnd()
+    if self.priority is not None:
+      oprot.writeFieldBegin('priority', TType.I32, 7)
+      oprot.writeI32(self.priority)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -262,6 +275,7 @@ class SendMessageRequest(object):
     value = (value * 31) ^ hash(self.invisibilitySeconds)
     value = (value * 31) ^ hash(self.messageAttributes)
     value = (value * 31) ^ hash(self.topic)
+    value = (value * 31) ^ hash(self.priority)
     return value
 
   def __repr__(self):
@@ -402,6 +416,8 @@ class SendMessageBatchRequestEntry(object):
 
    - messageAttributes: User-defined attributes attached to message
 
+   - priority: The priority of the message, default 8 (1 ~ 16);
+
   """
 
   thrift_spec = (
@@ -411,14 +427,16 @@ class SendMessageBatchRequestEntry(object):
     (3, TType.I32, 'delaySeconds', None, None, ), # 3
     (4, TType.I32, 'invisibilitySeconds', None, None, ), # 4
     (5, TType.MAP, 'messageAttributes', (TType.STRING,None,TType.STRUCT,(MessageAttribute, MessageAttribute.thrift_spec)), None, ), # 5
+    (6, TType.I32, 'priority', None, None, ), # 6
   )
 
-  def __init__(self, entryId=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None,):
+  def __init__(self, entryId=None, messageBody=None, delaySeconds=None, invisibilitySeconds=None, messageAttributes=None, priority=None,):
     self.entryId = entryId
     self.messageBody = messageBody
     self.delaySeconds = delaySeconds
     self.invisibilitySeconds = invisibilitySeconds
     self.messageAttributes = messageAttributes
+    self.priority = priority
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -461,6 +479,11 @@ class SendMessageBatchRequestEntry(object):
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.I32:
+          self.priority = iprot.readI32();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -495,6 +518,10 @@ class SendMessageBatchRequestEntry(object):
         viter17.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
+    if self.priority is not None:
+      oprot.writeFieldBegin('priority', TType.I32, 6)
+      oprot.writeI32(self.priority)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -513,6 +540,7 @@ class SendMessageBatchRequestEntry(object):
     value = (value * 31) ^ hash(self.delaySeconds)
     value = (value * 31) ^ hash(self.invisibilitySeconds)
     value = (value * 31) ^ hash(self.messageAttributes)
+    value = (value * 31) ^ hash(self.priority)
     return value
 
   def __repr__(self):
@@ -1095,6 +1123,7 @@ class ReceiveMessageResponse(object):
 
    - attributes: Attributes of message, including:
   - senderId
+  - priority
   - messageLength
   - md5OfBody
   - sendTimestamp
