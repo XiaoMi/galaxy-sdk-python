@@ -55,8 +55,6 @@ admin_client = client_factory.new_admin_client(endpoint + ADMIN_SERVICE_PATH,
                                                DEFAULT_ADMIN_CLIENT_TIMEOUT)
 table_client = client_factory.new_table_client(endpoint + TABLE_SERVICE_PATH,
                                                DEFAULT_CLIENT_TIMEOUT)
-table_client = client_factory.new_table_client(endpoint + TABLE_SERVICE_PATH,
-                                               1)
 
 table_name = "python-test-weather"
 
