@@ -11,7 +11,7 @@ from emq.range.constants import GALAXY_EMQ_QUEUE_DELAY_SECONDS_MINIMAL, GALAXY_E
   GALAXY_EMQ_MESSAGE_DELAY_SECONDS_MAXIMAL, GALAXY_EMQ_MESSAGE_DELAY_SECONDS_MINIMAL, \
   GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MAXIMAL, GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MINIMAL, \
   GALAXY_EMQ_QUEUE_WRITE_QPS_MINIMAL, GALAXY_EMQ_QUEUE_WRITE_QPS_MAXIMAL, GALAXY_EMQ_QUEUE_READ_QPS_MINIMAL, \
-  GALAXY_EMQ_QUEUE_READ_QPS_MAXIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MINIMAL, GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MAXIMAL, \
+  GALAXY_EMQ_QUEUE_READ_QPS_MAXIMAL, \
   GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MINIMAL, GALAXY_EMQ_QUEUE_REDRIVE_POLICY_MAX_RECEIVE_TIME_MAXIMAL
 from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, ChangeMessageVisibilityRequest, \
   DeleteMessageRequest, SendMessageBatchRequest, SendMessageBatchRequestEntry, ChangeMessageVisibilityBatchRequestEntry, \
@@ -39,7 +39,7 @@ class RequestChecker(object):
     if isinstance(request, ListQueueRequest):
       self.validate_queue_prefix(request.queueNamePrefix)
     elif isinstance(request, CreateQueueRequest):
-      self.validate_queue_name(request.queueName, False)
+      self.validate_queue_name(request.queueName, True, True)
       self.validate_queue_attribute(request.queueAttribute)
       self.validate_queue_quota(request.queueQuota)
     elif isinstance(request, SetQueueAttributesRequest):
@@ -335,12 +335,6 @@ class RequestChecker(object):
                            GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MINIMAL,
                            GALAXY_EMQ_MESSAGE_INVISIBILITY_SECONDS_MAXIMAL,
                            "messageInvisibilitySeconds")
-
-  def validate_spaceQuota(self, spaceQuota):
-    self.check_filed_range(spaceQuota,
-                           GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MINIMAL,
-                           GALAXY_EMQ_QUEUE_MAX_SPACE_QUOTA_MAXIMAL,
-                           "spaceQuota")
 
   def validate_readQps(self, readQps):
     self.check_filed_range(readQps,
