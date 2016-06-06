@@ -31,7 +31,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  ScanResult scan(ScanRequest request)')
   print('  BatchResult batch(BatchRequest request)')
   print('  PutResult putToRebuildIndex(PutRequest request)')
-  print('  GetNewImageResult getNewImage(GetNewImageRequest request)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
   print('  i64 getServerTime()')
@@ -132,12 +131,6 @@ elif cmd == 'putToRebuildIndex':
     print('putToRebuildIndex requires 1 args')
     sys.exit(1)
   pp.pprint(client.putToRebuildIndex(eval(args[0]),))
-
-elif cmd == 'getNewImage':
-  if len(args) != 1:
-    print('getNewImage requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.getNewImage(eval(args[0]),))
 
 elif cmd == 'getServerVersion':
   if len(args) != 0:

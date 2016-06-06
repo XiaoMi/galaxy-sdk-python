@@ -50,9 +50,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   listSubscribedPhone()')
   print('   listSubscribedEmail()')
   print('   getTableHistorySize(string tableName, i64 startDate, i64 stopDate)')
-  print('   getPartitions(string tableName)')
-  print('  Partition getPartition(string tableName, i32 partitionId)')
-  print('  PartitionStatistics getPartitionStatistics(string tableName, i32 partitionId)')
   print('  void renameTable(string srcName, string destName)')
   print('  TableSnapshots listSnapshots(string tableName)')
   print('  void snapshotTable(string tableName, string snapshotName)')
@@ -276,24 +273,6 @@ elif cmd == 'getTableHistorySize':
     print('getTableHistorySize requires 3 args')
     sys.exit(1)
   pp.pprint(client.getTableHistorySize(args[0],eval(args[1]),eval(args[2]),))
-
-elif cmd == 'getPartitions':
-  if len(args) != 1:
-    print('getPartitions requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.getPartitions(args[0],))
-
-elif cmd == 'getPartition':
-  if len(args) != 2:
-    print('getPartition requires 2 args')
-    sys.exit(1)
-  pp.pprint(client.getPartition(args[0],eval(args[1]),))
-
-elif cmd == 'getPartitionStatistics':
-  if len(args) != 2:
-    print('getPartitionStatistics requires 2 args')
-    sys.exit(1)
-  pp.pprint(client.getPartitionStatistics(args[0],eval(args[1]),))
 
 elif cmd == 'renameTable':
   if len(args) != 2:

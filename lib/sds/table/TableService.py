@@ -87,16 +87,6 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def getNewImage(self, request):
-    """
-    new-image的消费操作
-
-
-    Parameters:
-     - request
-    """
-    pass
-
 
 class Client(sds.common.BaseService.Client, Iface):
   """
@@ -351,42 +341,6 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "putToRebuildIndex failed: unknown result");
 
-  def getNewImage(self, request):
-    """
-    new-image的消费操作
-
-
-    Parameters:
-     - request
-    """
-    self.send_getNewImage(request)
-    return self.recv_getNewImage()
-
-  def send_getNewImage(self, request):
-    self._oprot.writeMessageBegin('getNewImage', TMessageType.CALL, self._seqid)
-    args = getNewImage_args()
-    args.request = request
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getNewImage(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getNewImage_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.se is not None:
-      raise result.se
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getNewImage failed: unknown result");
-
 
 class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -398,7 +352,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["scan"] = Processor.process_scan
     self._processMap["batch"] = Processor.process_batch
     self._processMap["putToRebuildIndex"] = Processor.process_putToRebuildIndex
-    self._processMap["getNewImage"] = Processor.process_getNewImage
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -509,20 +462,6 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("putToRebuildIndex", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getNewImage(self, seqid, iprot, oprot):
-    args = getNewImage_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getNewImage_result()
-    try:
-      result.success = self._handler.getNewImage(args.request)
-    except sds.errors.ttypes.ServiceException, se:
-      result.se = se
-    oprot.writeMessageBegin("getNewImage", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -1513,151 +1452,6 @@ class putToRebuildIndex_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('putToRebuildIndex_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.se is not None:
-      oprot.writeFieldBegin('se', TType.STRUCT, 1)
-      self.se.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.se)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getNewImage_args(object):
-  """
-  Attributes:
-   - request
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'request', (GetNewImageRequest, GetNewImageRequest.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, request=None,):
-    self.request = request
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.request = GetNewImageRequest()
-          self.request.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getNewImage_args')
-    if self.request is not None:
-      oprot.writeFieldBegin('request', TType.STRUCT, 1)
-      self.request.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.request)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getNewImage_result(object):
-  """
-  Attributes:
-   - success
-   - se
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (GetNewImageResult, GetNewImageResult.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, se=None,):
-    self.success = success
-    self.se = se
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = GetNewImageResult()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.se = sds.errors.ttypes.ServiceException()
-          self.se.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getNewImage_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
