@@ -1078,6 +1078,10 @@ class QuotaInfo(object):
    - readCapacityUsed: 已使用读quota
    - writeCapacity: 用户总的写quota限制
    - writeCapacityUsed: 已使用写quota
+   - slaveReadCapacity: 用户总的备集群读quota限制
+   - slaveReadCapacityUsed: 已使用备集群读quota
+   - slaveWriteCapacity: 用户总的备集群写quota限制
+   - slaveWriteCapacityUsed: 已使用备集群写quota
   """
 
   thrift_spec = (
@@ -1091,9 +1095,13 @@ class QuotaInfo(object):
     (7, TType.I64, 'readCapacityUsed', None, None, ), # 7
     (8, TType.I64, 'writeCapacity', None, None, ), # 8
     (9, TType.I64, 'writeCapacityUsed', None, None, ), # 9
+    (10, TType.I64, 'slaveReadCapacity', None, None, ), # 10
+    (11, TType.I64, 'slaveReadCapacityUsed', None, None, ), # 11
+    (12, TType.I64, 'slaveWriteCapacity', None, None, ), # 12
+    (13, TType.I64, 'slaveWriteCapacityUsed', None, None, ), # 13
   )
 
-  def __init__(self, accountId=None, tableNum=None, tableNumUsed=None, space=None, spaceUsed=None, readCapacity=None, readCapacityUsed=None, writeCapacity=None, writeCapacityUsed=None,):
+  def __init__(self, accountId=None, tableNum=None, tableNumUsed=None, space=None, spaceUsed=None, readCapacity=None, readCapacityUsed=None, writeCapacity=None, writeCapacityUsed=None, slaveReadCapacity=None, slaveReadCapacityUsed=None, slaveWriteCapacity=None, slaveWriteCapacityUsed=None,):
     self.accountId = accountId
     self.tableNum = tableNum
     self.tableNumUsed = tableNumUsed
@@ -1103,6 +1111,10 @@ class QuotaInfo(object):
     self.readCapacityUsed = readCapacityUsed
     self.writeCapacity = writeCapacity
     self.writeCapacityUsed = writeCapacityUsed
+    self.slaveReadCapacity = slaveReadCapacity
+    self.slaveReadCapacityUsed = slaveReadCapacityUsed
+    self.slaveWriteCapacity = slaveWriteCapacity
+    self.slaveWriteCapacityUsed = slaveWriteCapacityUsed
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1158,6 +1170,26 @@ class QuotaInfo(object):
           self.writeCapacityUsed = iprot.readI64();
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.I64:
+          self.slaveReadCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.I64:
+          self.slaveReadCapacityUsed = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.I64:
+          self.slaveWriteCapacity = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.I64:
+          self.slaveWriteCapacityUsed = iprot.readI64();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1204,6 +1236,22 @@ class QuotaInfo(object):
       oprot.writeFieldBegin('writeCapacityUsed', TType.I64, 9)
       oprot.writeI64(self.writeCapacityUsed)
       oprot.writeFieldEnd()
+    if self.slaveReadCapacity is not None:
+      oprot.writeFieldBegin('slaveReadCapacity', TType.I64, 10)
+      oprot.writeI64(self.slaveReadCapacity)
+      oprot.writeFieldEnd()
+    if self.slaveReadCapacityUsed is not None:
+      oprot.writeFieldBegin('slaveReadCapacityUsed', TType.I64, 11)
+      oprot.writeI64(self.slaveReadCapacityUsed)
+      oprot.writeFieldEnd()
+    if self.slaveWriteCapacity is not None:
+      oprot.writeFieldBegin('slaveWriteCapacity', TType.I64, 12)
+      oprot.writeI64(self.slaveWriteCapacity)
+      oprot.writeFieldEnd()
+    if self.slaveWriteCapacityUsed is not None:
+      oprot.writeFieldBegin('slaveWriteCapacityUsed', TType.I64, 13)
+      oprot.writeI64(self.slaveWriteCapacityUsed)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1222,6 +1270,10 @@ class QuotaInfo(object):
     value = (value * 31) ^ hash(self.readCapacityUsed)
     value = (value * 31) ^ hash(self.writeCapacity)
     value = (value * 31) ^ hash(self.writeCapacityUsed)
+    value = (value * 31) ^ hash(self.slaveReadCapacity)
+    value = (value * 31) ^ hash(self.slaveReadCapacityUsed)
+    value = (value * 31) ^ hash(self.slaveWriteCapacity)
+    value = (value * 31) ^ hash(self.slaveWriteCapacityUsed)
     return value
 
   def __repr__(self):
