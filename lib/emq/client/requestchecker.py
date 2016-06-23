@@ -18,8 +18,7 @@ from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, Change
   ChangeMessageVisibilityBatchRequest, DeleteMessageBatchRequest, DeadMessageBatchRequest, DeadMessageRequest
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
   RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota, CreateTagRequest, \
-  DeleteTagRequest, GetTagInfoRequest, ListTagRequest, SetQueueRedrivePolicyRequest, RemoveQueueRedrivePolicyRequest, \
-  ListDeadLetterSourceQueuesRequest
+  DeleteTagRequest, GetTagInfoRequest, ListTagRequest, SetQueueRedrivePolicyRequest, RemoveQueueRedrivePolicyRequest
 from emq.statistics.ttypes import SetUserQuotaRequest, GetUserQuotaRequest, GetUserUsedQuotaRequest, SetUserInfoRequest, \
   GetUserInfoRequest
 
@@ -53,8 +52,6 @@ class RequestChecker(object):
       self.validate_redrivePolcy(request.redrivePolicy)
     elif isinstance(request, RemoveQueueRedrivePolicyRequest):
       self.validate_queue_name(request.queueName)
-    elif isinstance(request, ListDeadLetterSourceQueuesRequest):
-      self.validate_queue_name(request.dlqName)
     elif isinstance(request, SetPermissionRequest):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.developerId, "developerId")

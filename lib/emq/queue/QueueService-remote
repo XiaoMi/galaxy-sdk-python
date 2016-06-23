@@ -33,7 +33,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  ListQueueResponse listQueue(ListQueueRequest request)')
   print('  SetQueueRedrivePolicyResponse setQueueRedrivePolicy(SetQueueRedrivePolicyRequest request)')
   print('  void removeQueueRedrivePolicy(RemoveQueueRedrivePolicyRequest request)')
-  print('  ListDeadLetterSourceQueuesResponse listDeadLetterSourceQueues(ListDeadLetterSourceQueuesRequest request)')
   print('  void setPermission(SetPermissionRequest request)')
   print('  void revokePermission(RevokePermissionRequest request)')
   print('  QueryPermissionResponse queryPermission(QueryPermissionRequest request)')
@@ -155,12 +154,6 @@ elif cmd == 'removeQueueRedrivePolicy':
     print('removeQueueRedrivePolicy requires 1 args')
     sys.exit(1)
   pp.pprint(client.removeQueueRedrivePolicy(eval(args[0]),))
-
-elif cmd == 'listDeadLetterSourceQueues':
-  if len(args) != 1:
-    print('listDeadLetterSourceQueues requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.listDeadLetterSourceQueues(eval(args[0]),))
 
 elif cmd == 'setPermission':
   if len(args) != 1:

@@ -1510,6 +1510,7 @@ class GetQueueInfoResponse(object):
    - deleteMessageForce: Purge expired messages even if they have not been received by users
 
    - defaultTagName
+   - sourceQueues
   """
 
   thrift_spec = (
@@ -1524,9 +1525,10 @@ class GetQueueInfoResponse(object):
     (8, TType.BOOL, 'topicQueue', None, None, ), # 8
     (9, TType.BOOL, 'deleteMessageForce', None, None, ), # 9
     (10, TType.STRING, 'defaultTagName', None, None, ), # 10
+    (11, TType.LIST, 'sourceQueues', (TType.STRING,None), None, ), # 11
   )
 
-  def __init__(self, queueName=None, queueAttribute=None, queueState=None, queueQuota=None, isDeadLetterQueue=None, redrivePolicy=None, enablePriority=None, topicQueue=None, deleteMessageForce=None, defaultTagName=None,):
+  def __init__(self, queueName=None, queueAttribute=None, queueState=None, queueQuota=None, isDeadLetterQueue=None, redrivePolicy=None, enablePriority=None, topicQueue=None, deleteMessageForce=None, defaultTagName=None, sourceQueues=None,):
     self.queueName = queueName
     self.queueAttribute = queueAttribute
     self.queueState = queueState
@@ -1537,6 +1539,7 @@ class GetQueueInfoResponse(object):
     self.topicQueue = topicQueue
     self.deleteMessageForce = deleteMessageForce
     self.defaultTagName = defaultTagName
+    self.sourceQueues = sourceQueues
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1601,6 +1604,16 @@ class GetQueueInfoResponse(object):
           self.defaultTagName = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.LIST:
+          self.sourceQueues = []
+          (_etype12, _size9) = iprot.readListBegin()
+          for _i13 in xrange(_size9):
+            _elem14 = iprot.readString();
+            self.sourceQueues.append(_elem14)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1651,6 +1664,13 @@ class GetQueueInfoResponse(object):
       oprot.writeFieldBegin('defaultTagName', TType.STRING, 10)
       oprot.writeString(self.defaultTagName)
       oprot.writeFieldEnd()
+    if self.sourceQueues is not None:
+      oprot.writeFieldBegin('sourceQueues', TType.LIST, 11)
+      oprot.writeListBegin(TType.STRING, len(self.sourceQueues))
+      for iter15 in self.sourceQueues:
+        oprot.writeString(iter15)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1676,6 +1696,7 @@ class GetQueueInfoResponse(object):
     value = (value * 31) ^ hash(self.topicQueue)
     value = (value * 31) ^ hash(self.deleteMessageForce)
     value = (value * 31) ^ hash(self.defaultTagName)
+    value = (value * 31) ^ hash(self.sourceQueues)
     return value
 
   def __repr__(self):
@@ -1909,163 +1930,6 @@ class RemoveQueueRedrivePolicyRequest(object):
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.queueName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class ListDeadLetterSourceQueuesRequest(object):
-  """
-  Attributes:
-   - dlqName
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'dlqName', None, None, ), # 1
-  )
-
-  def __init__(self, dlqName=None,):
-    self.dlqName = dlqName
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.dlqName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('ListDeadLetterSourceQueuesRequest')
-    if self.dlqName is not None:
-      oprot.writeFieldBegin('dlqName', TType.STRING, 1)
-      oprot.writeString(self.dlqName)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.dlqName is None:
-      raise TProtocol.TProtocolException(message='Required field dlqName is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.dlqName)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class ListDeadLetterSourceQueuesResponse(object):
-  """
-  Attributes:
-   - dlqName: The dead letter queue name;
-
-   - sourceQueues: The source queues, only a dead letter queue has source queues;
-
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'dlqName', None, None, ), # 1
-    (2, TType.LIST, 'sourceQueues', (TType.STRING,None), None, ), # 2
-  )
-
-  def __init__(self, dlqName=None, sourceQueues=None,):
-    self.dlqName = dlqName
-    self.sourceQueues = sourceQueues
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.dlqName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.LIST:
-          self.sourceQueues = []
-          (_etype12, _size9) = iprot.readListBegin()
-          for _i13 in xrange(_size9):
-            _elem14 = iprot.readString();
-            self.sourceQueues.append(_elem14)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('ListDeadLetterSourceQueuesResponse')
-    if self.dlqName is not None:
-      oprot.writeFieldBegin('dlqName', TType.STRING, 1)
-      oprot.writeString(self.dlqName)
-      oprot.writeFieldEnd()
-    if self.sourceQueues is not None:
-      oprot.writeFieldBegin('sourceQueues', TType.LIST, 2)
-      oprot.writeListBegin(TType.STRING, len(self.sourceQueues))
-      for iter15 in self.sourceQueues:
-        oprot.writeString(iter15)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.dlqName is None:
-      raise TProtocol.TProtocolException(message='Required field dlqName is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.dlqName)
-    value = (value * 31) ^ hash(self.sourceQueues)
     return value
 
   def __repr__(self):
