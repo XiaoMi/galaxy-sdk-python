@@ -1506,6 +1506,7 @@ class TableMetadata(object):
    - exceededSlaveThroughput: 备集群最大超发的读写配额，即系统空闲时可能达到最大的吞吐，设置比slaveThroughput大即允许超发
    - acl: 融合云权限模型的acl
    - spaceId: 表所在的命名空间
+   - enableEgAcl: entityGroup acl 开关
   """
 
   thrift_spec = (
@@ -1523,9 +1524,10 @@ class TableMetadata(object):
     (11, TType.STRUCT, 'exceededSlaveThroughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 11
     (12, TType.MAP, 'acl', (TType.STRING,None,TType.LIST,(TType.I32,None)), None, ), # 12
     (13, TType.STRING, 'spaceId', None, None, ), # 13
+    (14, TType.BOOL, 'enableEgAcl', None, False, ), # 14
   )
 
-  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, stream=None, enableSysSnapshot=None, exceededThroughput=None, slaveThroughput=None, exceededSlaveThroughput=None, acl=None, spaceId=None,):
+  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, stream=None, enableSysSnapshot=None, exceededThroughput=None, slaveThroughput=None, exceededSlaveThroughput=None, acl=None, spaceId=None, enableEgAcl=thrift_spec[14][4],):
     self.tableId = tableId
     self.developerId = developerId
     self.appAcl = appAcl
@@ -1539,6 +1541,7 @@ class TableMetadata(object):
     self.exceededSlaveThroughput = exceededSlaveThroughput
     self.acl = acl
     self.spaceId = spaceId
+    self.enableEgAcl = enableEgAcl
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1642,6 +1645,11 @@ class TableMetadata(object):
           self.spaceId = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 14:
+        if ftype == TType.BOOL:
+          self.enableEgAcl = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1718,6 +1726,10 @@ class TableMetadata(object):
       oprot.writeFieldBegin('spaceId', TType.STRING, 13)
       oprot.writeString(self.spaceId)
       oprot.writeFieldEnd()
+    if self.enableEgAcl is not None:
+      oprot.writeFieldBegin('enableEgAcl', TType.BOOL, 14)
+      oprot.writeBool(self.enableEgAcl)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1740,6 +1752,7 @@ class TableMetadata(object):
     value = (value * 31) ^ hash(self.exceededSlaveThroughput)
     value = (value * 31) ^ hash(self.acl)
     value = (value * 31) ^ hash(self.spaceId)
+    value = (value * 31) ^ hash(self.enableEgAcl)
     return value
 
   def __repr__(self):
