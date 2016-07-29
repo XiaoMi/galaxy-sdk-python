@@ -43,6 +43,10 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  GetTagInfoResponse getTagInfo(GetTagInfoRequest request)')
   print('  ListTagResponse listTag(ListTagRequest request)')
   print('  TimeSeriesData queryMetric(QueryMetricRequest request)')
+  print('  QueryPrivilegedQueueResponse queryPrivilegedQueue(QueryPrivilegedQueueRequest request)')
+  print('  VerifyEMQAdminResponse verifyEMQAdmin()')
+  print('  void copyQueue(CopyQueueRequest request)')
+  print('  GetQueueMetaResponse getQueueMeta(string queueName)')
   print('  Version getServiceVersion()')
   print('  void validClientVersion(Version clientVersion)')
   print('')
@@ -214,6 +218,30 @@ elif cmd == 'queryMetric':
     print('queryMetric requires 1 args')
     sys.exit(1)
   pp.pprint(client.queryMetric(eval(args[0]),))
+
+elif cmd == 'queryPrivilegedQueue':
+  if len(args) != 1:
+    print('queryPrivilegedQueue requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.queryPrivilegedQueue(eval(args[0]),))
+
+elif cmd == 'verifyEMQAdmin':
+  if len(args) != 0:
+    print('verifyEMQAdmin requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.verifyEMQAdmin())
+
+elif cmd == 'copyQueue':
+  if len(args) != 1:
+    print('copyQueue requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.copyQueue(eval(args[0]),))
+
+elif cmd == 'getQueueMeta':
+  if len(args) != 1:
+    print('getQueueMeta requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getQueueMeta(args[0],))
 
 elif cmd == 'getServiceVersion':
   if len(args) != 0:

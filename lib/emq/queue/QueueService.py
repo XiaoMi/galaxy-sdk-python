@@ -217,6 +217,37 @@ class Iface(emq.common.EMQBaseService.Iface):
     """
     pass
 
+  def queryPrivilegedQueue(self, request):
+    """
+    query privileged queues
+    No permission required
+
+
+    Parameters:
+     - request
+    """
+    pass
+
+  def verifyEMQAdmin(self):
+    pass
+
+  def copyQueue(self, request):
+    """
+    copy queues using queues meta
+
+
+    Parameters:
+     - request
+    """
+    pass
+
+  def getQueueMeta(self, queueName):
+    """
+    Parameters:
+     - queueName
+    """
+    pass
+
 
 class Client(emq.common.EMQBaseService.Client, Iface):
   def __init__(self, iprot, oprot=None):
@@ -901,6 +932,138 @@ class Client(emq.common.EMQBaseService.Client, Iface):
       raise result.e
     raise TApplicationException(TApplicationException.MISSING_RESULT, "queryMetric failed: unknown result");
 
+  def queryPrivilegedQueue(self, request):
+    """
+    query privileged queues
+    No permission required
+
+
+    Parameters:
+     - request
+    """
+    self.send_queryPrivilegedQueue(request)
+    return self.recv_queryPrivilegedQueue()
+
+  def send_queryPrivilegedQueue(self, request):
+    self._oprot.writeMessageBegin('queryPrivilegedQueue', TMessageType.CALL, self._seqid)
+    args = queryPrivilegedQueue_args()
+    args.request = request
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_queryPrivilegedQueue(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = queryPrivilegedQueue_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.e is not None:
+      raise result.e
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "queryPrivilegedQueue failed: unknown result");
+
+  def verifyEMQAdmin(self):
+    self.send_verifyEMQAdmin()
+    return self.recv_verifyEMQAdmin()
+
+  def send_verifyEMQAdmin(self):
+    self._oprot.writeMessageBegin('verifyEMQAdmin', TMessageType.CALL, self._seqid)
+    args = verifyEMQAdmin_args()
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_verifyEMQAdmin(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = verifyEMQAdmin_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.e is not None:
+      raise result.e
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "verifyEMQAdmin failed: unknown result");
+
+  def copyQueue(self, request):
+    """
+    copy queues using queues meta
+
+
+    Parameters:
+     - request
+    """
+    self.send_copyQueue(request)
+    self.recv_copyQueue()
+
+  def send_copyQueue(self, request):
+    self._oprot.writeMessageBegin('copyQueue', TMessageType.CALL, self._seqid)
+    args = copyQueue_args()
+    args.request = request
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_copyQueue(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = copyQueue_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.e is not None:
+      raise result.e
+    return
+
+  def getQueueMeta(self, queueName):
+    """
+    Parameters:
+     - queueName
+    """
+    self.send_getQueueMeta(queueName)
+    return self.recv_getQueueMeta()
+
+  def send_getQueueMeta(self, queueName):
+    self._oprot.writeMessageBegin('getQueueMeta', TMessageType.CALL, self._seqid)
+    args = getQueueMeta_args()
+    args.queueName = queueName
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getQueueMeta(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getQueueMeta_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.e is not None:
+      raise result.e
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getQueueMeta failed: unknown result");
+
 
 class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -924,6 +1087,10 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     self._processMap["getTagInfo"] = Processor.process_getTagInfo
     self._processMap["listTag"] = Processor.process_listTag
     self._processMap["queryMetric"] = Processor.process_queryMetric
+    self._processMap["queryPrivilegedQueue"] = Processor.process_queryPrivilegedQueue
+    self._processMap["verifyEMQAdmin"] = Processor.process_verifyEMQAdmin
+    self._processMap["copyQueue"] = Processor.process_copyQueue
+    self._processMap["getQueueMeta"] = Processor.process_getQueueMeta
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -1202,6 +1369,62 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     except emq.common.ttypes.GalaxyEmqServiceException, e:
       result.e = e
     oprot.writeMessageBegin("queryMetric", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_queryPrivilegedQueue(self, seqid, iprot, oprot):
+    args = queryPrivilegedQueue_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = queryPrivilegedQueue_result()
+    try:
+      result.success = self._handler.queryPrivilegedQueue(args.request)
+    except emq.common.ttypes.GalaxyEmqServiceException, e:
+      result.e = e
+    oprot.writeMessageBegin("queryPrivilegedQueue", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_verifyEMQAdmin(self, seqid, iprot, oprot):
+    args = verifyEMQAdmin_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = verifyEMQAdmin_result()
+    try:
+      result.success = self._handler.verifyEMQAdmin()
+    except emq.common.ttypes.GalaxyEmqServiceException, e:
+      result.e = e
+    oprot.writeMessageBegin("verifyEMQAdmin", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_copyQueue(self, seqid, iprot, oprot):
+    args = copyQueue_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = copyQueue_result()
+    try:
+      self._handler.copyQueue(args.request)
+    except emq.common.ttypes.GalaxyEmqServiceException, e:
+      result.e = e
+    oprot.writeMessageBegin("copyQueue", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getQueueMeta(self, seqid, iprot, oprot):
+    args = getQueueMeta_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getQueueMeta_result()
+    try:
+      result.success = self._handler.getQueueMeta(args.queueName)
+    except emq.common.ttypes.GalaxyEmqServiceException, e:
+      result.e = e
+    oprot.writeMessageBegin("getQueueMeta", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -3854,6 +4077,552 @@ class queryMetric_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('queryMetric_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class queryPrivilegedQueue_args(object):
+  """
+  Attributes:
+   - request
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'request', (QueryPrivilegedQueueRequest, QueryPrivilegedQueueRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, request=None,):
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.request = QueryPrivilegedQueueRequest()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('queryPrivilegedQueue_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 1)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class queryPrivilegedQueue_result(object):
+  """
+  Attributes:
+   - success
+   - e
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (QueryPrivilegedQueueResponse, QueryPrivilegedQueueResponse.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'e', (emq.common.ttypes.GalaxyEmqServiceException, emq.common.ttypes.GalaxyEmqServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, e=None,):
+    self.success = success
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = QueryPrivilegedQueueResponse()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = emq.common.ttypes.GalaxyEmqServiceException()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('queryPrivilegedQueue_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class verifyEMQAdmin_args(object):
+
+  thrift_spec = (
+  )
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('verifyEMQAdmin_args')
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class verifyEMQAdmin_result(object):
+  """
+  Attributes:
+   - success
+   - e
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (VerifyEMQAdminResponse, VerifyEMQAdminResponse.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'e', (emq.common.ttypes.GalaxyEmqServiceException, emq.common.ttypes.GalaxyEmqServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, e=None,):
+    self.success = success
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = VerifyEMQAdminResponse()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = emq.common.ttypes.GalaxyEmqServiceException()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('verifyEMQAdmin_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class copyQueue_args(object):
+  """
+  Attributes:
+   - request
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'request', (CopyQueueRequest, CopyQueueRequest.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, request=None,):
+    self.request = request
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.request = CopyQueueRequest()
+          self.request.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('copyQueue_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 1)
+      self.request.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.request)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class copyQueue_result(object):
+  """
+  Attributes:
+   - e
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'e', (emq.common.ttypes.GalaxyEmqServiceException, emq.common.ttypes.GalaxyEmqServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, e=None,):
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = emq.common.ttypes.GalaxyEmqServiceException()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('copyQueue_result')
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getQueueMeta_args(object):
+  """
+  Attributes:
+   - queueName
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+  )
+
+  def __init__(self, queueName=None,):
+    self.queueName = queueName
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getQueueMeta_args')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getQueueMeta_result(object):
+  """
+  Attributes:
+   - success
+   - e
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (GetQueueMetaResponse, GetQueueMetaResponse.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'e', (emq.common.ttypes.GalaxyEmqServiceException, emq.common.ttypes.GalaxyEmqServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, e=None,):
+    self.success = success
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = GetQueueMetaResponse()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = emq.common.ttypes.GalaxyEmqServiceException()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getQueueMeta_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)

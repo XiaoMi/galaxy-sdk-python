@@ -2085,6 +2085,265 @@ class ListQueueResponse(object):
   def __ne__(self, other):
     return not (self == other)
 
+class QueryPrivilegedQueueRequest(object):
+  """
+  Attributes:
+   - queueNamePrefix: The queue name prefix;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueNamePrefix', None, "", ), # 1
+  )
+
+  def __init__(self, queueNamePrefix=thrift_spec[1][4],):
+    self.queueNamePrefix = queueNamePrefix
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueNamePrefix = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('QueryPrivilegedQueueRequest')
+    if self.queueNamePrefix is not None:
+      oprot.writeFieldBegin('queueNamePrefix', TType.STRING, 1)
+      oprot.writeString(self.queueNamePrefix)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueNamePrefix)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class QueryPrivilegedQueueResponseEntry(object):
+  """
+  Attributes:
+   - queueName
+   - approximateMessageNumber: The approximate message number in this queue;
+
+   - approximateAvailableMessageNumber: The available message number in this queue, this is for message that could
+  be get using receivedMessage
+
+   - approximateInvisibilityMessageNumber: The invisibility message number in this queue, this is for received message
+  that in invisibilitySeconds and not deleted;
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+    (2, TType.I64, 'approximateMessageNumber', None, None, ), # 2
+    (3, TType.I64, 'approximateAvailableMessageNumber', None, None, ), # 3
+    (4, TType.I64, 'approximateInvisibilityMessageNumber', None, None, ), # 4
+  )
+
+  def __init__(self, queueName=None, approximateMessageNumber=None, approximateAvailableMessageNumber=None, approximateInvisibilityMessageNumber=None,):
+    self.queueName = queueName
+    self.approximateMessageNumber = approximateMessageNumber
+    self.approximateAvailableMessageNumber = approximateAvailableMessageNumber
+    self.approximateInvisibilityMessageNumber = approximateInvisibilityMessageNumber
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.approximateMessageNumber = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.approximateAvailableMessageNumber = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.approximateInvisibilityMessageNumber = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('QueryPrivilegedQueueResponseEntry')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    if self.approximateMessageNumber is not None:
+      oprot.writeFieldBegin('approximateMessageNumber', TType.I64, 2)
+      oprot.writeI64(self.approximateMessageNumber)
+      oprot.writeFieldEnd()
+    if self.approximateAvailableMessageNumber is not None:
+      oprot.writeFieldBegin('approximateAvailableMessageNumber', TType.I64, 3)
+      oprot.writeI64(self.approximateAvailableMessageNumber)
+      oprot.writeFieldEnd()
+    if self.approximateInvisibilityMessageNumber is not None:
+      oprot.writeFieldBegin('approximateInvisibilityMessageNumber', TType.I64, 4)
+      oprot.writeI64(self.approximateInvisibilityMessageNumber)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueName is None:
+      raise TProtocol.TProtocolException(message='Required field queueName is unset!')
+    if self.approximateMessageNumber is None:
+      raise TProtocol.TProtocolException(message='Required field approximateMessageNumber is unset!')
+    if self.approximateAvailableMessageNumber is None:
+      raise TProtocol.TProtocolException(message='Required field approximateAvailableMessageNumber is unset!')
+    if self.approximateInvisibilityMessageNumber is None:
+      raise TProtocol.TProtocolException(message='Required field approximateInvisibilityMessageNumber is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    value = (value * 31) ^ hash(self.approximateMessageNumber)
+    value = (value * 31) ^ hash(self.approximateAvailableMessageNumber)
+    value = (value * 31) ^ hash(self.approximateInvisibilityMessageNumber)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class QueryPrivilegedQueueResponse(object):
+  """
+  Attributes:
+   - queueList
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.LIST, 'queueList', (TType.STRUCT,(QueryPrivilegedQueueResponseEntry, QueryPrivilegedQueueResponseEntry.thrift_spec)), None, ), # 1
+  )
+
+  def __init__(self, queueList=None,):
+    self.queueList = queueList
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.LIST:
+          self.queueList = []
+          (_etype26, _size23) = iprot.readListBegin()
+          for _i27 in xrange(_size23):
+            _elem28 = QueryPrivilegedQueueResponseEntry()
+            _elem28.read(iprot)
+            self.queueList.append(_elem28)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('QueryPrivilegedQueueResponse')
+    if self.queueList is not None:
+      oprot.writeFieldBegin('queueList', TType.LIST, 1)
+      oprot.writeListBegin(TType.STRUCT, len(self.queueList))
+      for iter29 in self.queueList:
+        iter29.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueList is None:
+      raise TProtocol.TProtocolException(message='Required field queueList is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueList)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class SetPermissionRequest(object):
   """
   Attributes:
@@ -2640,11 +2899,11 @@ class ListPermissionsResponse(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.permissionList = {}
-          (_ktype24, _vtype25, _size23 ) = iprot.readMapBegin()
-          for _i27 in xrange(_size23):
-            _key28 = iprot.readString();
-            _val29 = iprot.readI32();
-            self.permissionList[_key28] = _val29
+          (_ktype31, _vtype32, _size30 ) = iprot.readMapBegin()
+          for _i34 in xrange(_size30):
+            _key35 = iprot.readString();
+            _val36 = iprot.readI32();
+            self.permissionList[_key35] = _val36
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2661,9 +2920,9 @@ class ListPermissionsResponse(object):
     if self.permissionList is not None:
       oprot.writeFieldBegin('permissionList', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.permissionList))
-      for kiter30,viter31 in self.permissionList.items():
-        oprot.writeString(kiter30)
-        oprot.writeI32(viter31)
+      for kiter37,viter38 in self.permissionList.items():
+        oprot.writeString(kiter37)
+        oprot.writeI32(viter38)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2764,11 +3023,11 @@ class CreateTagRequest(object):
       elif fid == 7:
         if ftype == TType.MAP:
           self.userAttributes = {}
-          (_ktype33, _vtype34, _size32 ) = iprot.readMapBegin()
-          for _i36 in xrange(_size32):
-            _key37 = iprot.readString();
-            _val38 = iprot.readString();
-            self.userAttributes[_key37] = _val38
+          (_ktype40, _vtype41, _size39 ) = iprot.readMapBegin()
+          for _i43 in xrange(_size39):
+            _key44 = iprot.readString();
+            _val45 = iprot.readString();
+            self.userAttributes[_key44] = _val45
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2809,9 +3068,9 @@ class CreateTagRequest(object):
     if self.userAttributes is not None:
       oprot.writeFieldBegin('userAttributes', TType.MAP, 7)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.userAttributes))
-      for kiter39,viter40 in self.userAttributes.items():
-        oprot.writeString(kiter39)
-        oprot.writeString(viter40)
+      for kiter46,viter47 in self.userAttributes.items():
+        oprot.writeString(kiter46)
+        oprot.writeString(viter47)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3203,11 +3462,11 @@ class GetTagInfoResponse(object):
       elif fid == 8:
         if ftype == TType.MAP:
           self.userAttributes = {}
-          (_ktype42, _vtype43, _size41 ) = iprot.readMapBegin()
-          for _i45 in xrange(_size41):
-            _key46 = iprot.readString();
-            _val47 = iprot.readString();
-            self.userAttributes[_key46] = _val47
+          (_ktype49, _vtype50, _size48 ) = iprot.readMapBegin()
+          for _i52 in xrange(_size48):
+            _key53 = iprot.readString();
+            _val54 = iprot.readString();
+            self.userAttributes[_key53] = _val54
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -3252,9 +3511,9 @@ class GetTagInfoResponse(object):
     if self.userAttributes is not None:
       oprot.writeFieldBegin('userAttributes', TType.MAP, 8)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.userAttributes))
-      for kiter48,viter49 in self.userAttributes.items():
-        oprot.writeString(kiter48)
-        oprot.writeString(viter49)
+      for kiter55,viter56 in self.userAttributes.items():
+        oprot.writeString(kiter55)
+        oprot.writeString(viter56)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3394,10 +3653,10 @@ class ListTagResponse(object):
       elif fid == 2:
         if ftype == TType.LIST:
           self.tagName = []
-          (_etype53, _size50) = iprot.readListBegin()
-          for _i54 in xrange(_size50):
-            _elem55 = iprot.readString();
-            self.tagName.append(_elem55)
+          (_etype60, _size57) = iprot.readListBegin()
+          for _i61 in xrange(_size57):
+            _elem62 = iprot.readString();
+            self.tagName.append(_elem62)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3418,8 +3677,8 @@ class ListTagResponse(object):
     if self.tagName is not None:
       oprot.writeFieldBegin('tagName', TType.LIST, 2)
       oprot.writeListBegin(TType.STRING, len(self.tagName))
-      for iter56 in self.tagName:
-        oprot.writeString(iter56)
+      for iter63 in self.tagName:
+        oprot.writeString(iter63)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3531,11 +3790,11 @@ class QueryMetricRequest(object):
       elif fid == 5:
         if ftype == TType.MAP:
           self.tags = {}
-          (_ktype58, _vtype59, _size57 ) = iprot.readMapBegin()
-          for _i61 in xrange(_size57):
-            _key62 = iprot.readString();
-            _val63 = iprot.readString();
-            self.tags[_key62] = _val63
+          (_ktype65, _vtype66, _size64 ) = iprot.readMapBegin()
+          for _i68 in xrange(_size64):
+            _key69 = iprot.readString();
+            _val70 = iprot.readString();
+            self.tags[_key69] = _val70
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -3593,9 +3852,9 @@ class QueryMetricRequest(object):
     if self.tags is not None:
       oprot.writeFieldBegin('tags', TType.MAP, 5)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.tags))
-      for kiter64,viter65 in self.tags.items():
-        oprot.writeString(kiter64)
-        oprot.writeString(viter65)
+      for kiter71,viter72 in self.tags.items():
+        oprot.writeString(kiter71)
+        oprot.writeString(viter72)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.aggregator is not None:
@@ -3689,22 +3948,22 @@ class TimeSeriesData(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.tags = {}
-          (_ktype67, _vtype68, _size66 ) = iprot.readMapBegin()
-          for _i70 in xrange(_size66):
-            _key71 = iprot.readString();
-            _val72 = iprot.readString();
-            self.tags[_key71] = _val72
+          (_ktype74, _vtype75, _size73 ) = iprot.readMapBegin()
+          for _i77 in xrange(_size73):
+            _key78 = iprot.readString();
+            _val79 = iprot.readString();
+            self.tags[_key78] = _val79
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.MAP:
           self.data = {}
-          (_ktype74, _vtype75, _size73 ) = iprot.readMapBegin()
-          for _i77 in xrange(_size73):
-            _key78 = iprot.readI64();
-            _val79 = iprot.readDouble();
-            self.data[_key78] = _val79
+          (_ktype81, _vtype82, _size80 ) = iprot.readMapBegin()
+          for _i84 in xrange(_size80):
+            _key85 = iprot.readI64();
+            _val86 = iprot.readDouble();
+            self.data[_key85] = _val86
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -3725,17 +3984,17 @@ class TimeSeriesData(object):
     if self.tags is not None:
       oprot.writeFieldBegin('tags', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.tags))
-      for kiter80,viter81 in self.tags.items():
-        oprot.writeString(kiter80)
-        oprot.writeString(viter81)
+      for kiter87,viter88 in self.tags.items():
+        oprot.writeString(kiter87)
+        oprot.writeString(viter88)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.data is not None:
       oprot.writeFieldBegin('data', TType.MAP, 3)
       oprot.writeMapBegin(TType.I64, TType.DOUBLE, len(self.data))
-      for kiter82,viter83 in self.data.items():
-        oprot.writeI64(kiter82)
-        oprot.writeDouble(viter83)
+      for kiter89,viter90 in self.data.items():
+        oprot.writeI64(kiter89)
+        oprot.writeDouble(viter90)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3750,6 +4009,654 @@ class TimeSeriesData(object):
     value = (value * 31) ^ hash(self.metric)
     value = (value * 31) ^ hash(self.tags)
     value = (value * 31) ^ hash(self.data)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class VerifyEMQAdminResponse(object):
+  """
+  Attributes:
+   - prefix: Default prefix for admin
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'prefix', None, None, ), # 1
+  )
+
+  def __init__(self, prefix=None,):
+    self.prefix = prefix
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.prefix = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('VerifyEMQAdminResponse')
+    if self.prefix is not None:
+      oprot.writeFieldBegin('prefix', TType.STRING, 1)
+      oprot.writeString(self.prefix)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.prefix is None:
+      raise TProtocol.TProtocolException(message='Required field prefix is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.prefix)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class QueueMeta(object):
+  """
+  Attributes:
+   - queueName: The queue name, prefix is developerId, must has prefix;
+
+   - queueAttribute: The queue attribute;
+
+   - queueQuota: The queue quota, including space quota, read qps, and write qps;
+
+   - enablePriority: Set the queue using priority of not;
+
+   - topicQueue: Set the queue be a topic queue or not;
+  All messages with the same topic in topic queue will be received one by one
+  Default: false
+
+   - deleteMessageForce: Purge expired messages even if they have not been received by users
+  Default: true
+
+   - defaultTagName: Name default tag
+  You can use "" as default tag name while receiving messages if this field is not set
+
+   - permissionList
+   - redrivePolicy
+   - sourceQueues
+   - createTimestamp: Queue create timestamp;
+
+   - lastModifiedTimestamp: Queue last modified timestamp;
+
+   - queueTagMap: Tag ids must be unique in the map
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+    (2, TType.STRUCT, 'queueAttribute', (QueueAttribute, QueueAttribute.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'queueQuota', (QueueQuota, QueueQuota.thrift_spec), None, ), # 3
+    (4, TType.BOOL, 'enablePriority', None, None, ), # 4
+    (5, TType.BOOL, 'topicQueue', None, None, ), # 5
+    (6, TType.BOOL, 'deleteMessageForce', None, True, ), # 6
+    (7, TType.STRING, 'defaultTagName', None, None, ), # 7
+    (8, TType.MAP, 'permissionList', (TType.STRING,None,TType.I32,None), None, ), # 8
+    (9, TType.STRUCT, 'redrivePolicy', (RedrivePolicy, RedrivePolicy.thrift_spec), None, ), # 9
+    (10, TType.LIST, 'sourceQueues', (TType.STRING,None), None, ), # 10
+    (11, TType.I64, 'createTimestamp', None, None, ), # 11
+    (12, TType.I64, 'lastModifiedTimestamp', None, None, ), # 12
+    (13, TType.MAP, 'queueTagMap', (TType.STRING,None,TType.STRUCT,(QueueTag, QueueTag.thrift_spec)), None, ), # 13
+  )
+
+  def __init__(self, queueName=None, queueAttribute=None, queueQuota=None, enablePriority=None, topicQueue=None, deleteMessageForce=thrift_spec[6][4], defaultTagName=None, permissionList=None, redrivePolicy=None, sourceQueues=None, createTimestamp=None, lastModifiedTimestamp=None, queueTagMap=None,):
+    self.queueName = queueName
+    self.queueAttribute = queueAttribute
+    self.queueQuota = queueQuota
+    self.enablePriority = enablePriority
+    self.topicQueue = topicQueue
+    self.deleteMessageForce = deleteMessageForce
+    self.defaultTagName = defaultTagName
+    self.permissionList = permissionList
+    self.redrivePolicy = redrivePolicy
+    self.sourceQueues = sourceQueues
+    self.createTimestamp = createTimestamp
+    self.lastModifiedTimestamp = lastModifiedTimestamp
+    self.queueTagMap = queueTagMap
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.queueAttribute = QueueAttribute()
+          self.queueAttribute.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.queueQuota = QueueQuota()
+          self.queueQuota.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.BOOL:
+          self.enablePriority = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.BOOL:
+          self.topicQueue = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.BOOL:
+          self.deleteMessageForce = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRING:
+          self.defaultTagName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.MAP:
+          self.permissionList = {}
+          (_ktype92, _vtype93, _size91 ) = iprot.readMapBegin()
+          for _i95 in xrange(_size91):
+            _key96 = iprot.readString();
+            _val97 = iprot.readI32();
+            self.permissionList[_key96] = _val97
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.STRUCT:
+          self.redrivePolicy = RedrivePolicy()
+          self.redrivePolicy.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.LIST:
+          self.sourceQueues = []
+          (_etype101, _size98) = iprot.readListBegin()
+          for _i102 in xrange(_size98):
+            _elem103 = iprot.readString();
+            self.sourceQueues.append(_elem103)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.I64:
+          self.createTimestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.I64:
+          self.lastModifiedTimestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.MAP:
+          self.queueTagMap = {}
+          (_ktype105, _vtype106, _size104 ) = iprot.readMapBegin()
+          for _i108 in xrange(_size104):
+            _key109 = iprot.readString();
+            _val110 = QueueTag()
+            _val110.read(iprot)
+            self.queueTagMap[_key109] = _val110
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('QueueMeta')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    if self.queueAttribute is not None:
+      oprot.writeFieldBegin('queueAttribute', TType.STRUCT, 2)
+      self.queueAttribute.write(oprot)
+      oprot.writeFieldEnd()
+    if self.queueQuota is not None:
+      oprot.writeFieldBegin('queueQuota', TType.STRUCT, 3)
+      self.queueQuota.write(oprot)
+      oprot.writeFieldEnd()
+    if self.enablePriority is not None:
+      oprot.writeFieldBegin('enablePriority', TType.BOOL, 4)
+      oprot.writeBool(self.enablePriority)
+      oprot.writeFieldEnd()
+    if self.topicQueue is not None:
+      oprot.writeFieldBegin('topicQueue', TType.BOOL, 5)
+      oprot.writeBool(self.topicQueue)
+      oprot.writeFieldEnd()
+    if self.deleteMessageForce is not None:
+      oprot.writeFieldBegin('deleteMessageForce', TType.BOOL, 6)
+      oprot.writeBool(self.deleteMessageForce)
+      oprot.writeFieldEnd()
+    if self.defaultTagName is not None:
+      oprot.writeFieldBegin('defaultTagName', TType.STRING, 7)
+      oprot.writeString(self.defaultTagName)
+      oprot.writeFieldEnd()
+    if self.permissionList is not None:
+      oprot.writeFieldBegin('permissionList', TType.MAP, 8)
+      oprot.writeMapBegin(TType.STRING, TType.I32, len(self.permissionList))
+      for kiter111,viter112 in self.permissionList.items():
+        oprot.writeString(kiter111)
+        oprot.writeI32(viter112)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.redrivePolicy is not None:
+      oprot.writeFieldBegin('redrivePolicy', TType.STRUCT, 9)
+      self.redrivePolicy.write(oprot)
+      oprot.writeFieldEnd()
+    if self.sourceQueues is not None:
+      oprot.writeFieldBegin('sourceQueues', TType.LIST, 10)
+      oprot.writeListBegin(TType.STRING, len(self.sourceQueues))
+      for iter113 in self.sourceQueues:
+        oprot.writeString(iter113)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.createTimestamp is not None:
+      oprot.writeFieldBegin('createTimestamp', TType.I64, 11)
+      oprot.writeI64(self.createTimestamp)
+      oprot.writeFieldEnd()
+    if self.lastModifiedTimestamp is not None:
+      oprot.writeFieldBegin('lastModifiedTimestamp', TType.I64, 12)
+      oprot.writeI64(self.lastModifiedTimestamp)
+      oprot.writeFieldEnd()
+    if self.queueTagMap is not None:
+      oprot.writeFieldBegin('queueTagMap', TType.MAP, 13)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.queueTagMap))
+      for kiter114,viter115 in self.queueTagMap.items():
+        oprot.writeString(kiter114)
+        viter115.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueName is None:
+      raise TProtocol.TProtocolException(message='Required field queueName is unset!')
+    if self.queueAttribute is None:
+      raise TProtocol.TProtocolException(message='Required field queueAttribute is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    value = (value * 31) ^ hash(self.queueAttribute)
+    value = (value * 31) ^ hash(self.queueQuota)
+    value = (value * 31) ^ hash(self.enablePriority)
+    value = (value * 31) ^ hash(self.topicQueue)
+    value = (value * 31) ^ hash(self.deleteMessageForce)
+    value = (value * 31) ^ hash(self.defaultTagName)
+    value = (value * 31) ^ hash(self.permissionList)
+    value = (value * 31) ^ hash(self.redrivePolicy)
+    value = (value * 31) ^ hash(self.sourceQueues)
+    value = (value * 31) ^ hash(self.createTimestamp)
+    value = (value * 31) ^ hash(self.lastModifiedTimestamp)
+    value = (value * 31) ^ hash(self.queueTagMap)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class QueueTag(object):
+  """
+  Attributes:
+   - queueName
+   - tagName
+   - tagId: Tag id must be more than zero
+
+   - startTimestamp
+   - createTimestamp
+   - attributeName
+   - attributeValue
+   - userAttributes
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'queueName', None, None, ), # 1
+    (2, TType.STRING, 'tagName', None, None, ), # 2
+    (3, TType.I32, 'tagId', None, None, ), # 3
+    (4, TType.I64, 'startTimestamp', None, None, ), # 4
+    (5, TType.I64, 'createTimestamp', None, None, ), # 5
+    (6, TType.STRING, 'attributeName', None, None, ), # 6
+    (7, TType.STRUCT, 'attributeValue', (emq.message.ttypes.MessageAttribute, emq.message.ttypes.MessageAttribute.thrift_spec), None, ), # 7
+    (8, TType.MAP, 'userAttributes', (TType.STRING,None,TType.STRING,None), None, ), # 8
+  )
+
+  def __init__(self, queueName=None, tagName=None, tagId=None, startTimestamp=None, createTimestamp=None, attributeName=None, attributeValue=None, userAttributes=None,):
+    self.queueName = queueName
+    self.tagName = tagName
+    self.tagId = tagId
+    self.startTimestamp = startTimestamp
+    self.createTimestamp = createTimestamp
+    self.attributeName = attributeName
+    self.attributeValue = attributeValue
+    self.userAttributes = userAttributes
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.queueName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.tagName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.tagId = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.startTimestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.I64:
+          self.createTimestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.attributeName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRUCT:
+          self.attributeValue = emq.message.ttypes.MessageAttribute()
+          self.attributeValue.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.MAP:
+          self.userAttributes = {}
+          (_ktype117, _vtype118, _size116 ) = iprot.readMapBegin()
+          for _i120 in xrange(_size116):
+            _key121 = iprot.readString();
+            _val122 = iprot.readString();
+            self.userAttributes[_key121] = _val122
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('QueueTag')
+    if self.queueName is not None:
+      oprot.writeFieldBegin('queueName', TType.STRING, 1)
+      oprot.writeString(self.queueName)
+      oprot.writeFieldEnd()
+    if self.tagName is not None:
+      oprot.writeFieldBegin('tagName', TType.STRING, 2)
+      oprot.writeString(self.tagName)
+      oprot.writeFieldEnd()
+    if self.tagId is not None:
+      oprot.writeFieldBegin('tagId', TType.I32, 3)
+      oprot.writeI32(self.tagId)
+      oprot.writeFieldEnd()
+    if self.startTimestamp is not None:
+      oprot.writeFieldBegin('startTimestamp', TType.I64, 4)
+      oprot.writeI64(self.startTimestamp)
+      oprot.writeFieldEnd()
+    if self.createTimestamp is not None:
+      oprot.writeFieldBegin('createTimestamp', TType.I64, 5)
+      oprot.writeI64(self.createTimestamp)
+      oprot.writeFieldEnd()
+    if self.attributeName is not None:
+      oprot.writeFieldBegin('attributeName', TType.STRING, 6)
+      oprot.writeString(self.attributeName)
+      oprot.writeFieldEnd()
+    if self.attributeValue is not None:
+      oprot.writeFieldBegin('attributeValue', TType.STRUCT, 7)
+      self.attributeValue.write(oprot)
+      oprot.writeFieldEnd()
+    if self.userAttributes is not None:
+      oprot.writeFieldBegin('userAttributes', TType.MAP, 8)
+      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.userAttributes))
+      for kiter123,viter124 in self.userAttributes.items():
+        oprot.writeString(kiter123)
+        oprot.writeString(viter124)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueName is None:
+      raise TProtocol.TProtocolException(message='Required field queueName is unset!')
+    if self.tagName is None:
+      raise TProtocol.TProtocolException(message='Required field tagName is unset!')
+    if self.tagId is None:
+      raise TProtocol.TProtocolException(message='Required field tagId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueName)
+    value = (value * 31) ^ hash(self.tagName)
+    value = (value * 31) ^ hash(self.tagId)
+    value = (value * 31) ^ hash(self.startTimestamp)
+    value = (value * 31) ^ hash(self.createTimestamp)
+    value = (value * 31) ^ hash(self.attributeName)
+    value = (value * 31) ^ hash(self.attributeValue)
+    value = (value * 31) ^ hash(self.userAttributes)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class GetQueueMetaResponse(object):
+  """
+  Attributes:
+   - queueMeta
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'queueMeta', (QueueMeta, QueueMeta.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, queueMeta=None,):
+    self.queueMeta = queueMeta
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.queueMeta = QueueMeta()
+          self.queueMeta.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('GetQueueMetaResponse')
+    if self.queueMeta is not None:
+      oprot.writeFieldBegin('queueMeta', TType.STRUCT, 1)
+      self.queueMeta.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueMeta is None:
+      raise TProtocol.TProtocolException(message='Required field queueMeta is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueMeta)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class CopyQueueRequest(object):
+  """
+  Attributes:
+   - queueMeta
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'queueMeta', (QueueMeta, QueueMeta.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, queueMeta=None,):
+    self.queueMeta = queueMeta
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.queueMeta = QueueMeta()
+          self.queueMeta.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('CopyQueueRequest')
+    if self.queueMeta is not None:
+      oprot.writeFieldBegin('queueMeta', TType.STRUCT, 1)
+      self.queueMeta.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.queueMeta is None:
+      raise TProtocol.TProtocolException(message='Required field queueMeta is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.queueMeta)
     return value
 
   def __repr__(self):

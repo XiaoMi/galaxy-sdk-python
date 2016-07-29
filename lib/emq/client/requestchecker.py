@@ -18,7 +18,8 @@ from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, Change
   ChangeMessageVisibilityBatchRequest, DeleteMessageBatchRequest, DeadMessageBatchRequest, DeadMessageRequest
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
   RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota, CreateTagRequest, \
-  DeleteTagRequest, GetTagInfoRequest, ListTagRequest, SetQueueRedrivePolicyRequest, RemoveQueueRedrivePolicyRequest
+  DeleteTagRequest, GetTagInfoRequest, ListTagRequest, SetQueueRedrivePolicyRequest, RemoveQueueRedrivePolicyRequest, \
+  CopyQueueRequest, QueryPrivilegedQueueRequest
 from emq.statistics.ttypes import SetUserQuotaRequest, GetUserQuotaRequest, GetUserUsedQuotaRequest, SetUserInfoRequest, \
   GetUserInfoRequest
 
@@ -31,11 +32,12 @@ class RequestChecker(object):
     if len(self.__args) > 1:
       errMsg = "Unknown request"
       raise GalaxyEmqServiceException(errMsg=errMsg)
-    else:
+    elif len(self.__args) == 1:
       self.check_request_params(self.__args[0])
 
   def check_request_params(self, request):
-    if isinstance(request, ListQueueRequest):
+    if isinstance(request, ListQueueRequest) or \
+        isinstance(request, QueryPrivilegedQueueRequest):
       self.validate_queue_prefix(request.queueNamePrefix)
     elif isinstance(request, CreateQueueRequest):
       self.validate_queue_name(request.queueName, True, True)
@@ -163,6 +165,11 @@ class RequestChecker(object):
           or isinstance(request, GetUserUsedQuotaRequest) or isinstance(request, SetUserInfoRequest)
           or isinstance(request, GetUserInfoRequest)):
       pass
+    elif isinstance(request, string):
+      self.validate_queue_name(request)
+    elif isinstance(request, CopyQueueRequest):
+      queueMeta = request.queueMeta
+      self.validate_queue_name(queueMeta.queueName)
     else:
       self.validate_queue_name(request.queueName)
 
