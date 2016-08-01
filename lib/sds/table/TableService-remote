@@ -30,6 +30,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  RemoveResult remove(RemoveRequest request)')
   print('  ScanResult scan(ScanRequest request)')
   print('  BatchResult batch(BatchRequest request)')
+  print('  BatchResult batchCheckAndMutate(BatchRequest request)')
   print('  PutResult putToRebuildIndex(PutRequest request)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
@@ -125,6 +126,12 @@ elif cmd == 'batch':
     print('batch requires 1 args')
     sys.exit(1)
   pp.pprint(client.batch(eval(args[0]),))
+
+elif cmd == 'batchCheckAndMutate':
+  if len(args) != 1:
+    print('batchCheckAndMutate requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.batchCheckAndMutate(eval(args[0]),))
 
 elif cmd == 'putToRebuildIndex':
   if len(args) != 1:
