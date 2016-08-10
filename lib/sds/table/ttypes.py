@@ -192,6 +192,26 @@ class Permission(object):
     "ADMIN": 3,
   }
 
+class ConsistencyLevel(object):
+  """
+  数据一致性级别
+  """
+  STRONG = 0
+  EVENTUAL = 1
+  WEAK = 2
+
+  _VALUES_TO_NAMES = {
+    0: "STRONG",
+    1: "EVENTUAL",
+    2: "WEAK",
+  }
+
+  _NAMES_TO_VALUES = {
+    "STRONG": 0,
+    "EVENTUAL": 1,
+    "WEAK": 2,
+  }
+
 class StreamViewType(object):
   """
   stream view type
@@ -1183,6 +1203,213 @@ class EntityGroupSpec(object):
   def __ne__(self, other):
     return not (self == other)
 
+class GlobalSecondaryIndexSpec(object):
+  """
+  全局二级索引定义
+
+  Attributes:
+   - indexEntityGroup: 索引表的实体组键
+  可用于对索引表进行hash
+   - indexPrimaryKey: 索引表的主键
+   - projections: 投影的属性，全局二级索引不能读取非投影属性
+   - consistencyLevel: 索引数据一致性级别
+   - unique: 是否为唯一索引
+   - throughput: 索引表的吞吐量配额
+   - slaveThroughput: 索引表的备集群的吞吐量配额
+   - exceededThroughput: 索引表的最大超发吞吐量配额
+   - exceededSlaveThroughput: 索引表的备集群的最大超发吞吐量配额
+   - preSplits: 表初始分片数目，仅支持Entity Group开启hash分布的表，且仅在建表时起作用
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'indexEntityGroup', (EntityGroupSpec, EntityGroupSpec.thrift_spec), None, ), # 1
+    (2, TType.LIST, 'indexPrimaryKey', (TType.STRUCT,(KeySpec, KeySpec.thrift_spec)), None, ), # 2
+    (3, TType.LIST, 'projections', (TType.STRING,None), None, ), # 3
+    (4, TType.I32, 'consistencyLevel', None,     0, ), # 4
+    (5, TType.BOOL, 'unique', None, False, ), # 5
+    (6, TType.STRUCT, 'throughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 6
+    (7, TType.STRUCT, 'slaveThroughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 7
+    (8, TType.STRUCT, 'exceededThroughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 8
+    (9, TType.STRUCT, 'exceededSlaveThroughput', (ProvisionThroughput, ProvisionThroughput.thrift_spec), None, ), # 9
+    (10, TType.I32, 'preSplits', None, 1, ), # 10
+  )
+
+  def __init__(self, indexEntityGroup=None, indexPrimaryKey=None, projections=None, consistencyLevel=thrift_spec[4][4], unique=thrift_spec[5][4], throughput=None, slaveThroughput=None, exceededThroughput=None, exceededSlaveThroughput=None, preSplits=thrift_spec[10][4],):
+    self.indexEntityGroup = indexEntityGroup
+    self.indexPrimaryKey = indexPrimaryKey
+    self.projections = projections
+    self.consistencyLevel = consistencyLevel
+    self.unique = unique
+    self.throughput = throughput
+    self.slaveThroughput = slaveThroughput
+    self.exceededThroughput = exceededThroughput
+    self.exceededSlaveThroughput = exceededSlaveThroughput
+    self.preSplits = preSplits
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.indexEntityGroup = EntityGroupSpec()
+          self.indexEntityGroup.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.LIST:
+          self.indexPrimaryKey = []
+          (_etype80, _size77) = iprot.readListBegin()
+          for _i81 in xrange(_size77):
+            _elem82 = KeySpec()
+            _elem82.read(iprot)
+            self.indexPrimaryKey.append(_elem82)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.LIST:
+          self.projections = []
+          (_etype86, _size83) = iprot.readListBegin()
+          for _i87 in xrange(_size83):
+            _elem88 = iprot.readString();
+            self.projections.append(_elem88)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I32:
+          self.consistencyLevel = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.BOOL:
+          self.unique = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRUCT:
+          self.throughput = ProvisionThroughput()
+          self.throughput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRUCT:
+          self.slaveThroughput = ProvisionThroughput()
+          self.slaveThroughput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.STRUCT:
+          self.exceededThroughput = ProvisionThroughput()
+          self.exceededThroughput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.STRUCT:
+          self.exceededSlaveThroughput = ProvisionThroughput()
+          self.exceededSlaveThroughput.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.I32:
+          self.preSplits = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('GlobalSecondaryIndexSpec')
+    if self.indexEntityGroup is not None:
+      oprot.writeFieldBegin('indexEntityGroup', TType.STRUCT, 1)
+      self.indexEntityGroup.write(oprot)
+      oprot.writeFieldEnd()
+    if self.indexPrimaryKey is not None:
+      oprot.writeFieldBegin('indexPrimaryKey', TType.LIST, 2)
+      oprot.writeListBegin(TType.STRUCT, len(self.indexPrimaryKey))
+      for iter89 in self.indexPrimaryKey:
+        iter89.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.projections is not None:
+      oprot.writeFieldBegin('projections', TType.LIST, 3)
+      oprot.writeListBegin(TType.STRING, len(self.projections))
+      for iter90 in self.projections:
+        oprot.writeString(iter90)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.consistencyLevel is not None:
+      oprot.writeFieldBegin('consistencyLevel', TType.I32, 4)
+      oprot.writeI32(self.consistencyLevel)
+      oprot.writeFieldEnd()
+    if self.unique is not None:
+      oprot.writeFieldBegin('unique', TType.BOOL, 5)
+      oprot.writeBool(self.unique)
+      oprot.writeFieldEnd()
+    if self.throughput is not None:
+      oprot.writeFieldBegin('throughput', TType.STRUCT, 6)
+      self.throughput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.slaveThroughput is not None:
+      oprot.writeFieldBegin('slaveThroughput', TType.STRUCT, 7)
+      self.slaveThroughput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.exceededThroughput is not None:
+      oprot.writeFieldBegin('exceededThroughput', TType.STRUCT, 8)
+      self.exceededThroughput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.exceededSlaveThroughput is not None:
+      oprot.writeFieldBegin('exceededSlaveThroughput', TType.STRUCT, 9)
+      self.exceededSlaveThroughput.write(oprot)
+      oprot.writeFieldEnd()
+    if self.preSplits is not None:
+      oprot.writeFieldBegin('preSplits', TType.I32, 10)
+      oprot.writeI32(self.preSplits)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.indexEntityGroup)
+    value = (value * 31) ^ hash(self.indexPrimaryKey)
+    value = (value * 31) ^ hash(self.projections)
+    value = (value * 31) ^ hash(self.consistencyLevel)
+    value = (value * 31) ^ hash(self.unique)
+    value = (value * 31) ^ hash(self.throughput)
+    value = (value * 31) ^ hash(self.slaveThroughput)
+    value = (value * 31) ^ hash(self.exceededThroughput)
+    value = (value * 31) ^ hash(self.exceededSlaveThroughput)
+    value = (value * 31) ^ hash(self.preSplits)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class StreamSpec(object):
   """
   stream specification
@@ -1227,10 +1454,10 @@ class StreamSpec(object):
       elif fid == 3:
         if ftype == TType.LIST:
           self.attributes = []
-          (_etype80, _size77) = iprot.readListBegin()
-          for _i81 in xrange(_size77):
-            _elem82 = iprot.readString();
-            self.attributes.append(_elem82)
+          (_etype94, _size91) = iprot.readListBegin()
+          for _i95 in xrange(_size91):
+            _elem96 = iprot.readString();
+            self.attributes.append(_elem96)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1255,8 +1482,8 @@ class StreamSpec(object):
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.attributes))
-      for iter83 in self.attributes:
-        oprot.writeString(iter83)
+      for iter97 in self.attributes:
+        oprot.writeString(iter97)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1299,6 +1526,7 @@ class TableSchema(object):
    - ttl: 记录存活时间，单位为秒。-1表示不会自动删除
    - preSplits: 表初始分片数目，仅支持Entity Group开启hash分布的表，且仅在建表时起作用
    - streams: stream定义, TopicName => StreamSpec
+   - globalSecondaryIndexes: 全局二级索引定义
   """
 
   thrift_spec = (
@@ -1311,9 +1539,10 @@ class TableSchema(object):
     (6, TType.I32, 'ttl', None, -1, ), # 6
     (7, TType.I32, 'preSplits', None, 1, ), # 7
     (8, TType.MAP, 'streams', (TType.STRING,None,TType.STRUCT,(StreamSpec, StreamSpec.thrift_spec)), None, ), # 8
+    (9, TType.MAP, 'globalSecondaryIndexes', (TType.STRING,None,TType.STRUCT,(GlobalSecondaryIndexSpec, GlobalSecondaryIndexSpec.thrift_spec)), None, ), # 9
   )
 
-  def __init__(self, version=None, entityGroup=None, primaryIndex=None, secondaryIndexes=None, attributes=None, ttl=thrift_spec[6][4], preSplits=thrift_spec[7][4], streams=None,):
+  def __init__(self, version=None, entityGroup=None, primaryIndex=None, secondaryIndexes=None, attributes=None, ttl=thrift_spec[6][4], preSplits=thrift_spec[7][4], streams=None, globalSecondaryIndexes=None,):
     self.version = version
     self.entityGroup = entityGroup
     self.primaryIndex = primaryIndex
@@ -1322,6 +1551,7 @@ class TableSchema(object):
     self.ttl = ttl
     self.preSplits = preSplits
     self.streams = streams
+    self.globalSecondaryIndexes = globalSecondaryIndexes
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1346,34 +1576,34 @@ class TableSchema(object):
       elif fid == 3:
         if ftype == TType.LIST:
           self.primaryIndex = []
-          (_etype87, _size84) = iprot.readListBegin()
-          for _i88 in xrange(_size84):
-            _elem89 = KeySpec()
-            _elem89.read(iprot)
-            self.primaryIndex.append(_elem89)
+          (_etype101, _size98) = iprot.readListBegin()
+          for _i102 in xrange(_size98):
+            _elem103 = KeySpec()
+            _elem103.read(iprot)
+            self.primaryIndex.append(_elem103)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.MAP:
           self.secondaryIndexes = {}
-          (_ktype91, _vtype92, _size90 ) = iprot.readMapBegin()
-          for _i94 in xrange(_size90):
-            _key95 = iprot.readString();
-            _val96 = LocalSecondaryIndexSpec()
-            _val96.read(iprot)
-            self.secondaryIndexes[_key95] = _val96
+          (_ktype105, _vtype106, _size104 ) = iprot.readMapBegin()
+          for _i108 in xrange(_size104):
+            _key109 = iprot.readString();
+            _val110 = LocalSecondaryIndexSpec()
+            _val110.read(iprot)
+            self.secondaryIndexes[_key109] = _val110
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.MAP:
           self.attributes = {}
-          (_ktype98, _vtype99, _size97 ) = iprot.readMapBegin()
-          for _i101 in xrange(_size97):
-            _key102 = iprot.readString();
-            _val103 = iprot.readI32();
-            self.attributes[_key102] = _val103
+          (_ktype112, _vtype113, _size111 ) = iprot.readMapBegin()
+          for _i115 in xrange(_size111):
+            _key116 = iprot.readString();
+            _val117 = iprot.readI32();
+            self.attributes[_key116] = _val117
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -1390,12 +1620,24 @@ class TableSchema(object):
       elif fid == 8:
         if ftype == TType.MAP:
           self.streams = {}
-          (_ktype105, _vtype106, _size104 ) = iprot.readMapBegin()
-          for _i108 in xrange(_size104):
-            _key109 = iprot.readString();
-            _val110 = StreamSpec()
-            _val110.read(iprot)
-            self.streams[_key109] = _val110
+          (_ktype119, _vtype120, _size118 ) = iprot.readMapBegin()
+          for _i122 in xrange(_size118):
+            _key123 = iprot.readString();
+            _val124 = StreamSpec()
+            _val124.read(iprot)
+            self.streams[_key123] = _val124
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.MAP:
+          self.globalSecondaryIndexes = {}
+          (_ktype126, _vtype127, _size125 ) = iprot.readMapBegin()
+          for _i129 in xrange(_size125):
+            _key130 = iprot.readString();
+            _val131 = GlobalSecondaryIndexSpec()
+            _val131.read(iprot)
+            self.globalSecondaryIndexes[_key130] = _val131
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -1420,24 +1662,24 @@ class TableSchema(object):
     if self.primaryIndex is not None:
       oprot.writeFieldBegin('primaryIndex', TType.LIST, 3)
       oprot.writeListBegin(TType.STRUCT, len(self.primaryIndex))
-      for iter111 in self.primaryIndex:
-        iter111.write(oprot)
+      for iter132 in self.primaryIndex:
+        iter132.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.secondaryIndexes is not None:
       oprot.writeFieldBegin('secondaryIndexes', TType.MAP, 4)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.secondaryIndexes))
-      for kiter112,viter113 in self.secondaryIndexes.items():
-        oprot.writeString(kiter112)
-        viter113.write(oprot)
+      for kiter133,viter134 in self.secondaryIndexes.items():
+        oprot.writeString(kiter133)
+        viter134.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.MAP, 5)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.attributes))
-      for kiter114,viter115 in self.attributes.items():
-        oprot.writeString(kiter114)
-        oprot.writeI32(viter115)
+      for kiter135,viter136 in self.attributes.items():
+        oprot.writeString(kiter135)
+        oprot.writeI32(viter136)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ttl is not None:
@@ -1451,9 +1693,17 @@ class TableSchema(object):
     if self.streams is not None:
       oprot.writeFieldBegin('streams', TType.MAP, 8)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.streams))
-      for kiter116,viter117 in self.streams.items():
-        oprot.writeString(kiter116)
-        viter117.write(oprot)
+      for kiter137,viter138 in self.streams.items():
+        oprot.writeString(kiter137)
+        viter138.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.globalSecondaryIndexes is not None:
+      oprot.writeFieldBegin('globalSecondaryIndexes', TType.MAP, 9)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.globalSecondaryIndexes))
+      for kiter139,viter140 in self.globalSecondaryIndexes.items():
+        oprot.writeString(kiter139)
+        viter140.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1473,6 +1723,7 @@ class TableSchema(object):
     value = (value * 31) ^ hash(self.ttl)
     value = (value * 31) ^ hash(self.preSplits)
     value = (value * 31) ^ hash(self.streams)
+    value = (value * 31) ^ hash(self.globalSecondaryIndexes)
     return value
 
   def __repr__(self):
@@ -1565,16 +1816,16 @@ class TableMetadata(object):
       elif fid == 3:
         if ftype == TType.MAP:
           self.appAcl = {}
-          (_ktype119, _vtype120, _size118 ) = iprot.readMapBegin()
-          for _i122 in xrange(_size118):
-            _key123 = iprot.readString();
-            _val124 = []
-            (_etype128, _size125) = iprot.readListBegin()
-            for _i129 in xrange(_size125):
-              _elem130 = iprot.readI32();
-              _val124.append(_elem130)
+          (_ktype142, _vtype143, _size141 ) = iprot.readMapBegin()
+          for _i145 in xrange(_size141):
+            _key146 = iprot.readString();
+            _val147 = []
+            (_etype151, _size148) = iprot.readListBegin()
+            for _i152 in xrange(_size148):
+              _elem153 = iprot.readI32();
+              _val147.append(_elem153)
             iprot.readListEnd()
-            self.appAcl[_key123] = _val124
+            self.appAcl[_key146] = _val147
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -1627,16 +1878,16 @@ class TableMetadata(object):
       elif fid == 12:
         if ftype == TType.MAP:
           self.acl = {}
-          (_ktype132, _vtype133, _size131 ) = iprot.readMapBegin()
-          for _i135 in xrange(_size131):
-            _key136 = iprot.readString();
-            _val137 = []
-            (_etype141, _size138) = iprot.readListBegin()
-            for _i142 in xrange(_size138):
-              _elem143 = iprot.readI32();
-              _val137.append(_elem143)
+          (_ktype155, _vtype156, _size154 ) = iprot.readMapBegin()
+          for _i158 in xrange(_size154):
+            _key159 = iprot.readString();
+            _val160 = []
+            (_etype164, _size161) = iprot.readListBegin()
+            for _i165 in xrange(_size161):
+              _elem166 = iprot.readI32();
+              _val160.append(_elem166)
             iprot.readListEnd()
-            self.acl[_key136] = _val137
+            self.acl[_key159] = _val160
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -1671,11 +1922,11 @@ class TableMetadata(object):
     if self.appAcl is not None:
       oprot.writeFieldBegin('appAcl', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.LIST, len(self.appAcl))
-      for kiter144,viter145 in self.appAcl.items():
-        oprot.writeString(kiter144)
-        oprot.writeListBegin(TType.I32, len(viter145))
-        for iter146 in viter145:
-          oprot.writeI32(iter146)
+      for kiter167,viter168 in self.appAcl.items():
+        oprot.writeString(kiter167)
+        oprot.writeListBegin(TType.I32, len(viter168))
+        for iter169 in viter168:
+          oprot.writeI32(iter169)
         oprot.writeListEnd()
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
@@ -1714,11 +1965,11 @@ class TableMetadata(object):
     if self.acl is not None:
       oprot.writeFieldBegin('acl', TType.MAP, 12)
       oprot.writeMapBegin(TType.STRING, TType.LIST, len(self.acl))
-      for kiter147,viter148 in self.acl.items():
-        oprot.writeString(kiter147)
-        oprot.writeListBegin(TType.I32, len(viter148))
-        for iter149 in viter148:
-          oprot.writeI32(iter149)
+      for kiter170,viter171 in self.acl.items():
+        oprot.writeString(kiter170)
+        oprot.writeListBegin(TType.I32, len(viter171))
+        for iter172 in viter171:
+          oprot.writeI32(iter172)
         oprot.writeListEnd()
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
@@ -2213,24 +2464,24 @@ class TableSplit(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.startKey = {}
-          (_ktype151, _vtype152, _size150 ) = iprot.readMapBegin()
-          for _i154 in xrange(_size150):
-            _key155 = iprot.readString();
-            _val156 = Datum()
-            _val156.read(iprot)
-            self.startKey[_key155] = _val156
+          (_ktype174, _vtype175, _size173 ) = iprot.readMapBegin()
+          for _i177 in xrange(_size173):
+            _key178 = iprot.readString();
+            _val179 = Datum()
+            _val179.read(iprot)
+            self.startKey[_key178] = _val179
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.MAP:
           self.stopKey = {}
-          (_ktype158, _vtype159, _size157 ) = iprot.readMapBegin()
-          for _i161 in xrange(_size157):
-            _key162 = iprot.readString();
-            _val163 = Datum()
-            _val163.read(iprot)
-            self.stopKey[_key162] = _val163
+          (_ktype181, _vtype182, _size180 ) = iprot.readMapBegin()
+          for _i184 in xrange(_size180):
+            _key185 = iprot.readString();
+            _val186 = Datum()
+            _val186.read(iprot)
+            self.stopKey[_key185] = _val186
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2247,17 +2498,17 @@ class TableSplit(object):
     if self.startKey is not None:
       oprot.writeFieldBegin('startKey', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
-      for kiter164,viter165 in self.startKey.items():
-        oprot.writeString(kiter164)
-        viter165.write(oprot)
+      for kiter187,viter188 in self.startKey.items():
+        oprot.writeString(kiter187)
+        viter188.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.stopKey is not None:
       oprot.writeFieldBegin('stopKey', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
-      for kiter166,viter167 in self.stopKey.items():
-        oprot.writeString(kiter166)
-        viter167.write(oprot)
+      for kiter189,viter190 in self.stopKey.items():
+        oprot.writeString(kiter189)
+        viter190.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2321,22 +2572,22 @@ class GetRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.keys = {}
-          (_ktype169, _vtype170, _size168 ) = iprot.readMapBegin()
-          for _i172 in xrange(_size168):
-            _key173 = iprot.readString();
-            _val174 = Datum()
-            _val174.read(iprot)
-            self.keys[_key173] = _val174
+          (_ktype192, _vtype193, _size191 ) = iprot.readMapBegin()
+          for _i195 in xrange(_size191):
+            _key196 = iprot.readString();
+            _val197 = Datum()
+            _val197.read(iprot)
+            self.keys[_key196] = _val197
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.LIST:
           self.attributes = []
-          (_etype178, _size175) = iprot.readListBegin()
-          for _i179 in xrange(_size175):
-            _elem180 = iprot.readString();
-            self.attributes.append(_elem180)
+          (_etype201, _size198) = iprot.readListBegin()
+          for _i202 in xrange(_size198):
+            _elem203 = iprot.readString();
+            self.attributes.append(_elem203)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2357,16 +2608,16 @@ class GetRequest(object):
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.keys))
-      for kiter181,viter182 in self.keys.items():
-        oprot.writeString(kiter181)
-        viter182.write(oprot)
+      for kiter204,viter205 in self.keys.items():
+        oprot.writeString(kiter204)
+        viter205.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.attributes))
-      for iter183 in self.attributes:
-        oprot.writeString(iter183)
+      for iter206 in self.attributes:
+        oprot.writeString(iter206)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2420,12 +2671,12 @@ class GetResult(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.item = {}
-          (_ktype185, _vtype186, _size184 ) = iprot.readMapBegin()
-          for _i188 in xrange(_size184):
-            _key189 = iprot.readString();
-            _val190 = Datum()
-            _val190.read(iprot)
-            self.item[_key189] = _val190
+          (_ktype208, _vtype209, _size207 ) = iprot.readMapBegin()
+          for _i211 in xrange(_size207):
+            _key212 = iprot.readString();
+            _val213 = Datum()
+            _val213.read(iprot)
+            self.item[_key212] = _val213
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2442,9 +2693,9 @@ class GetResult(object):
     if self.item is not None:
       oprot.writeFieldBegin('item', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.item))
-      for kiter191,viter192 in self.item.items():
-        oprot.writeString(kiter191)
-        viter192.write(oprot)
+      for kiter214,viter215 in self.item.items():
+        oprot.writeString(kiter214)
+        viter215.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2507,12 +2758,12 @@ class PutRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype194, _vtype195, _size193 ) = iprot.readMapBegin()
-          for _i197 in xrange(_size193):
-            _key198 = iprot.readString();
-            _val199 = Datum()
-            _val199.read(iprot)
-            self.record[_key198] = _val199
+          (_ktype217, _vtype218, _size216 ) = iprot.readMapBegin()
+          for _i220 in xrange(_size216):
+            _key221 = iprot.readString();
+            _val222 = Datum()
+            _val222.read(iprot)
+            self.record[_key221] = _val222
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2539,9 +2790,9 @@ class PutRequest(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter200,viter201 in self.record.items():
-        oprot.writeString(kiter200)
-        viter201.write(oprot)
+      for kiter223,viter224 in self.record.items():
+        oprot.writeString(kiter223)
+        viter224.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.condition is not None:
@@ -2675,24 +2926,24 @@ class IncrementRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.keys = {}
-          (_ktype203, _vtype204, _size202 ) = iprot.readMapBegin()
-          for _i206 in xrange(_size202):
-            _key207 = iprot.readString();
-            _val208 = Datum()
-            _val208.read(iprot)
-            self.keys[_key207] = _val208
+          (_ktype226, _vtype227, _size225 ) = iprot.readMapBegin()
+          for _i229 in xrange(_size225):
+            _key230 = iprot.readString();
+            _val231 = Datum()
+            _val231.read(iprot)
+            self.keys[_key230] = _val231
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.MAP:
           self.amounts = {}
-          (_ktype210, _vtype211, _size209 ) = iprot.readMapBegin()
-          for _i213 in xrange(_size209):
-            _key214 = iprot.readString();
-            _val215 = Datum()
-            _val215.read(iprot)
-            self.amounts[_key214] = _val215
+          (_ktype233, _vtype234, _size232 ) = iprot.readMapBegin()
+          for _i236 in xrange(_size232):
+            _key237 = iprot.readString();
+            _val238 = Datum()
+            _val238.read(iprot)
+            self.amounts[_key237] = _val238
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2713,17 +2964,17 @@ class IncrementRequest(object):
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.keys))
-      for kiter216,viter217 in self.keys.items():
-        oprot.writeString(kiter216)
-        viter217.write(oprot)
+      for kiter239,viter240 in self.keys.items():
+        oprot.writeString(kiter239)
+        viter240.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.amounts is not None:
       oprot.writeFieldBegin('amounts', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.amounts))
-      for kiter218,viter219 in self.amounts.items():
-        oprot.writeString(kiter218)
-        viter219.write(oprot)
+      for kiter241,viter242 in self.amounts.items():
+        oprot.writeString(kiter241)
+        viter242.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2777,12 +3028,12 @@ class IncrementResult(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.amounts = {}
-          (_ktype221, _vtype222, _size220 ) = iprot.readMapBegin()
-          for _i224 in xrange(_size220):
-            _key225 = iprot.readString();
-            _val226 = Datum()
-            _val226.read(iprot)
-            self.amounts[_key225] = _val226
+          (_ktype244, _vtype245, _size243 ) = iprot.readMapBegin()
+          for _i247 in xrange(_size243):
+            _key248 = iprot.readString();
+            _val249 = Datum()
+            _val249.read(iprot)
+            self.amounts[_key248] = _val249
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -2799,9 +3050,9 @@ class IncrementResult(object):
     if self.amounts is not None:
       oprot.writeFieldBegin('amounts', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.amounts))
-      for kiter227,viter228 in self.amounts.items():
-        oprot.writeString(kiter227)
-        viter228.write(oprot)
+      for kiter250,viter251 in self.amounts.items():
+        oprot.writeString(kiter250)
+        viter251.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2868,22 +3119,22 @@ class RemoveRequest(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.keys = {}
-          (_ktype230, _vtype231, _size229 ) = iprot.readMapBegin()
-          for _i233 in xrange(_size229):
-            _key234 = iprot.readString();
-            _val235 = Datum()
-            _val235.read(iprot)
-            self.keys[_key234] = _val235
+          (_ktype253, _vtype254, _size252 ) = iprot.readMapBegin()
+          for _i256 in xrange(_size252):
+            _key257 = iprot.readString();
+            _val258 = Datum()
+            _val258.read(iprot)
+            self.keys[_key257] = _val258
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.LIST:
           self.attributes = []
-          (_etype239, _size236) = iprot.readListBegin()
-          for _i240 in xrange(_size236):
-            _elem241 = iprot.readString();
-            self.attributes.append(_elem241)
+          (_etype262, _size259) = iprot.readListBegin()
+          for _i263 in xrange(_size259):
+            _elem264 = iprot.readString();
+            self.attributes.append(_elem264)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2910,16 +3161,16 @@ class RemoveRequest(object):
     if self.keys is not None:
       oprot.writeFieldBegin('keys', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.keys))
-      for kiter242,viter243 in self.keys.items():
-        oprot.writeString(kiter242)
-        viter243.write(oprot)
+      for kiter265,viter266 in self.keys.items():
+        oprot.writeString(kiter265)
+        viter266.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.LIST, 3)
       oprot.writeListBegin(TType.STRING, len(self.attributes))
-      for iter244 in self.attributes:
-        oprot.writeString(iter244)
+      for iter267 in self.attributes:
+        oprot.writeString(iter267)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.condition is not None:
@@ -3283,34 +3534,34 @@ class ScanRequest(object):
       elif fid == 3:
         if ftype == TType.MAP:
           self.startKey = {}
-          (_ktype246, _vtype247, _size245 ) = iprot.readMapBegin()
-          for _i249 in xrange(_size245):
-            _key250 = iprot.readString();
-            _val251 = Datum()
-            _val251.read(iprot)
-            self.startKey[_key250] = _val251
+          (_ktype269, _vtype270, _size268 ) = iprot.readMapBegin()
+          for _i272 in xrange(_size268):
+            _key273 = iprot.readString();
+            _val274 = Datum()
+            _val274.read(iprot)
+            self.startKey[_key273] = _val274
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.MAP:
           self.stopKey = {}
-          (_ktype253, _vtype254, _size252 ) = iprot.readMapBegin()
-          for _i256 in xrange(_size252):
-            _key257 = iprot.readString();
-            _val258 = Datum()
-            _val258.read(iprot)
-            self.stopKey[_key257] = _val258
+          (_ktype276, _vtype277, _size275 ) = iprot.readMapBegin()
+          for _i279 in xrange(_size275):
+            _key280 = iprot.readString();
+            _val281 = Datum()
+            _val281.read(iprot)
+            self.stopKey[_key280] = _val281
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.LIST:
           self.attributes = []
-          (_etype262, _size259) = iprot.readListBegin()
-          for _i263 in xrange(_size259):
-            _elem264 = iprot.readString();
-            self.attributes.append(_elem264)
+          (_etype285, _size282) = iprot.readListBegin()
+          for _i286 in xrange(_size282):
+            _elem287 = iprot.readString();
+            self.attributes.append(_elem287)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3371,24 +3622,24 @@ class ScanRequest(object):
     if self.startKey is not None:
       oprot.writeFieldBegin('startKey', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
-      for kiter265,viter266 in self.startKey.items():
-        oprot.writeString(kiter265)
-        viter266.write(oprot)
+      for kiter288,viter289 in self.startKey.items():
+        oprot.writeString(kiter288)
+        viter289.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.stopKey is not None:
       oprot.writeFieldBegin('stopKey', TType.MAP, 4)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
-      for kiter267,viter268 in self.stopKey.items():
-        oprot.writeString(kiter267)
-        viter268.write(oprot)
+      for kiter290,viter291 in self.stopKey.items():
+        oprot.writeString(kiter290)
+        viter291.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.LIST, 5)
       oprot.writeListBegin(TType.STRING, len(self.attributes))
-      for iter269 in self.attributes:
-        oprot.writeString(iter269)
+      for iter292 in self.attributes:
+        oprot.writeString(iter292)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.condition is not None:
@@ -3485,29 +3736,29 @@ class ScanResult(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.nextStartKey = {}
-          (_ktype271, _vtype272, _size270 ) = iprot.readMapBegin()
-          for _i274 in xrange(_size270):
-            _key275 = iprot.readString();
-            _val276 = Datum()
-            _val276.read(iprot)
-            self.nextStartKey[_key275] = _val276
+          (_ktype294, _vtype295, _size293 ) = iprot.readMapBegin()
+          for _i297 in xrange(_size293):
+            _key298 = iprot.readString();
+            _val299 = Datum()
+            _val299.read(iprot)
+            self.nextStartKey[_key298] = _val299
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.LIST:
           self.records = []
-          (_etype280, _size277) = iprot.readListBegin()
-          for _i281 in xrange(_size277):
-            _elem282 = {}
-            (_ktype284, _vtype285, _size283 ) = iprot.readMapBegin()
-            for _i287 in xrange(_size283):
-              _key288 = iprot.readString();
-              _val289 = Datum()
-              _val289.read(iprot)
-              _elem282[_key288] = _val289
+          (_etype303, _size300) = iprot.readListBegin()
+          for _i304 in xrange(_size300):
+            _elem305 = {}
+            (_ktype307, _vtype308, _size306 ) = iprot.readMapBegin()
+            for _i310 in xrange(_size306):
+              _key311 = iprot.readString();
+              _val312 = Datum()
+              _val312.read(iprot)
+              _elem305[_key311] = _val312
             iprot.readMapEnd()
-            self.records.append(_elem282)
+            self.records.append(_elem305)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3529,19 +3780,19 @@ class ScanResult(object):
     if self.nextStartKey is not None:
       oprot.writeFieldBegin('nextStartKey', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.nextStartKey))
-      for kiter290,viter291 in self.nextStartKey.items():
-        oprot.writeString(kiter290)
-        viter291.write(oprot)
+      for kiter313,viter314 in self.nextStartKey.items():
+        oprot.writeString(kiter313)
+        viter314.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.records is not None:
       oprot.writeFieldBegin('records', TType.LIST, 2)
       oprot.writeListBegin(TType.MAP, len(self.records))
-      for iter292 in self.records:
-        oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(iter292))
-        for kiter293,viter294 in iter292.items():
-          oprot.writeString(kiter293)
-          viter294.write(oprot)
+      for iter315 in self.records:
+        oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(iter315))
+        for kiter316,viter317 in iter315.items():
+          oprot.writeString(kiter316)
+          viter317.write(oprot)
         oprot.writeMapEnd()
       oprot.writeListEnd()
       oprot.writeFieldEnd()
@@ -3893,11 +4144,11 @@ class BatchRequest(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.items = []
-          (_etype298, _size295) = iprot.readListBegin()
-          for _i299 in xrange(_size295):
-            _elem300 = BatchRequestItem()
-            _elem300.read(iprot)
-            self.items.append(_elem300)
+          (_etype321, _size318) = iprot.readListBegin()
+          for _i322 in xrange(_size318):
+            _elem323 = BatchRequestItem()
+            _elem323.read(iprot)
+            self.items.append(_elem323)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3914,8 +4165,8 @@ class BatchRequest(object):
     if self.items is not None:
       oprot.writeFieldBegin('items', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.items))
-      for iter301 in self.items:
-        iter301.write(oprot)
+      for iter324 in self.items:
+        iter324.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3967,11 +4218,11 @@ class BatchResult(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.items = []
-          (_etype305, _size302) = iprot.readListBegin()
-          for _i306 in xrange(_size302):
-            _elem307 = BatchResultItem()
-            _elem307.read(iprot)
-            self.items.append(_elem307)
+          (_etype328, _size325) = iprot.readListBegin()
+          for _i329 in xrange(_size325):
+            _elem330 = BatchResultItem()
+            _elem330.read(iprot)
+            self.items.append(_elem330)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3988,8 +4239,8 @@ class BatchResult(object):
     if self.items is not None:
       oprot.writeFieldBegin('items', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.items))
-      for iter308 in self.items:
-        iter308.write(oprot)
+      for iter331 in self.items:
+        iter331.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -4050,11 +4301,11 @@ class InternalMutationLogEntry(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype310, _vtype311, _size309 ) = iprot.readMapBegin()
-          for _i313 in xrange(_size309):
-            _key314 = iprot.readString();
-            _val315 = iprot.readString();
-            self.record[_key314] = _val315
+          (_ktype333, _vtype334, _size332 ) = iprot.readMapBegin()
+          for _i336 in xrange(_size332):
+            _key337 = iprot.readString();
+            _val338 = iprot.readString();
+            self.record[_key337] = _val338
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4081,9 +4332,9 @@ class InternalMutationLogEntry(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.record))
-      for kiter316,viter317 in self.record.items():
-        oprot.writeString(kiter316)
-        oprot.writeString(viter317)
+      for kiter339,viter340 in self.record.items():
+        oprot.writeString(kiter339)
+        oprot.writeString(viter340)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.type is not None:
@@ -4157,12 +4408,12 @@ class MutationLogEntry(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype319, _vtype320, _size318 ) = iprot.readMapBegin()
-          for _i322 in xrange(_size318):
-            _key323 = iprot.readString();
-            _val324 = Datum()
-            _val324.read(iprot)
-            self.record[_key323] = _val324
+          (_ktype342, _vtype343, _size341 ) = iprot.readMapBegin()
+          for _i345 in xrange(_size341):
+            _key346 = iprot.readString();
+            _val347 = Datum()
+            _val347.read(iprot)
+            self.record[_key346] = _val347
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4194,9 +4445,9 @@ class MutationLogEntry(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter325,viter326 in self.record.items():
-        oprot.writeString(kiter325)
-        viter326.write(oprot)
+      for kiter348,viter349 in self.record.items():
+        oprot.writeString(kiter348)
+        viter349.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.type is not None:
@@ -4272,12 +4523,12 @@ class RecordImage(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype328, _vtype329, _size327 ) = iprot.readMapBegin()
-          for _i331 in xrange(_size327):
-            _key332 = iprot.readString();
-            _val333 = Datum()
-            _val333.read(iprot)
-            self.record[_key332] = _val333
+          (_ktype351, _vtype352, _size350 ) = iprot.readMapBegin()
+          for _i354 in xrange(_size350):
+            _key355 = iprot.readString();
+            _val356 = Datum()
+            _val356.read(iprot)
+            self.record[_key355] = _val356
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4304,9 +4555,9 @@ class RecordImage(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter334,viter335 in self.record.items():
-        oprot.writeString(kiter334)
-        viter335.write(oprot)
+      for kiter357,viter358 in self.record.items():
+        oprot.writeString(kiter357)
+        viter358.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.rowDeleted is not None:
