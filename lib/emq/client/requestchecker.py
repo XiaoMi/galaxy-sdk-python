@@ -19,7 +19,7 @@ from emq.message.ttypes import SendMessageRequest, ReceiveMessageRequest, Change
 from emq.queue.ttypes import CreateQueueRequest, ListQueueRequest, SetQueueAttributesRequest, SetPermissionRequest, \
   RevokePermissionRequest, QueryPermissionForIdRequest, SetQueueQuotaRequest, QueueQuota, CreateTagRequest, \
   DeleteTagRequest, GetTagInfoRequest, ListTagRequest, SetQueueRedrivePolicyRequest, RemoveQueueRedrivePolicyRequest, \
-  CopyQueueRequest, QueryPrivilegedQueueRequest
+  CopyQueueRequest, QueryPrivilegedQueueRequest, DeleteQueueRequest
 from emq.statistics.ttypes import SetUserQuotaRequest, GetUserQuotaRequest, GetUserUsedQuotaRequest, SetUserInfoRequest, \
   GetUserInfoRequest
 
@@ -165,11 +165,13 @@ class RequestChecker(object):
           or isinstance(request, GetUserUsedQuotaRequest) or isinstance(request, SetUserInfoRequest)
           or isinstance(request, GetUserInfoRequest)):
       pass
-    elif isinstance(request, string):
-      self.validate_queue_name(request)
+    elif isinstance(request, DeleteQueueRequest):
+      self.validate_queue_name(request.queueName)
     elif isinstance(request, CopyQueueRequest):
       queueMeta = request.queueMeta
       self.validate_queue_name(queueMeta.queueName)
+    elif isinstance(request, basestring):
+      self.validate_queue_name(request)
     else:
       self.validate_queue_name(request.queueName)
 
