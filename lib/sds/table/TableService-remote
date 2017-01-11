@@ -32,6 +32,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  BatchResult batch(BatchRequest request)')
   print('  BatchResult batchCheckAndMutate(BatchRequest request)')
   print('  PutResult putToRebuildIndex(PutRequest request)')
+  print('  BatchResult partialAllowedBatch(BatchRequest request)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
   print('  i64 getServerTime()')
@@ -138,6 +139,12 @@ elif cmd == 'putToRebuildIndex':
     print('putToRebuildIndex requires 1 args')
     sys.exit(1)
   pp.pprint(client.putToRebuildIndex(eval(args[0]),))
+
+elif cmd == 'partialAllowedBatch':
+  if len(args) != 1:
+    print('partialAllowedBatch requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.partialAllowedBatch(eval(args[0]),))
 
 elif cmd == 'getServerVersion':
   if len(args) != 0:

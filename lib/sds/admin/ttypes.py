@@ -870,6 +870,7 @@ class TableSnapshots(object):
    - tableName: 表名
    - sysSnapshots: 系统自动生成的快照
    - userSnapshots: 用户生成的快照
+   - pitrSnapshots: PointInTimeRecovery生成的快照
   """
 
   thrift_spec = (
@@ -877,12 +878,14 @@ class TableSnapshots(object):
     (1, TType.STRING, 'tableName', None, None, ), # 1
     (2, TType.LIST, 'sysSnapshots', (TType.STRUCT,(Snapshot, Snapshot.thrift_spec)), None, ), # 2
     (3, TType.LIST, 'userSnapshots', (TType.STRUCT,(Snapshot, Snapshot.thrift_spec)), None, ), # 3
+    (4, TType.LIST, 'pitrSnapshots', (TType.STRUCT,(Snapshot, Snapshot.thrift_spec)), None, ), # 4
   )
 
-  def __init__(self, tableName=None, sysSnapshots=None, userSnapshots=None,):
+  def __init__(self, tableName=None, sysSnapshots=None, userSnapshots=None, pitrSnapshots=None,):
     self.tableName = tableName
     self.sysSnapshots = sysSnapshots
     self.userSnapshots = userSnapshots
+    self.pitrSnapshots = pitrSnapshots
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -920,6 +923,17 @@ class TableSnapshots(object):
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.LIST:
+          self.pitrSnapshots = []
+          (_etype49, _size46) = iprot.readListBegin()
+          for _i50 in xrange(_size46):
+            _elem51 = Snapshot()
+            _elem51.read(iprot)
+            self.pitrSnapshots.append(_elem51)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -937,15 +951,22 @@ class TableSnapshots(object):
     if self.sysSnapshots is not None:
       oprot.writeFieldBegin('sysSnapshots', TType.LIST, 2)
       oprot.writeListBegin(TType.STRUCT, len(self.sysSnapshots))
-      for iter46 in self.sysSnapshots:
-        iter46.write(oprot)
+      for iter52 in self.sysSnapshots:
+        iter52.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.userSnapshots is not None:
       oprot.writeFieldBegin('userSnapshots', TType.LIST, 3)
       oprot.writeListBegin(TType.STRUCT, len(self.userSnapshots))
-      for iter47 in self.userSnapshots:
-        iter47.write(oprot)
+      for iter53 in self.userSnapshots:
+        iter53.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.pitrSnapshots is not None:
+      oprot.writeFieldBegin('pitrSnapshots', TType.LIST, 4)
+      oprot.writeListBegin(TType.STRUCT, len(self.pitrSnapshots))
+      for iter54 in self.pitrSnapshots:
+        iter54.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -960,6 +981,7 @@ class TableSnapshots(object):
     value = (value * 31) ^ hash(self.tableName)
     value = (value * 31) ^ hash(self.sysSnapshots)
     value = (value * 31) ^ hash(self.userSnapshots)
+    value = (value * 31) ^ hash(self.pitrSnapshots)
     return value
 
   def __repr__(self):
@@ -1274,6 +1296,189 @@ class QuotaInfo(object):
     value = (value * 31) ^ hash(self.slaveReadCapacityUsed)
     value = (value * 31) ^ hash(self.slaveWriteCapacity)
     value = (value * 31) ^ hash(self.slaveWriteCapacityUsed)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class TopicPartitionState(object):
+  """
+  Attributes:
+   - partitionId: partition id for this topic
+
+   - offset: The message offset of checkpoint in this partition
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'partitionId', None, None, ), # 1
+    (2, TType.I64, 'offset', None, None, ), # 2
+  )
+
+  def __init__(self, partitionId=None, offset=None,):
+    self.partitionId = partitionId
+    self.offset = offset
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.partitionId = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.offset = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('TopicPartitionState')
+    if self.partitionId is not None:
+      oprot.writeFieldBegin('partitionId', TType.I32, 1)
+      oprot.writeI32(self.partitionId)
+      oprot.writeFieldEnd()
+    if self.offset is not None:
+      oprot.writeFieldBegin('offset', TType.I64, 2)
+      oprot.writeI64(self.offset)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.partitionId)
+    value = (value * 31) ^ hash(self.offset)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class StreamCheckpoint(object):
+  """
+  Attributes:
+   - timestamp: checkpoint timestamp
+
+   - topicName: topic name
+
+   - partitionStates: topic partition state list
+
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'timestamp', None, None, ), # 1
+    (2, TType.STRING, 'topicName', None, None, ), # 2
+    (3, TType.LIST, 'partitionStates', (TType.STRUCT,(TopicPartitionState, TopicPartitionState.thrift_spec)), None, ), # 3
+  )
+
+  def __init__(self, timestamp=None, topicName=None, partitionStates=None,):
+    self.timestamp = timestamp
+    self.topicName = topicName
+    self.partitionStates = partitionStates
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.timestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.topicName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.LIST:
+          self.partitionStates = []
+          (_etype58, _size55) = iprot.readListBegin()
+          for _i59 in xrange(_size55):
+            _elem60 = TopicPartitionState()
+            _elem60.read(iprot)
+            self.partitionStates.append(_elem60)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('StreamCheckpoint')
+    if self.timestamp is not None:
+      oprot.writeFieldBegin('timestamp', TType.I64, 1)
+      oprot.writeI64(self.timestamp)
+      oprot.writeFieldEnd()
+    if self.topicName is not None:
+      oprot.writeFieldBegin('topicName', TType.STRING, 2)
+      oprot.writeString(self.topicName)
+      oprot.writeFieldEnd()
+    if self.partitionStates is not None:
+      oprot.writeFieldBegin('partitionStates', TType.LIST, 3)
+      oprot.writeListBegin(TType.STRUCT, len(self.partitionStates))
+      for iter61 in self.partitionStates:
+        iter61.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.timestamp)
+    value = (value * 31) ^ hash(self.topicName)
+    value = (value * 31) ^ hash(self.partitionStates)
     return value
 
   def __repr__(self):

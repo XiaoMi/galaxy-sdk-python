@@ -242,6 +242,7 @@ class TableState(object):
   DELETED = 7
   LAZY_DELETE = 8
   RENAMING = 9
+  RECOVERING = 10
 
   _VALUES_TO_NAMES = {
     1: "CREATING",
@@ -253,6 +254,7 @@ class TableState(object):
     7: "DELETED",
     8: "LAZY_DELETE",
     9: "RENAMING",
+    10: "RECOVERING",
   }
 
   _NAMES_TO_VALUES = {
@@ -265,6 +267,7 @@ class TableState(object):
     "DELETED": 7,
     "LAZY_DELETE": 8,
     "RENAMING": 9,
+    "RECOVERING": 10,
   }
 
 class SnapshotState(object):
@@ -1415,7 +1418,7 @@ class StreamSpec(object):
   stream specification
 
   Attributes:
-   - enableStream: stream is enable or not
+   - enableStream: stream is enabled or not
    - viewType: view type
    - attributes: attribute list
   """
@@ -1511,6 +1514,126 @@ class StreamSpec(object):
   def __ne__(self, other):
     return not (self == other)
 
+class PointInTimeRecovery(object):
+  """
+  point-in-time recovery
+
+
+  Attributes:
+   - enablePointInTimeRecovery: PITR is enabled or not;
+   - topicName: topic name, should be stream-enabled and topic ttl >= pitr ttl;
+   - ttl: PITR ttl, include checkpoints and snapshots;
+   - snapshotPeriod: snapshot period;
+   - createdTimestamp: created timestamp, output value;
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.BOOL, 'enablePointInTimeRecovery', None, None, ), # 1
+    (2, TType.STRING, 'topicName', None, None, ), # 2
+    (3, TType.I64, 'ttl', None, None, ), # 3
+    (4, TType.I64, 'snapshotPeriod', None, None, ), # 4
+    (5, TType.I64, 'createdTimestamp', None, None, ), # 5
+  )
+
+  def __init__(self, enablePointInTimeRecovery=None, topicName=None, ttl=None, snapshotPeriod=None, createdTimestamp=None,):
+    self.enablePointInTimeRecovery = enablePointInTimeRecovery
+    self.topicName = topicName
+    self.ttl = ttl
+    self.snapshotPeriod = snapshotPeriod
+    self.createdTimestamp = createdTimestamp
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.BOOL:
+          self.enablePointInTimeRecovery = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.topicName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.ttl = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.snapshotPeriod = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.I64:
+          self.createdTimestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('PointInTimeRecovery')
+    if self.enablePointInTimeRecovery is not None:
+      oprot.writeFieldBegin('enablePointInTimeRecovery', TType.BOOL, 1)
+      oprot.writeBool(self.enablePointInTimeRecovery)
+      oprot.writeFieldEnd()
+    if self.topicName is not None:
+      oprot.writeFieldBegin('topicName', TType.STRING, 2)
+      oprot.writeString(self.topicName)
+      oprot.writeFieldEnd()
+    if self.ttl is not None:
+      oprot.writeFieldBegin('ttl', TType.I64, 3)
+      oprot.writeI64(self.ttl)
+      oprot.writeFieldEnd()
+    if self.snapshotPeriod is not None:
+      oprot.writeFieldBegin('snapshotPeriod', TType.I64, 4)
+      oprot.writeI64(self.snapshotPeriod)
+      oprot.writeFieldEnd()
+    if self.createdTimestamp is not None:
+      oprot.writeFieldBegin('createdTimestamp', TType.I64, 5)
+      oprot.writeI64(self.createdTimestamp)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.enablePointInTimeRecovery)
+    value = (value * 31) ^ hash(self.topicName)
+    value = (value * 31) ^ hash(self.ttl)
+    value = (value * 31) ^ hash(self.snapshotPeriod)
+    value = (value * 31) ^ hash(self.createdTimestamp)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class TableSchema(object):
   """
   表Schema设置
@@ -1525,7 +1648,7 @@ class TableSchema(object):
    - attributes: 属性定义
    - ttl: 记录存活时间，单位为秒。-1表示不会自动删除
    - preSplits: 表初始分片数目，仅支持Entity Group开启hash分布的表，且仅在建表时起作用
-   - streams: stream定义, TopicName => StreamSpec
+   - streams: stream定义，TopicName => StreamSpec
    - globalSecondaryIndexes: 全局二级索引定义
   """
 
@@ -1758,6 +1881,7 @@ class TableMetadata(object):
    - acl: 融合云权限模型的acl
    - spaceId: 表所在的命名空间
    - enableEgAcl: entityGroup acl 开关
+   - pitr: Point-In-Time recovery
   """
 
   thrift_spec = (
@@ -1776,9 +1900,10 @@ class TableMetadata(object):
     (12, TType.MAP, 'acl', (TType.STRING,None,TType.LIST,(TType.I32,None)), None, ), # 12
     (13, TType.STRING, 'spaceId', None, None, ), # 13
     (14, TType.BOOL, 'enableEgAcl', None, False, ), # 14
+    (15, TType.STRUCT, 'pitr', (PointInTimeRecovery, PointInTimeRecovery.thrift_spec), None, ), # 15
   )
 
-  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, stream=None, enableSysSnapshot=None, exceededThroughput=None, slaveThroughput=None, exceededSlaveThroughput=None, acl=None, spaceId=None, enableEgAcl=thrift_spec[14][4],):
+  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, stream=None, enableSysSnapshot=None, exceededThroughput=None, slaveThroughput=None, exceededSlaveThroughput=None, acl=None, spaceId=None, enableEgAcl=thrift_spec[14][4], pitr=None,):
     self.tableId = tableId
     self.developerId = developerId
     self.appAcl = appAcl
@@ -1793,6 +1918,7 @@ class TableMetadata(object):
     self.acl = acl
     self.spaceId = spaceId
     self.enableEgAcl = enableEgAcl
+    self.pitr = pitr
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1901,6 +2027,12 @@ class TableMetadata(object):
           self.enableEgAcl = iprot.readBool();
         else:
           iprot.skip(ftype)
+      elif fid == 15:
+        if ftype == TType.STRUCT:
+          self.pitr = PointInTimeRecovery()
+          self.pitr.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1981,6 +2113,10 @@ class TableMetadata(object):
       oprot.writeFieldBegin('enableEgAcl', TType.BOOL, 14)
       oprot.writeBool(self.enableEgAcl)
       oprot.writeFieldEnd()
+    if self.pitr is not None:
+      oprot.writeFieldBegin('pitr', TType.STRUCT, 15)
+      self.pitr.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -2004,6 +2140,7 @@ class TableMetadata(object):
     value = (value * 31) ^ hash(self.acl)
     value = (value * 31) ^ hash(self.spaceId)
     value = (value * 31) ^ hash(self.enableEgAcl)
+    value = (value * 31) ^ hash(self.pitr)
     return value
 
   def __repr__(self):
@@ -4275,6 +4412,7 @@ class InternalMutationLogEntry(object):
    - record: row key and items
    - type: mutation type
    - rowDeleted: is row deleted or not
+   - amounts: increment amounts
   """
 
   thrift_spec = (
@@ -4282,12 +4420,14 @@ class InternalMutationLogEntry(object):
     (1, TType.MAP, 'record', (TType.STRING,None,TType.STRING,None), None, ), # 1
     (2, TType.I32, 'type', None, None, ), # 2
     (3, TType.BOOL, 'rowDeleted', None, None, ), # 3
+    (4, TType.MAP, 'amounts', (TType.STRING,None,TType.STRING,None), None, ), # 4
   )
 
-  def __init__(self, record=None, type=None, rowDeleted=None,):
+  def __init__(self, record=None, type=None, rowDeleted=None, amounts=None,):
     self.record = record
     self.type = type
     self.rowDeleted = rowDeleted
+    self.amounts = amounts
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -4319,6 +4459,17 @@ class InternalMutationLogEntry(object):
           self.rowDeleted = iprot.readBool();
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.MAP:
+          self.amounts = {}
+          (_ktype340, _vtype341, _size339 ) = iprot.readMapBegin()
+          for _i343 in xrange(_size339):
+            _key344 = iprot.readString();
+            _val345 = iprot.readString();
+            self.amounts[_key344] = _val345
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -4332,9 +4483,9 @@ class InternalMutationLogEntry(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.record))
-      for kiter339,viter340 in self.record.items():
-        oprot.writeString(kiter339)
-        oprot.writeString(viter340)
+      for kiter346,viter347 in self.record.items():
+        oprot.writeString(kiter346)
+        oprot.writeString(viter347)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.type is not None:
@@ -4344,6 +4495,14 @@ class InternalMutationLogEntry(object):
     if self.rowDeleted is not None:
       oprot.writeFieldBegin('rowDeleted', TType.BOOL, 3)
       oprot.writeBool(self.rowDeleted)
+      oprot.writeFieldEnd()
+    if self.amounts is not None:
+      oprot.writeFieldBegin('amounts', TType.MAP, 4)
+      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.amounts))
+      for kiter348,viter349 in self.amounts.items():
+        oprot.writeString(kiter348)
+        oprot.writeString(viter349)
+      oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -4357,6 +4516,7 @@ class InternalMutationLogEntry(object):
     value = (value * 31) ^ hash(self.record)
     value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.rowDeleted)
+    value = (value * 31) ^ hash(self.amounts)
     return value
 
   def __repr__(self):
@@ -4380,6 +4540,7 @@ class MutationLogEntry(object):
    - type: mutation type
    - rowDeleted: is row deleted or not
    - timestamp: mutation timestamp
+   - amounts: increment amounts
   """
 
   thrift_spec = (
@@ -4388,13 +4549,15 @@ class MutationLogEntry(object):
     (2, TType.I32, 'type', None, None, ), # 2
     (3, TType.BOOL, 'rowDeleted', None, None, ), # 3
     (4, TType.I64, 'timestamp', None, None, ), # 4
+    (5, TType.MAP, 'amounts', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 5
   )
 
-  def __init__(self, record=None, type=None, rowDeleted=None, timestamp=None,):
+  def __init__(self, record=None, type=None, rowDeleted=None, timestamp=None, amounts=None,):
     self.record = record
     self.type = type
     self.rowDeleted = rowDeleted
     self.timestamp = timestamp
+    self.amounts = amounts
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -4408,12 +4571,12 @@ class MutationLogEntry(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype342, _vtype343, _size341 ) = iprot.readMapBegin()
-          for _i345 in xrange(_size341):
-            _key346 = iprot.readString();
-            _val347 = Datum()
-            _val347.read(iprot)
-            self.record[_key346] = _val347
+          (_ktype351, _vtype352, _size350 ) = iprot.readMapBegin()
+          for _i354 in xrange(_size350):
+            _key355 = iprot.readString();
+            _val356 = Datum()
+            _val356.read(iprot)
+            self.record[_key355] = _val356
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4432,6 +4595,18 @@ class MutationLogEntry(object):
           self.timestamp = iprot.readI64();
         else:
           iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.MAP:
+          self.amounts = {}
+          (_ktype358, _vtype359, _size357 ) = iprot.readMapBegin()
+          for _i361 in xrange(_size357):
+            _key362 = iprot.readString();
+            _val363 = Datum()
+            _val363.read(iprot)
+            self.amounts[_key362] = _val363
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -4445,9 +4620,9 @@ class MutationLogEntry(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter348,viter349 in self.record.items():
-        oprot.writeString(kiter348)
-        viter349.write(oprot)
+      for kiter364,viter365 in self.record.items():
+        oprot.writeString(kiter364)
+        viter365.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.type is not None:
@@ -4462,6 +4637,14 @@ class MutationLogEntry(object):
       oprot.writeFieldBegin('timestamp', TType.I64, 4)
       oprot.writeI64(self.timestamp)
       oprot.writeFieldEnd()
+    if self.amounts is not None:
+      oprot.writeFieldBegin('amounts', TType.MAP, 5)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.amounts))
+      for kiter366,viter367 in self.amounts.items():
+        oprot.writeString(kiter366)
+        viter367.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -4475,6 +4658,7 @@ class MutationLogEntry(object):
     value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.rowDeleted)
     value = (value * 31) ^ hash(self.timestamp)
+    value = (value * 31) ^ hash(self.amounts)
     return value
 
   def __repr__(self):
@@ -4523,12 +4707,12 @@ class RecordImage(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype351, _vtype352, _size350 ) = iprot.readMapBegin()
-          for _i354 in xrange(_size350):
-            _key355 = iprot.readString();
-            _val356 = Datum()
-            _val356.read(iprot)
-            self.record[_key355] = _val356
+          (_ktype369, _vtype370, _size368 ) = iprot.readMapBegin()
+          for _i372 in xrange(_size368):
+            _key373 = iprot.readString();
+            _val374 = Datum()
+            _val374.read(iprot)
+            self.record[_key373] = _val374
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4555,9 +4739,9 @@ class RecordImage(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter357,viter358 in self.record.items():
-        oprot.writeString(kiter357)
-        viter358.write(oprot)
+      for kiter375,viter376 in self.record.items():
+        oprot.writeString(kiter375)
+        viter376.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.rowDeleted is not None:

@@ -82,13 +82,13 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
-  def cloneTable(self, srcName, destTable, flushTable):
+  def cloneTable(self, srcTableName, destTableName, flushTable):
     """
     克隆表
 
     Parameters:
-     - srcName
-     - destTable
+     - srcTableName
+     - destTableName
      - flushTable
     """
     pass
@@ -346,6 +346,50 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
+  def getLatestStreamCheckpoint(self, tableName, topicName):
+    """
+    查询最近的stream checkpoint
+
+    Parameters:
+     - tableName
+     - topicName
+    """
+    pass
+
+  def getFloorStreamCheckpoint(self, tableName, topicName, timestamp):
+    """
+    查询小于等于timestamp的最大stream checkpoint
+
+    Parameters:
+     - tableName
+     - topicName
+     - timestamp
+    """
+    pass
+
+  def getCeilStreamCheckpoint(self, tableName, topicName, timestamp):
+    """
+    查询大于等于timestamp的最小stream checkpoint
+
+    Parameters:
+     - tableName
+     - topicName
+     - timestamp
+    """
+    pass
+
+  def recoverTable(self, srcTableName, destTableName, topicName, timestamp):
+    """
+    恢复表到指定timestamp的状态，destTableName由系统根据最近快照创建，异步操作
+
+    Parameters:
+     - srcTableName
+     - destTableName
+     - topicName
+     - timestamp
+    """
+    pass
+
 
 class Client(sds.common.BaseService.Client, Iface):
   """
@@ -589,23 +633,23 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
-  def cloneTable(self, srcName, destTable, flushTable):
+  def cloneTable(self, srcTableName, destTableName, flushTable):
     """
     克隆表
 
     Parameters:
-     - srcName
-     - destTable
+     - srcTableName
+     - destTableName
      - flushTable
     """
-    self.send_cloneTable(srcName, destTable, flushTable)
+    self.send_cloneTable(srcTableName, destTableName, flushTable)
     self.recv_cloneTable()
 
-  def send_cloneTable(self, srcName, destTable, flushTable):
+  def send_cloneTable(self, srcTableName, destTableName, flushTable):
     self._oprot.writeMessageBegin('cloneTable', TMessageType.CALL, self._seqid)
     args = cloneTable_args()
-    args.srcName = srcName
-    args.destTable = destTable
+    args.srcTableName = srcTableName
+    args.destTableName = destTableName
     args.flushTable = flushTable
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -1571,6 +1615,160 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getQuotaInfo failed: unknown result");
 
+  def getLatestStreamCheckpoint(self, tableName, topicName):
+    """
+    查询最近的stream checkpoint
+
+    Parameters:
+     - tableName
+     - topicName
+    """
+    self.send_getLatestStreamCheckpoint(tableName, topicName)
+    return self.recv_getLatestStreamCheckpoint()
+
+  def send_getLatestStreamCheckpoint(self, tableName, topicName):
+    self._oprot.writeMessageBegin('getLatestStreamCheckpoint', TMessageType.CALL, self._seqid)
+    args = getLatestStreamCheckpoint_args()
+    args.tableName = tableName
+    args.topicName = topicName
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getLatestStreamCheckpoint(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getLatestStreamCheckpoint_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getLatestStreamCheckpoint failed: unknown result");
+
+  def getFloorStreamCheckpoint(self, tableName, topicName, timestamp):
+    """
+    查询小于等于timestamp的最大stream checkpoint
+
+    Parameters:
+     - tableName
+     - topicName
+     - timestamp
+    """
+    self.send_getFloorStreamCheckpoint(tableName, topicName, timestamp)
+    return self.recv_getFloorStreamCheckpoint()
+
+  def send_getFloorStreamCheckpoint(self, tableName, topicName, timestamp):
+    self._oprot.writeMessageBegin('getFloorStreamCheckpoint', TMessageType.CALL, self._seqid)
+    args = getFloorStreamCheckpoint_args()
+    args.tableName = tableName
+    args.topicName = topicName
+    args.timestamp = timestamp
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getFloorStreamCheckpoint(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getFloorStreamCheckpoint_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getFloorStreamCheckpoint failed: unknown result");
+
+  def getCeilStreamCheckpoint(self, tableName, topicName, timestamp):
+    """
+    查询大于等于timestamp的最小stream checkpoint
+
+    Parameters:
+     - tableName
+     - topicName
+     - timestamp
+    """
+    self.send_getCeilStreamCheckpoint(tableName, topicName, timestamp)
+    return self.recv_getCeilStreamCheckpoint()
+
+  def send_getCeilStreamCheckpoint(self, tableName, topicName, timestamp):
+    self._oprot.writeMessageBegin('getCeilStreamCheckpoint', TMessageType.CALL, self._seqid)
+    args = getCeilStreamCheckpoint_args()
+    args.tableName = tableName
+    args.topicName = topicName
+    args.timestamp = timestamp
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getCeilStreamCheckpoint(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getCeilStreamCheckpoint_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getCeilStreamCheckpoint failed: unknown result");
+
+  def recoverTable(self, srcTableName, destTableName, topicName, timestamp):
+    """
+    恢复表到指定timestamp的状态，destTableName由系统根据最近快照创建，异步操作
+
+    Parameters:
+     - srcTableName
+     - destTableName
+     - topicName
+     - timestamp
+    """
+    self.send_recoverTable(srcTableName, destTableName, topicName, timestamp)
+    self.recv_recoverTable()
+
+  def send_recoverTable(self, srcTableName, destTableName, topicName, timestamp):
+    self._oprot.writeMessageBegin('recoverTable', TMessageType.CALL, self._seqid)
+    args = recoverTable_args()
+    args.srcTableName = srcTableName
+    args.destTableName = destTableName
+    args.topicName = topicName
+    args.timestamp = timestamp
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_recoverTable(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = recoverTable_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.se is not None:
+      raise result.se
+    return
+
 
 class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -1610,6 +1808,10 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["cancelSnapshotTable"] = Processor.process_cancelSnapshotTable
     self._processMap["getSnapshotState"] = Processor.process_getSnapshotState
     self._processMap["getQuotaInfo"] = Processor.process_getQuotaInfo
+    self._processMap["getLatestStreamCheckpoint"] = Processor.process_getLatestStreamCheckpoint
+    self._processMap["getFloorStreamCheckpoint"] = Processor.process_getFloorStreamCheckpoint
+    self._processMap["getCeilStreamCheckpoint"] = Processor.process_getCeilStreamCheckpoint
+    self._processMap["recoverTable"] = Processor.process_recoverTable
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -1730,7 +1932,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     iprot.readMessageEnd()
     result = cloneTable_result()
     try:
-      self._handler.cloneTable(args.srcName, args.destTable, args.flushTable)
+      self._handler.cloneTable(args.srcTableName, args.destTableName, args.flushTable)
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("cloneTable", TMessageType.REPLY, seqid)
@@ -2116,6 +2318,62 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
+  def process_getLatestStreamCheckpoint(self, seqid, iprot, oprot):
+    args = getLatestStreamCheckpoint_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getLatestStreamCheckpoint_result()
+    try:
+      result.success = self._handler.getLatestStreamCheckpoint(args.tableName, args.topicName)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("getLatestStreamCheckpoint", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getFloorStreamCheckpoint(self, seqid, iprot, oprot):
+    args = getFloorStreamCheckpoint_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getFloorStreamCheckpoint_result()
+    try:
+      result.success = self._handler.getFloorStreamCheckpoint(args.tableName, args.topicName, args.timestamp)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("getFloorStreamCheckpoint", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getCeilStreamCheckpoint(self, seqid, iprot, oprot):
+    args = getCeilStreamCheckpoint_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getCeilStreamCheckpoint_result()
+    try:
+      result.success = self._handler.getCeilStreamCheckpoint(args.tableName, args.topicName, args.timestamp)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("getCeilStreamCheckpoint", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_recoverTable(self, seqid, iprot, oprot):
+    args = recoverTable_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = recoverTable_result()
+    try:
+      self._handler.recoverTable(args.srcTableName, args.destTableName, args.topicName, args.timestamp)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("recoverTable", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
 
 # HELPER FUNCTIONS AND STRUCTURES
 
@@ -2469,11 +2727,11 @@ class findAllApps_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype51, _size48) = iprot.readListBegin()
-          for _i52 in xrange(_size48):
-            _elem53 = AppInfo()
-            _elem53.read(iprot)
-            self.success.append(_elem53)
+          (_etype65, _size62) = iprot.readListBegin()
+          for _i66 in xrange(_size62):
+            _elem67 = AppInfo()
+            _elem67.read(iprot)
+            self.success.append(_elem67)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2496,8 +2754,8 @@ class findAllApps_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter54 in self.success:
-        iter54.write(oprot)
+      for iter68 in self.success:
+        iter68.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -2602,11 +2860,11 @@ class findAllTables_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype58, _size55) = iprot.readListBegin()
-          for _i59 in xrange(_size55):
-            _elem60 = sds.table.ttypes.TableInfo()
-            _elem60.read(iprot)
-            self.success.append(_elem60)
+          (_etype72, _size69) = iprot.readListBegin()
+          for _i73 in xrange(_size69):
+            _elem74 = sds.table.ttypes.TableInfo()
+            _elem74.read(iprot)
+            self.success.append(_elem74)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2629,8 +2887,8 @@ class findAllTables_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter61 in self.success:
-        iter61.write(oprot)
+      for iter75 in self.success:
+        iter75.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -3098,21 +3356,21 @@ class alterTable_result(object):
 class cloneTable_args(object):
   """
   Attributes:
-   - srcName
-   - destTable
+   - srcTableName
+   - destTableName
    - flushTable
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'srcName', None, None, ), # 1
-    (2, TType.STRING, 'destTable', None, None, ), # 2
+    (1, TType.STRING, 'srcTableName', None, None, ), # 1
+    (2, TType.STRING, 'destTableName', None, None, ), # 2
     (3, TType.BOOL, 'flushTable', None, None, ), # 3
   )
 
-  def __init__(self, srcName=None, destTable=None, flushTable=None,):
-    self.srcName = srcName
-    self.destTable = destTable
+  def __init__(self, srcTableName=None, destTableName=None, flushTable=None,):
+    self.srcTableName = srcTableName
+    self.destTableName = destTableName
     self.flushTable = flushTable
 
   def read(self, iprot):
@@ -3126,12 +3384,12 @@ class cloneTable_args(object):
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.srcName = iprot.readString();
+          self.srcTableName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.destTable = iprot.readString();
+          self.destTableName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -3149,13 +3407,13 @@ class cloneTable_args(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('cloneTable_args')
-    if self.srcName is not None:
-      oprot.writeFieldBegin('srcName', TType.STRING, 1)
-      oprot.writeString(self.srcName)
+    if self.srcTableName is not None:
+      oprot.writeFieldBegin('srcTableName', TType.STRING, 1)
+      oprot.writeString(self.srcTableName)
       oprot.writeFieldEnd()
-    if self.destTable is not None:
-      oprot.writeFieldBegin('destTable', TType.STRING, 2)
-      oprot.writeString(self.destTable)
+    if self.destTableName is not None:
+      oprot.writeFieldBegin('destTableName', TType.STRING, 2)
+      oprot.writeString(self.destTableName)
       oprot.writeFieldEnd()
     if self.flushTable is not None:
       oprot.writeFieldBegin('flushTable', TType.BOOL, 3)
@@ -3170,8 +3428,8 @@ class cloneTable_args(object):
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.srcName)
-    value = (value * 31) ^ hash(self.destTable)
+    value = (value * 31) ^ hash(self.srcTableName)
+    value = (value * 31) ^ hash(self.destTableName)
     value = (value * 31) ^ hash(self.flushTable)
     return value
 
@@ -3982,24 +4240,24 @@ class getTableSplits_args(object):
       elif fid == 2:
         if ftype == TType.MAP:
           self.startKey = {}
-          (_ktype63, _vtype64, _size62 ) = iprot.readMapBegin()
-          for _i66 in xrange(_size62):
-            _key67 = iprot.readString();
-            _val68 = sds.table.ttypes.Datum()
-            _val68.read(iprot)
-            self.startKey[_key67] = _val68
+          (_ktype77, _vtype78, _size76 ) = iprot.readMapBegin()
+          for _i80 in xrange(_size76):
+            _key81 = iprot.readString();
+            _val82 = sds.table.ttypes.Datum()
+            _val82.read(iprot)
+            self.startKey[_key81] = _val82
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.MAP:
           self.stopKey = {}
-          (_ktype70, _vtype71, _size69 ) = iprot.readMapBegin()
-          for _i73 in xrange(_size69):
-            _key74 = iprot.readString();
-            _val75 = sds.table.ttypes.Datum()
-            _val75.read(iprot)
-            self.stopKey[_key74] = _val75
+          (_ktype84, _vtype85, _size83 ) = iprot.readMapBegin()
+          for _i87 in xrange(_size83):
+            _key88 = iprot.readString();
+            _val89 = sds.table.ttypes.Datum()
+            _val89.read(iprot)
+            self.stopKey[_key88] = _val89
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4020,17 +4278,17 @@ class getTableSplits_args(object):
     if self.startKey is not None:
       oprot.writeFieldBegin('startKey', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
-      for kiter76,viter77 in self.startKey.items():
-        oprot.writeString(kiter76)
-        viter77.write(oprot)
+      for kiter90,viter91 in self.startKey.items():
+        oprot.writeString(kiter90)
+        viter91.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.stopKey is not None:
       oprot.writeFieldBegin('stopKey', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
-      for kiter78,viter79 in self.stopKey.items():
-        oprot.writeString(kiter78)
-        viter79.write(oprot)
+      for kiter92,viter93 in self.stopKey.items():
+        oprot.writeString(kiter92)
+        viter93.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -4086,11 +4344,11 @@ class getTableSplits_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype83, _size80) = iprot.readListBegin()
-          for _i84 in xrange(_size80):
-            _elem85 = sds.table.ttypes.TableSplit()
-            _elem85.read(iprot)
-            self.success.append(_elem85)
+          (_etype97, _size94) = iprot.readListBegin()
+          for _i98 in xrange(_size94):
+            _elem99 = sds.table.ttypes.TableSplit()
+            _elem99.read(iprot)
+            self.success.append(_elem99)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4113,8 +4371,8 @@ class getTableSplits_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter86 in self.success:
-        iter86.write(oprot)
+      for iter100 in self.success:
+        iter100.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -4316,11 +4574,11 @@ class queryMetrics_args(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.queries = []
-          (_etype90, _size87) = iprot.readListBegin()
-          for _i91 in xrange(_size87):
-            _elem92 = MetricQueryRequest()
-            _elem92.read(iprot)
-            self.queries.append(_elem92)
+          (_etype104, _size101) = iprot.readListBegin()
+          for _i105 in xrange(_size101):
+            _elem106 = MetricQueryRequest()
+            _elem106.read(iprot)
+            self.queries.append(_elem106)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4337,8 +4595,8 @@ class queryMetrics_args(object):
     if self.queries is not None:
       oprot.writeFieldBegin('queries', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.queries))
-      for iter93 in self.queries:
-        iter93.write(oprot)
+      for iter107 in self.queries:
+        iter107.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -4392,11 +4650,11 @@ class queryMetrics_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype97, _size94) = iprot.readListBegin()
-          for _i98 in xrange(_size94):
-            _elem99 = TimeSeriesData()
-            _elem99.read(iprot)
-            self.success.append(_elem99)
+          (_etype111, _size108) = iprot.readListBegin()
+          for _i112 in xrange(_size108):
+            _elem113 = TimeSeriesData()
+            _elem113.read(iprot)
+            self.success.append(_elem113)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4419,8 +4677,8 @@ class queryMetrics_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter100 in self.success:
-        iter100.write(oprot)
+      for iter114 in self.success:
+        iter114.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -4525,11 +4783,11 @@ class findAllAppInfo_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype104, _size101) = iprot.readListBegin()
-          for _i105 in xrange(_size101):
-            _elem106 = AppInfo()
-            _elem106.read(iprot)
-            self.success.append(_elem106)
+          (_etype118, _size115) = iprot.readListBegin()
+          for _i119 in xrange(_size115):
+            _elem120 = AppInfo()
+            _elem120.read(iprot)
+            self.success.append(_elem120)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4552,8 +4810,8 @@ class findAllAppInfo_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter107 in self.success:
-        iter107.write(oprot)
+      for iter121 in self.success:
+        iter121.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -5528,10 +5786,10 @@ class listSubscribedPhone_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype111, _size108) = iprot.readListBegin()
-          for _i112 in xrange(_size108):
-            _elem113 = iprot.readString();
-            self.success.append(_elem113)
+          (_etype125, _size122) = iprot.readListBegin()
+          for _i126 in xrange(_size122):
+            _elem127 = iprot.readString();
+            self.success.append(_elem127)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -5554,8 +5812,8 @@ class listSubscribedPhone_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter114 in self.success:
-        oprot.writeString(iter114)
+      for iter128 in self.success:
+        oprot.writeString(iter128)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -5679,10 +5937,10 @@ class listSubscribedEmail_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype118, _size115) = iprot.readListBegin()
-          for _i119 in xrange(_size115):
-            _elem120 = iprot.readString();
-            self.success.append(_elem120)
+          (_etype132, _size129) = iprot.readListBegin()
+          for _i133 in xrange(_size129):
+            _elem134 = iprot.readString();
+            self.success.append(_elem134)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -5705,8 +5963,8 @@ class listSubscribedEmail_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter121 in self.success:
-        oprot.writeString(iter121)
+      for iter135 in self.success:
+        oprot.writeString(iter135)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -5856,11 +6114,11 @@ class getTableHistorySize_result(object):
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype123, _vtype124, _size122 ) = iprot.readMapBegin()
-          for _i126 in xrange(_size122):
-            _key127 = iprot.readI64();
-            _val128 = iprot.readI64();
-            self.success[_key127] = _val128
+          (_ktype137, _vtype138, _size136 ) = iprot.readMapBegin()
+          for _i140 in xrange(_size136):
+            _key141 = iprot.readI64();
+            _val142 = iprot.readI64();
+            self.success[_key141] = _val142
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -5883,9 +6141,9 @@ class getTableHistorySize_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.I64, TType.I64, len(self.success))
-      for kiter129,viter130 in self.success.items():
-        oprot.writeI64(kiter129)
-        oprot.writeI64(viter130)
+      for kiter143,viter144 in self.success.items():
+        oprot.writeI64(kiter143)
+        oprot.writeI64(viter144)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -6736,11 +6994,11 @@ class listAllSnapshots_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype134, _size131) = iprot.readListBegin()
-          for _i135 in xrange(_size131):
-            _elem136 = SnapshotTableView()
-            _elem136.read(iprot)
-            self.success.append(_elem136)
+          (_etype148, _size145) = iprot.readListBegin()
+          for _i149 in xrange(_size145):
+            _elem150 = SnapshotTableView()
+            _elem150.read(iprot)
+            self.success.append(_elem150)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -6763,8 +7021,8 @@ class listAllSnapshots_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter137 in self.success:
-        iter137.write(oprot)
+      for iter151 in self.success:
+        iter151.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -7225,6 +7483,673 @@ class getQuotaInfo_result(object):
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getLatestStreamCheckpoint_args(object):
+  """
+  Attributes:
+   - tableName
+   - topicName
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'topicName', None, None, ), # 2
+  )
+
+  def __init__(self, tableName=None, topicName=None,):
+    self.tableName = tableName
+    self.topicName = topicName
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.topicName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getLatestStreamCheckpoint_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.topicName is not None:
+      oprot.writeFieldBegin('topicName', TType.STRING, 2)
+      oprot.writeString(self.topicName)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.topicName)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getLatestStreamCheckpoint_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (StreamCheckpoint, StreamCheckpoint.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = StreamCheckpoint()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getLatestStreamCheckpoint_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getFloorStreamCheckpoint_args(object):
+  """
+  Attributes:
+   - tableName
+   - topicName
+   - timestamp
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'topicName', None, None, ), # 2
+    (3, TType.I64, 'timestamp', None, None, ), # 3
+  )
+
+  def __init__(self, tableName=None, topicName=None, timestamp=None,):
+    self.tableName = tableName
+    self.topicName = topicName
+    self.timestamp = timestamp
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.topicName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.timestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getFloorStreamCheckpoint_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.topicName is not None:
+      oprot.writeFieldBegin('topicName', TType.STRING, 2)
+      oprot.writeString(self.topicName)
+      oprot.writeFieldEnd()
+    if self.timestamp is not None:
+      oprot.writeFieldBegin('timestamp', TType.I64, 3)
+      oprot.writeI64(self.timestamp)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.topicName)
+    value = (value * 31) ^ hash(self.timestamp)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getFloorStreamCheckpoint_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (StreamCheckpoint, StreamCheckpoint.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = StreamCheckpoint()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getFloorStreamCheckpoint_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getCeilStreamCheckpoint_args(object):
+  """
+  Attributes:
+   - tableName
+   - topicName
+   - timestamp
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'topicName', None, None, ), # 2
+    (3, TType.I64, 'timestamp', None, None, ), # 3
+  )
+
+  def __init__(self, tableName=None, topicName=None, timestamp=None,):
+    self.tableName = tableName
+    self.topicName = topicName
+    self.timestamp = timestamp
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.topicName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.timestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getCeilStreamCheckpoint_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.topicName is not None:
+      oprot.writeFieldBegin('topicName', TType.STRING, 2)
+      oprot.writeString(self.topicName)
+      oprot.writeFieldEnd()
+    if self.timestamp is not None:
+      oprot.writeFieldBegin('timestamp', TType.I64, 3)
+      oprot.writeI64(self.timestamp)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.topicName)
+    value = (value * 31) ^ hash(self.timestamp)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getCeilStreamCheckpoint_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (StreamCheckpoint, StreamCheckpoint.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = StreamCheckpoint()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getCeilStreamCheckpoint_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class recoverTable_args(object):
+  """
+  Attributes:
+   - srcTableName
+   - destTableName
+   - topicName
+   - timestamp
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'srcTableName', None, None, ), # 1
+    (2, TType.STRING, 'destTableName', None, None, ), # 2
+    (3, TType.STRING, 'topicName', None, None, ), # 3
+    (4, TType.I64, 'timestamp', None, None, ), # 4
+  )
+
+  def __init__(self, srcTableName=None, destTableName=None, topicName=None, timestamp=None,):
+    self.srcTableName = srcTableName
+    self.destTableName = destTableName
+    self.topicName = topicName
+    self.timestamp = timestamp
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.srcTableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.destTableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.topicName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.timestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('recoverTable_args')
+    if self.srcTableName is not None:
+      oprot.writeFieldBegin('srcTableName', TType.STRING, 1)
+      oprot.writeString(self.srcTableName)
+      oprot.writeFieldEnd()
+    if self.destTableName is not None:
+      oprot.writeFieldBegin('destTableName', TType.STRING, 2)
+      oprot.writeString(self.destTableName)
+      oprot.writeFieldEnd()
+    if self.topicName is not None:
+      oprot.writeFieldBegin('topicName', TType.STRING, 3)
+      oprot.writeString(self.topicName)
+      oprot.writeFieldEnd()
+    if self.timestamp is not None:
+      oprot.writeFieldBegin('timestamp', TType.I64, 4)
+      oprot.writeI64(self.timestamp)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.srcTableName)
+    value = (value * 31) ^ hash(self.destTableName)
+    value = (value * 31) ^ hash(self.topicName)
+    value = (value * 31) ^ hash(self.timestamp)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class recoverTable_result(object):
+  """
+  Attributes:
+   - se
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, se=None,):
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('recoverTable_result')
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
     value = (value * 31) ^ hash(self.se)
     return value
 
