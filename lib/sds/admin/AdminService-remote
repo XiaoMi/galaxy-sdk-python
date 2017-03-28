@@ -63,6 +63,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  StreamCheckpoint getFloorStreamCheckpoint(string tableName, string topicName, i64 timestamp)')
   print('  StreamCheckpoint getCeilStreamCheckpoint(string tableName, string topicName, i64 timestamp)')
   print('  void recoverTable(string srcTableName, string destTableName, string topicName, i64 timestamp)')
+  print('   listAllDeletedTables()')
+  print('  void restoreTable(string deletedTableName, string destTableName)')
   print('  Version getServerVersion()')
   print('  void validateClientVersion(Version clientVersion)')
   print('  i64 getServerTime()')
@@ -355,6 +357,18 @@ elif cmd == 'recoverTable':
     print('recoverTable requires 4 args')
     sys.exit(1)
   pp.pprint(client.recoverTable(args[0],args[1],args[2],eval(args[3]),))
+
+elif cmd == 'listAllDeletedTables':
+  if len(args) != 0:
+    print('listAllDeletedTables requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.listAllDeletedTables())
+
+elif cmd == 'restoreTable':
+  if len(args) != 2:
+    print('restoreTable requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.restoreTable(args[0],args[1],))
 
 elif cmd == 'getServerVersion':
   if len(args) != 0:

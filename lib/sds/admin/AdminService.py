@@ -390,6 +390,17 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
+  def listAllDeletedTables(self):
+    pass
+
+  def restoreTable(self, deletedTableName, destTableName):
+    """
+    Parameters:
+     - deletedTableName
+     - destTableName
+    """
+    pass
+
 
 class Client(sds.common.BaseService.Client, Iface):
   """
@@ -1769,6 +1780,67 @@ class Client(sds.common.BaseService.Client, Iface):
       raise result.se
     return
 
+  def listAllDeletedTables(self):
+    self.send_listAllDeletedTables()
+    return self.recv_listAllDeletedTables()
+
+  def send_listAllDeletedTables(self):
+    self._oprot.writeMessageBegin('listAllDeletedTables', TMessageType.CALL, self._seqid)
+    args = listAllDeletedTables_args()
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_listAllDeletedTables(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = listAllDeletedTables_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "listAllDeletedTables failed: unknown result");
+
+  def restoreTable(self, deletedTableName, destTableName):
+    """
+    Parameters:
+     - deletedTableName
+     - destTableName
+    """
+    self.send_restoreTable(deletedTableName, destTableName)
+    self.recv_restoreTable()
+
+  def send_restoreTable(self, deletedTableName, destTableName):
+    self._oprot.writeMessageBegin('restoreTable', TMessageType.CALL, self._seqid)
+    args = restoreTable_args()
+    args.deletedTableName = deletedTableName
+    args.destTableName = destTableName
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_restoreTable(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = restoreTable_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.se is not None:
+      raise result.se
+    return
+
 
 class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
   def __init__(self, handler):
@@ -1812,6 +1884,8 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["getFloorStreamCheckpoint"] = Processor.process_getFloorStreamCheckpoint
     self._processMap["getCeilStreamCheckpoint"] = Processor.process_getCeilStreamCheckpoint
     self._processMap["recoverTable"] = Processor.process_recoverTable
+    self._processMap["listAllDeletedTables"] = Processor.process_listAllDeletedTables
+    self._processMap["restoreTable"] = Processor.process_restoreTable
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -2370,6 +2444,34 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("recoverTable", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_listAllDeletedTables(self, seqid, iprot, oprot):
+    args = listAllDeletedTables_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = listAllDeletedTables_result()
+    try:
+      result.success = self._handler.listAllDeletedTables()
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("listAllDeletedTables", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_restoreTable(self, seqid, iprot, oprot):
+    args = restoreTable_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = restoreTable_result()
+    try:
+      self._handler.restoreTable(args.deletedTableName, args.destTableName)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("restoreTable", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -8137,6 +8239,283 @@ class recoverTable_result(object):
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('recoverTable_result')
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class listAllDeletedTables_args(object):
+
+  thrift_spec = (
+  )
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('listAllDeletedTables_args')
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class listAllDeletedTables_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(sds.table.ttypes.TableInfo, sds.table.ttypes.TableInfo.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype155, _size152) = iprot.readListBegin()
+          for _i156 in xrange(_size152):
+            _elem157 = sds.table.ttypes.TableInfo()
+            _elem157.read(iprot)
+            self.success.append(_elem157)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('listAllDeletedTables_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter158 in self.success:
+        iter158.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class restoreTable_args(object):
+  """
+  Attributes:
+   - deletedTableName
+   - destTableName
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'deletedTableName', None, None, ), # 1
+    (2, TType.STRING, 'destTableName', None, None, ), # 2
+  )
+
+  def __init__(self, deletedTableName=None, destTableName=None,):
+    self.deletedTableName = deletedTableName
+    self.destTableName = destTableName
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.deletedTableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.destTableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('restoreTable_args')
+    if self.deletedTableName is not None:
+      oprot.writeFieldBegin('deletedTableName', TType.STRING, 1)
+      oprot.writeString(self.deletedTableName)
+      oprot.writeFieldEnd()
+    if self.destTableName is not None:
+      oprot.writeFieldBegin('destTableName', TType.STRING, 2)
+      oprot.writeString(self.destTableName)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.deletedTableName)
+    value = (value * 31) ^ hash(self.destTableName)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class restoreTable_result(object):
+  """
+  Attributes:
+   - se
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, se=None,):
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('restoreTable_result')
     if self.se is not None:
       oprot.writeFieldBegin('se', TType.STRUCT, 1)
       self.se.write(oprot)

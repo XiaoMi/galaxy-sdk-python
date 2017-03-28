@@ -1882,6 +1882,7 @@ class TableMetadata(object):
    - spaceId: 表所在的命名空间
    - enableEgAcl: entityGroup acl 开关
    - pitr: Point-In-Time recovery
+   - softDeletedTtl: 软删除时，已删表保留的时间，单位为秒
   """
 
   thrift_spec = (
@@ -1901,9 +1902,10 @@ class TableMetadata(object):
     (13, TType.STRING, 'spaceId', None, None, ), # 13
     (14, TType.BOOL, 'enableEgAcl', None, False, ), # 14
     (15, TType.STRUCT, 'pitr', (PointInTimeRecovery, PointInTimeRecovery.thrift_spec), None, ), # 15
+    (16, TType.I64, 'softDeletedTtl', None, None, ), # 16
   )
 
-  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, stream=None, enableSysSnapshot=None, exceededThroughput=None, slaveThroughput=None, exceededSlaveThroughput=None, acl=None, spaceId=None, enableEgAcl=thrift_spec[14][4], pitr=None,):
+  def __init__(self, tableId=None, developerId=None, appAcl=None, quota=None, throughput=None, description=None, stream=None, enableSysSnapshot=None, exceededThroughput=None, slaveThroughput=None, exceededSlaveThroughput=None, acl=None, spaceId=None, enableEgAcl=thrift_spec[14][4], pitr=None, softDeletedTtl=None,):
     self.tableId = tableId
     self.developerId = developerId
     self.appAcl = appAcl
@@ -1919,6 +1921,7 @@ class TableMetadata(object):
     self.spaceId = spaceId
     self.enableEgAcl = enableEgAcl
     self.pitr = pitr
+    self.softDeletedTtl = softDeletedTtl
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2033,6 +2036,11 @@ class TableMetadata(object):
           self.pitr.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 16:
+        if ftype == TType.I64:
+          self.softDeletedTtl = iprot.readI64();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2117,6 +2125,10 @@ class TableMetadata(object):
       oprot.writeFieldBegin('pitr', TType.STRUCT, 15)
       self.pitr.write(oprot)
       oprot.writeFieldEnd()
+    if self.softDeletedTtl is not None:
+      oprot.writeFieldBegin('softDeletedTtl', TType.I64, 16)
+      oprot.writeI64(self.softDeletedTtl)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -2141,6 +2153,7 @@ class TableMetadata(object):
     value = (value * 31) ^ hash(self.spaceId)
     value = (value * 31) ^ hash(self.enableEgAcl)
     value = (value * 31) ^ hash(self.pitr)
+    value = (value * 31) ^ hash(self.softDeletedTtl)
     return value
 
   def __repr__(self):
