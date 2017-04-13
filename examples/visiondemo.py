@@ -18,7 +18,7 @@
 from common.clientfactory import *
 from vision.models import *
 
-client_factory = ClientFactory(Credential(galaxy_access_key="YOU-AK", galaxy_key_secret="YOU-SK"))
+client_factory = ClientFactory(Credential(galaxy_access_key="YOUR-AK", galaxy_key_secret="YOUR-SK"))
 vision_client = client_factory.client("vision", endpoint="cnbj2.vision.api.xiaomi.com", https_enables=False)
 
 image = Image(uri="fds://cnbj2.fds.api.xiaomi.com/vision-test/test_img.jpg")
