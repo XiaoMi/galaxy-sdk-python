@@ -47,8 +47,8 @@ def execute_http_request(conf, params, headers):
     if response.status != 200:
       raise Exception("http response status code is error, the status code is %d, the response msg is %s" % (response.status, msg))
     response = json.loads(msg, encoding='utf-8')
-  except Exception, e:
-    print "exception: ", e
+  except Exception as e:
+    print ("exception: %s" % (str(e)))
   finally:
     if http_client:
       http_client.close()

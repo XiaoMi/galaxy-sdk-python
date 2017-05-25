@@ -18,7 +18,7 @@
 #
 
 import struct
-from cStringIO import StringIO
+from io import BytesIO as StringIO
 
 from zope.interface import implements, Interface, Attribute
 from twisted.internet.protocol import ServerFactory, ClientFactory, \

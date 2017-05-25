@@ -26,10 +26,6 @@ from sds.table.ttypes import GetRequest
 from sds.table.ttypes import ScanRequest
 
 
-# change default encodings if unicode is used
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 endpoint = "http://cnbj-s0.sds.api.xiaomi.com"
 # Set your AppKey and AppSecret
 appKey = ""
@@ -68,7 +64,7 @@ categories = ['work', 'travel', 'food']
 M = 20
 try:
     admin_client.dropTable(table_name)
-except ServiceException, se:
+except ServiceException as se:
     assert se.errorCode == ErrorCode.RESOURCE_NOT_FOUND, "Unexpected error: %s" % se.errorCode
 
 admin_client.createTable(table_name, table_spec)
@@ -87,20 +83,20 @@ for i in range(0, M):
                                            DataType.STRING_SET)
                      })
     table_client.put(put)
-    print "put record %d" % i
+    print ("put record %d" % i)
 
 # random access
-print "================= get note by id ===================="
+print ("================= get note by id ====================")
 get = GetRequest(tableName=table_name,
                  keys={
                      'userId': datum('user1'),
                      'noteId': datum(random.randint(0, M), DataType.INT64)
                  },
                  attributes=['title', 'content'])
-print "get record: %s" % values(table_client.get(get).item)
+print ("get record: %s" % values(table_client.get(get).item))
 
 # scan by last modify time
-print "================= scan by last modify time ===================="
+print ("================= scan by last modify time ====================")
 start_key = {'userId': datum('user1')}
 stop_key = start_key
 scan = ScanRequest(tableName=table_name,
@@ -111,10 +107,10 @@ scan = ScanRequest(tableName=table_name,
                    limit=M)  # batch size
 
 for record in scan_iter(table_client, scan):
-    print record
+    print (record)
 
 # get noteId which contain category food
-print "================= get notes which contain category food ===================="
+print ("================= get notes which contain category food ====================")
 start_key = {'userId': datum('user1'), 'category': datum('food')}
 stop_key = start_key
 scan = ScanRequest(tableName=table_name,
@@ -124,7 +120,7 @@ scan = ScanRequest(tableName=table_name,
                    attributes=['noteId', 'category'],  # scan all attributes if not specified
                    limit=M)  # batch size
 for record in scan_iter(table_client, scan):
-    print record
+    print (record)
 
 admin_client.dropTable(table_name)
 

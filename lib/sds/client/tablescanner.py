@@ -1,7 +1,7 @@
 # encoding: utf-8
 from time import sleep
 
-from datumutil import values
+from .datumutil import values
 
 
 def datum_scan_iter(table_client, scan):

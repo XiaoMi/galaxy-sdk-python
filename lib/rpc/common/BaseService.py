@@ -178,7 +178,7 @@ class Processor(Iface, TProcessor):
     result = getServerVersion_result()
     try:
       result.success = self._handler.getServerVersion()
-    except rpc.errors.ttypes.ServiceException, se:
+    except rpc.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getServerVersion", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -192,7 +192,7 @@ class Processor(Iface, TProcessor):
     result = validateClientVersion_result()
     try:
       self._handler.validateClientVersion(args.clientVersion)
-    except rpc.errors.ttypes.ServiceException, se:
+    except rpc.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("validateClientVersion", TMessageType.REPLY, seqid)
     result.write(oprot)

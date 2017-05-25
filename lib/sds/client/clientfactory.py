@@ -89,14 +89,14 @@ class RetryableClient:
       while retry < 3:
         try:
           return getattr(self.client, item)(*args)
-        except SdsTransportException, ex:
-          if ERROR_BACKOFF.has_key(ex.errorCode) and retry < MAX_RETRY:
+        except SdsTransportException as ex:
+          if  ex.errorCode in ERROR_BACKOFF and retry < MAX_RETRY:
             sec = ERROR_BACKOFF[ex.errorCode] / 1000.0 * (1 << retry)
             time.sleep(sec)
             retry += 1
           else:
             raise ex
-        except socket.timeout, se:
+        except socket.timeout as se:
           if self.retryIfTimeout and retry < MAX_RETRY:
             retry += 1
           else:

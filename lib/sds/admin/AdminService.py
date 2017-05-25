@@ -9,7 +9,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import sds.common.BaseService
-from ttypes import *
+from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -1909,7 +1909,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = saveAppInfo_result()
     try:
       self._handler.saveAppInfo(args.appInfo)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("saveAppInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1923,7 +1923,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getAppInfo_result()
     try:
       result.success = self._handler.getAppInfo(args.appId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getAppInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1937,7 +1937,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = findAllApps_result()
     try:
       result.success = self._handler.findAllApps()
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("findAllApps", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1951,7 +1951,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = findAllTables_result()
     try:
       result.success = self._handler.findAllTables()
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("findAllTables", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1965,7 +1965,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = createTable_result()
     try:
       result.success = self._handler.createTable(args.tableName, args.tableSpec)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("createTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1979,7 +1979,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = dropTable_result()
     try:
       self._handler.dropTable(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("dropTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1993,7 +1993,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = alterTable_result()
     try:
       self._handler.alterTable(args.tableName, args.tableSpec)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("alterTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2007,7 +2007,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = cloneTable_result()
     try:
       self._handler.cloneTable(args.srcTableName, args.destTableName, args.flushTable)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("cloneTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2021,7 +2021,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = disableTable_result()
     try:
       self._handler.disableTable(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("disableTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2035,7 +2035,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = enableTable_result()
     try:
       self._handler.enableTable(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("enableTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2049,7 +2049,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = describeTable_result()
     try:
       result.success = self._handler.describeTable(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("describeTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2063,7 +2063,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getTableStatus_result()
     try:
       result.success = self._handler.getTableStatus(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getTableStatus", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2077,7 +2077,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getTableState_result()
     try:
       result.success = self._handler.getTableState(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getTableState", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2091,7 +2091,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getTableSplits_result()
     try:
       result.success = self._handler.getTableSplits(args.tableName, args.startKey, args.stopKey)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getTableSplits", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2105,7 +2105,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = queryMetric_result()
     try:
       result.success = self._handler.queryMetric(args.query)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("queryMetric", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2119,7 +2119,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = queryMetrics_result()
     try:
       result.success = self._handler.queryMetrics(args.queries)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("queryMetrics", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2133,7 +2133,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = findAllAppInfo_result()
     try:
       result.success = self._handler.findAllAppInfo()
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("findAllAppInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2147,7 +2147,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getTableSize_result()
     try:
       result.success = self._handler.getTableSize(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getTableSize", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2161,7 +2161,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = putClientMetrics_result()
     try:
       self._handler.putClientMetrics(args.clientMetrics)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("putClientMetrics", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2175,7 +2175,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = subscribePhoneAlert_result()
     try:
       self._handler.subscribePhoneAlert(args.phoneNumber, args.spaceId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("subscribePhoneAlert", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2189,7 +2189,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = unsubscribePhoneAlert_result()
     try:
       self._handler.unsubscribePhoneAlert(args.phoneNumber, args.spaceId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("unsubscribePhoneAlert", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2203,7 +2203,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = subscribeEmailAlert_result()
     try:
       self._handler.subscribeEmailAlert(args.email, args.spaceId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("subscribeEmailAlert", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2217,7 +2217,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = unsubscribeEmailAlert_result()
     try:
       self._handler.unsubscribeEmailAlert(args.email, args.spaceId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("unsubscribeEmailAlert", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2231,7 +2231,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = listSubscribedPhone_result()
     try:
       result.success = self._handler.listSubscribedPhone(args.spaceId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("listSubscribedPhone", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2245,7 +2245,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = listSubscribedEmail_result()
     try:
       result.success = self._handler.listSubscribedEmail(args.spaceId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("listSubscribedEmail", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2259,7 +2259,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getTableHistorySize_result()
     try:
       result.success = self._handler.getTableHistorySize(args.tableName, args.startDate, args.stopDate)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getTableHistorySize", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2273,7 +2273,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = renameTable_result()
     try:
       self._handler.renameTable(args.srcName, args.destName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("renameTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2287,7 +2287,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = listSnapshots_result()
     try:
       result.success = self._handler.listSnapshots(args.tableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("listSnapshots", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2301,7 +2301,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = snapshotTable_result()
     try:
       self._handler.snapshotTable(args.tableName, args.snapshotName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("snapshotTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2315,7 +2315,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = deleteSnapshot_result()
     try:
       self._handler.deleteSnapshot(args.tableName, args.snapshotName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("deleteSnapshot", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2329,7 +2329,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = restoreSnapshot_result()
     try:
       self._handler.restoreSnapshot(args.tableName, args.snapshotName, args.destTableName, args.isSystem)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("restoreSnapshot", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2343,7 +2343,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = listAllSnapshots_result()
     try:
       result.success = self._handler.listAllSnapshots()
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("listAllSnapshots", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2357,7 +2357,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = cancelSnapshotTable_result()
     try:
       self._handler.cancelSnapshotTable(args.tableName, args.snapshotName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("cancelSnapshotTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2371,7 +2371,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getSnapshotState_result()
     try:
       result.success = self._handler.getSnapshotState(args.tableName, args.snapshotName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getSnapshotState", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2385,7 +2385,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getQuotaInfo_result()
     try:
       result.success = self._handler.getQuotaInfo(args.spaceId)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getQuotaInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2399,7 +2399,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getLatestStreamCheckpoint_result()
     try:
       result.success = self._handler.getLatestStreamCheckpoint(args.tableName, args.topicName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getLatestStreamCheckpoint", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2413,7 +2413,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getFloorStreamCheckpoint_result()
     try:
       result.success = self._handler.getFloorStreamCheckpoint(args.tableName, args.topicName, args.timestamp)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getFloorStreamCheckpoint", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2427,7 +2427,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = getCeilStreamCheckpoint_result()
     try:
       result.success = self._handler.getCeilStreamCheckpoint(args.tableName, args.topicName, args.timestamp)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("getCeilStreamCheckpoint", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2441,7 +2441,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = recoverTable_result()
     try:
       self._handler.recoverTable(args.srcTableName, args.destTableName, args.topicName, args.timestamp)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("recoverTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2455,7 +2455,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = listAllDeletedTables_result()
     try:
       result.success = self._handler.listAllDeletedTables()
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("listAllDeletedTables", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2469,7 +2469,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = restoreTable_result()
     try:
       self._handler.restoreTable(args.deletedTableName, args.destTableName)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("restoreTable", TMessageType.REPLY, seqid)
     result.write(oprot)

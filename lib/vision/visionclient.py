@@ -103,8 +103,8 @@ class VisionClient:
     try:
       image_file = open(path, "r")
       bytes_source = image_file.read()
-    except Exception, e:
-      print Exception, ":", e
+    except Exception as e:
+      print ("Exception : %s" % (str(e)))
     finally:
       if image_file is not None:
         image_file.close()
@@ -141,8 +141,8 @@ class VisionClient:
       result = self.__result2obj(response)
       if result is None:
         raise VisionException(errMsg="error is occurred, the response is none!")
-    except VisionException, ve:
-      print ve
+    except VisionException as ve:
+      print (ve)
     return result
 
   def detect_faces(self, *args, **kwargs):
@@ -177,6 +177,6 @@ class VisionClient:
       result = self.__result2obj(response)
       if result is None:
         raise VisionException(errMsg="error is occurred, the response is none!")
-    except VisionException, ve:
-      print ve
+    except VisionException as ve:
+      print (ve)
     return result

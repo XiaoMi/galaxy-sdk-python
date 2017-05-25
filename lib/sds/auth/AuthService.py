@@ -9,7 +9,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import sds.common.BaseService
-from ttypes import *
+from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -103,7 +103,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = createCredential_result()
     try:
       result.success = self._handler.createCredential(args.oauthInfo)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("createCredential", TMessageType.REPLY, seqid)
     result.write(oprot)

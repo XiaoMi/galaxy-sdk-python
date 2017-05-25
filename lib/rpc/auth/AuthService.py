@@ -109,7 +109,7 @@ class Processor(rpc.common.BaseService.Processor, Iface, TProcessor):
     result = createCredential_result()
     try:
       result.success = self._handler.createCredential(args.xiaomiAppId, args.appUserAuthProvider, args.authToken)
-    except rpc.errors.ttypes.ServiceException, se:
+    except rpc.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("createCredential", TMessageType.REPLY, seqid)
     result.write(oprot)

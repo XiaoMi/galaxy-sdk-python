@@ -18,17 +18,17 @@
 # under the License.
 #
 import base64
-import httplib
+import http.client
+
 import os
-import rfc822
 import socket
 import sys
 import urllib
-import urlparse
+from urllib.parse import urlparse
 import time
 import hashlib
 import hmac
-from cStringIO import StringIO
+from io import BytesIO as StringIO
 
 from thrift.transport.TTransport import TTransportBase
 from sds.auth.constants import HK_TIMESTAMP
@@ -41,8 +41,24 @@ from sds.errors.constants import HttpStatusCode
 from sds.client.exceptions import SdsTransportException
 from sds.common.ttypes import ThriftProtocol
 from sds.common.constants import THRIFT_HEADER_MAP
-from urlparse import urlparse
+from urllib.parse import urlparse
 from hashlib import sha1
+
+def formatdate(timeval=None):
+  """Returns time format preferred for Internet standards.
+  Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
+  According to RFC 1123, day and month names must always be in
+  English.  If not for that, this code could use strftime().  It
+  can't because strftime() honors the locale and could generated
+  non-English names.
+  """
+  if timeval is None:
+    timeval = time.time()
+  timeval = time.gmtime(timeval)
+  return "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
+    ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")[timeval[6]],timeval[2],
+    ("Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", 
+     "Dec")[timeval[1]-1], timeval[0], timeval[3], timeval[4], timeval[5])
 
 
 class SdsTHttpClient(TTransportBase):
@@ -54,9 +70,9 @@ class SdsTHttpClient(TTransportBase):
     self.scheme = parsed.scheme
     assert self.scheme in ('http', 'https')
     if self.scheme == 'http':
-      self.port = parsed.port or httplib.HTTP_PORT
+      self.port = parsed.port or http.client.HTTP_PORT
     elif self.scheme == 'https':
-      self.port = parsed.port or httplib.HTTPS_PORT
+      self.port = parsed.port or http.client.HTTPS_PORT
     self.host = parsed.hostname
     self.path = parsed.path
     if parsed.query:
@@ -67,12 +83,13 @@ class SdsTHttpClient(TTransportBase):
     self.__http = None
     self.__custom_headers = None
     self.__clock_offset = 0
+    self.response = None
 
   def open(self):
     if self.scheme == 'http':
-      self.__http = httplib.HTTP(self.host, self.port)
+      self.__http = http.client.HTTPConnection(self.host, self.port)
     else:
-      self.__http = httplib.HTTPS(self.host, self.port)
+      self.__http = http.client.HTTPSConnection(self.host, self.port)
 
   def close(self):
     self.__http.close()
@@ -94,7 +111,7 @@ class SdsTHttpClient(TTransportBase):
     self.__custom_headers = headers
 
   def read(self, sz):
-    return self.__http.file.read(sz)
+    return self.response.read(sz)
 
   def write(self, buf):
     self.__wbuf.write(buf)
@@ -131,7 +148,7 @@ class SdsTHttpClient(TTransportBase):
         user_agent = '%s (%s)' % (user_agent, urllib.quote(script))
       self.__http.putheader('User-Agent', user_agent)
 
-    for key, val in self.__auth_headers(dict(headers.items() + self.__custom_headers.items())).iteritems():
+    for key, val in self.__auth_headers(dict(headers.items() | self.__custom_headers.items())).items():
       self.__http.putheader(key, val)
 
     self.__http.endheaders()
@@ -139,8 +156,13 @@ class SdsTHttpClient(TTransportBase):
     # Write payload
     self.__http.send(data)
 
+
+
     # Get reply to flush the request
-    code, message, headers = self.__http.getreply()
+    self.response = self.__http.getresponse()
+    code = self.response.getcode()
+    message = self.response.reason
+    headers = self.response.getheaders()
     if code != 200:
       if code == HttpStatusCode.CLOCK_TOO_SKEWED:
         server_time = float(headers[HK_TIMESTAMP])
@@ -161,11 +183,12 @@ class SdsTHttpClient(TTransportBase):
     string_to_assign += '%s' % self.__canonicalize_xiaomi_headers(headers)
     string_to_assign += '%s' % self.__canonicalize_resource(self.path)
     signature = \
-      base64.encodestring(hmac.new(self.credential.secretKey, string_to_assign, digestmod=sha1).digest()).strip()
-    auth_string = "Galaxy-V3 %s:%s" % (self.credential.secretKeyId, signature)
+      base64.encodestring(hmac.new(bytearray(self.credential.secretKey.encode('utf-8')),bytes(string_to_assign.encode('utf-8')), digestmod=sha1).digest()).strip()
+    auth_string = "Galaxy-V3 %s:%s" % (self.credential.secretKeyId, signature.decode('utf-8'))
     headers[HK_AUTHORIZATION] = auth_string
 
     return headers
+
 
   def __set_headers(self, body):
     headers = dict()
@@ -174,7 +197,7 @@ class SdsTHttpClient(TTransportBase):
     headers[HK_TIMESTAMP] = str(int(time.time() + self.__clock_offset))
     headers[HK_CONTENT_MD5] = hashlib.md5(body).hexdigest()
     headers['content-type'] = THRIFT_HEADER_MAP[self.__protocol]
-    headers[MI_DATE] = rfc822.formatdate(time.time())
+    headers[MI_DATE] = formatdate(time.time())
     return headers
 
   def __get_header(self, http_headers, header_name):

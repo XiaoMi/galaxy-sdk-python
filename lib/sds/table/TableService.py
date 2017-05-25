@@ -9,7 +9,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import sds.common.BaseService
-from ttypes import *
+from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -325,6 +325,7 @@ class Client(sds.common.BaseService.Client, Iface):
     if result.success is not None:
       return result.success
     if result.se is not None:
+     # print (result.se)
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "batch failed: unknown result");
 
@@ -473,7 +474,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = get_result()
     try:
       result.success = self._handler.get(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("get", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -487,7 +488,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = put_result()
     try:
       result.success = self._handler.put(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("put", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -501,7 +502,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = increment_result()
     try:
       result.success = self._handler.increment(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("increment", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -515,7 +516,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = remove_result()
     try:
       result.success = self._handler.remove(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("remove", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -529,7 +530,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = scan_result()
     try:
       result.success = self._handler.scan(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("scan", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -543,7 +544,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = batch_result()
     try:
       result.success = self._handler.batch(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("batch", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -557,7 +558,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = batchCheckAndMutate_result()
     try:
       result.success = self._handler.batchCheckAndMutate(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("batchCheckAndMutate", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -571,7 +572,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = putToRebuildIndex_result()
     try:
       result.success = self._handler.putToRebuildIndex(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("putToRebuildIndex", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -585,7 +586,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     result = partialAllowedBatch_result()
     try:
       result.success = self._handler.partialAllowedBatch(args.request)
-    except sds.errors.ttypes.ServiceException, se:
+    except sds.errors.ttypes.ServiceException as se:
       result.se = se
     oprot.writeMessageBegin("partialAllowedBatch", TMessageType.REPLY, seqid)
     result.write(oprot)

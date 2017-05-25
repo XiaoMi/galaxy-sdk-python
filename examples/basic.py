@@ -3,6 +3,9 @@ import random
 import time
 import sys
 
+
+
+
 from sds.client.clientfactory import ClientFactory
 from sds.client.datumutil import datum
 from sds.client.datumutil import values
@@ -30,10 +33,6 @@ from sds.table.ttypes import BatchRequest
 from sds.table.ttypes import BatchOp
 from sds.table.ttypes import Request
 from sds.common.ttypes import ThriftProtocol
-
-# change default encodings if unicode is used
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 endpoint = "http://cnbj-s0.sds.api.xiaomi.com"
 # Set your AppKey and AppSecret
@@ -71,11 +70,11 @@ table_spec = TableSpec(
 
 try:
     admin_client.dropTable(table_name)
-except ServiceException, se:
+except ServiceException as se:
     assert se.errorCode == ErrorCode.RESOURCE_NOT_FOUND, "Unexpected error: %s" % se.errorCode
-
+print (table_name)
 admin_client.createTable(table_name, table_spec)
-print admin_client.describeTable(table_name)
+print (admin_client.describeTable(table_name))
 
 # put data
 now = int(time.time())
@@ -94,7 +93,7 @@ for i in range(0, len(cities)):
                          'pm25': datum(random.randint(0, 100), DataType.INT64)
                      })
     table_client.put(put)
-    print "put record %d" % i
+    print ("put record %d" % i)
 
 # batch put
 batch_items = []
@@ -118,7 +117,7 @@ get = GetRequest(tableName=table_name,
                      'timestamp': datum(now, DataType.INT64)
                  },
                  attributes=['pm25'])
-print "get record: %s" % values(table_client.get(get).item)
+print ("get record: %s" % values(table_client.get(get).item))
 
 # scan table
 scan = ScanRequest(tableName=table_name,
@@ -129,7 +128,7 @@ scan = ScanRequest(tableName=table_name,
                    limit=5)  # batch size
 
 for record in scan_iter(table_client, scan):
-    print record
+    print (record)
 
-print "Dropping table %s" % table_name
+print ("Dropping table %s" % table_name)
 admin_client.dropTable(table_name)

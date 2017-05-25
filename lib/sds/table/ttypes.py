@@ -465,7 +465,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.boolSetValue = []
           (_etype3, _size0) = iprot.readListBegin()
-          for _i4 in xrange(_size0):
+          for _i4 in range(_size0):
             _elem5 = iprot.readBool();
             self.boolSetValue.append(_elem5)
           iprot.readListEnd()
@@ -475,7 +475,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.int8SetValue = []
           (_etype9, _size6) = iprot.readListBegin()
-          for _i10 in xrange(_size6):
+          for _i10 in range(_size6):
             _elem11 = iprot.readByte();
             self.int8SetValue.append(_elem11)
           iprot.readListEnd()
@@ -485,7 +485,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.int16SetValue = []
           (_etype15, _size12) = iprot.readListBegin()
-          for _i16 in xrange(_size12):
+          for _i16 in range(_size12):
             _elem17 = iprot.readI16();
             self.int16SetValue.append(_elem17)
           iprot.readListEnd()
@@ -495,7 +495,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.int32SetValue = []
           (_etype21, _size18) = iprot.readListBegin()
-          for _i22 in xrange(_size18):
+          for _i22 in range(_size18):
             _elem23 = iprot.readI32();
             self.int32SetValue.append(_elem23)
           iprot.readListEnd()
@@ -505,7 +505,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.int64SetValue = []
           (_etype27, _size24) = iprot.readListBegin()
-          for _i28 in xrange(_size24):
+          for _i28 in range(_size24):
             _elem29 = iprot.readI64();
             self.int64SetValue.append(_elem29)
           iprot.readListEnd()
@@ -515,7 +515,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.doubleSetValue = []
           (_etype33, _size30) = iprot.readListBegin()
-          for _i34 in xrange(_size30):
+          for _i34 in range(_size30):
             _elem35 = iprot.readDouble();
             self.doubleSetValue.append(_elem35)
           iprot.readListEnd()
@@ -525,7 +525,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.stringSetValue = []
           (_etype39, _size36) = iprot.readListBegin()
-          for _i40 in xrange(_size36):
+          for _i40 in range(_size36):
             _elem41 = iprot.readString();
             self.stringSetValue.append(_elem41)
           iprot.readListEnd()
@@ -535,7 +535,7 @@ class Value(object):
         if ftype == TType.LIST:
           self.binarySetValue = []
           (_etype45, _size42) = iprot.readListBegin()
-          for _i46 in xrange(_size42):
+          for _i46 in range(_size42):
             _elem47 = iprot.readString();
             self.binarySetValue.append(_elem47)
           iprot.readListEnd()
@@ -678,7 +678,7 @@ class Value(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -759,7 +759,7 @@ class Datum(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -839,7 +839,7 @@ class ProvisionThroughput(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -906,7 +906,7 @@ class TableQuota(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -984,7 +984,7 @@ class KeySpec(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1031,7 +1031,7 @@ class LocalSecondaryIndexSpec(object):
         if ftype == TType.LIST:
           self.indexSchema = []
           (_etype59, _size56) = iprot.readListBegin()
-          for _i60 in xrange(_size56):
+          for _i60 in range(_size56):
             _elem61 = KeySpec()
             _elem61.read(iprot)
             self.indexSchema.append(_elem61)
@@ -1042,7 +1042,7 @@ class LocalSecondaryIndexSpec(object):
         if ftype == TType.LIST:
           self.projections = []
           (_etype65, _size62) = iprot.readListBegin()
-          for _i66 in xrange(_size62):
+          for _i66 in range(_size62):
             _elem67 = iprot.readString();
             self.projections.append(_elem67)
           iprot.readListEnd()
@@ -1107,7 +1107,7 @@ class LocalSecondaryIndexSpec(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1149,7 +1149,7 @@ class EntityGroupSpec(object):
         if ftype == TType.LIST:
           self.attributes = []
           (_etype73, _size70) = iprot.readListBegin()
-          for _i74 in xrange(_size70):
+          for _i74 in range(_size70):
             _elem75 = KeySpec()
             _elem75.read(iprot)
             self.attributes.append(_elem75)
@@ -1197,7 +1197,7 @@ class EntityGroupSpec(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1269,7 +1269,7 @@ class GlobalSecondaryIndexSpec(object):
         if ftype == TType.LIST:
           self.indexPrimaryKey = []
           (_etype80, _size77) = iprot.readListBegin()
-          for _i81 in xrange(_size77):
+          for _i81 in range(_size77):
             _elem82 = KeySpec()
             _elem82.read(iprot)
             self.indexPrimaryKey.append(_elem82)
@@ -1280,7 +1280,7 @@ class GlobalSecondaryIndexSpec(object):
         if ftype == TType.LIST:
           self.projections = []
           (_etype86, _size83) = iprot.readListBegin()
-          for _i87 in xrange(_size83):
+          for _i87 in range(_size83):
             _elem88 = iprot.readString();
             self.projections.append(_elem88)
           iprot.readListEnd()
@@ -1404,7 +1404,7 @@ class GlobalSecondaryIndexSpec(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1458,7 +1458,7 @@ class StreamSpec(object):
         if ftype == TType.LIST:
           self.attributes = []
           (_etype94, _size91) = iprot.readListBegin()
-          for _i95 in xrange(_size91):
+          for _i95 in range(_size91):
             _elem96 = iprot.readString();
             self.attributes.append(_elem96)
           iprot.readListEnd()
@@ -1505,7 +1505,7 @@ class StreamSpec(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1625,7 +1625,7 @@ class PointInTimeRecovery(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1700,7 +1700,7 @@ class TableSchema(object):
         if ftype == TType.LIST:
           self.primaryIndex = []
           (_etype101, _size98) = iprot.readListBegin()
-          for _i102 in xrange(_size98):
+          for _i102 in range(_size98):
             _elem103 = KeySpec()
             _elem103.read(iprot)
             self.primaryIndex.append(_elem103)
@@ -1711,7 +1711,7 @@ class TableSchema(object):
         if ftype == TType.MAP:
           self.secondaryIndexes = {}
           (_ktype105, _vtype106, _size104 ) = iprot.readMapBegin()
-          for _i108 in xrange(_size104):
+          for _i108 in range(_size104):
             _key109 = iprot.readString();
             _val110 = LocalSecondaryIndexSpec()
             _val110.read(iprot)
@@ -1723,7 +1723,7 @@ class TableSchema(object):
         if ftype == TType.MAP:
           self.attributes = {}
           (_ktype112, _vtype113, _size111 ) = iprot.readMapBegin()
-          for _i115 in xrange(_size111):
+          for _i115 in range(_size111):
             _key116 = iprot.readString();
             _val117 = iprot.readI32();
             self.attributes[_key116] = _val117
@@ -1744,7 +1744,7 @@ class TableSchema(object):
         if ftype == TType.MAP:
           self.streams = {}
           (_ktype119, _vtype120, _size118 ) = iprot.readMapBegin()
-          for _i122 in xrange(_size118):
+          for _i122 in range(_size118):
             _key123 = iprot.readString();
             _val124 = StreamSpec()
             _val124.read(iprot)
@@ -1756,7 +1756,7 @@ class TableSchema(object):
         if ftype == TType.MAP:
           self.globalSecondaryIndexes = {}
           (_ktype126, _vtype127, _size125 ) = iprot.readMapBegin()
-          for _i129 in xrange(_size125):
+          for _i129 in range(_size125):
             _key130 = iprot.readString();
             _val131 = GlobalSecondaryIndexSpec()
             _val131.read(iprot)
@@ -1851,7 +1851,7 @@ class TableSchema(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1946,11 +1946,11 @@ class TableMetadata(object):
         if ftype == TType.MAP:
           self.appAcl = {}
           (_ktype142, _vtype143, _size141 ) = iprot.readMapBegin()
-          for _i145 in xrange(_size141):
+          for _i145 in range(_size141):
             _key146 = iprot.readString();
             _val147 = []
             (_etype151, _size148) = iprot.readListBegin()
-            for _i152 in xrange(_size148):
+            for _i152 in range(_size148):
               _elem153 = iprot.readI32();
               _val147.append(_elem153)
             iprot.readListEnd()
@@ -2008,11 +2008,11 @@ class TableMetadata(object):
         if ftype == TType.MAP:
           self.acl = {}
           (_ktype155, _vtype156, _size154 ) = iprot.readMapBegin()
-          for _i158 in xrange(_size154):
+          for _i158 in range(_size154):
             _key159 = iprot.readString();
             _val160 = []
             (_etype164, _size161) = iprot.readListBegin()
-            for _i165 in xrange(_size161):
+            for _i165 in range(_size161):
               _elem166 = iprot.readI32();
               _val160.append(_elem166)
             iprot.readListEnd()
@@ -2158,7 +2158,7 @@ class TableMetadata(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2240,7 +2240,7 @@ class TableSpec(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2372,7 +2372,7 @@ class TableStatus(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2467,7 +2467,7 @@ class TableInfo(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2574,7 +2574,7 @@ class SimpleCondition(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2615,7 +2615,7 @@ class TableSplit(object):
         if ftype == TType.MAP:
           self.startKey = {}
           (_ktype174, _vtype175, _size173 ) = iprot.readMapBegin()
-          for _i177 in xrange(_size173):
+          for _i177 in range(_size173):
             _key178 = iprot.readString();
             _val179 = Datum()
             _val179.read(iprot)
@@ -2627,7 +2627,7 @@ class TableSplit(object):
         if ftype == TType.MAP:
           self.stopKey = {}
           (_ktype181, _vtype182, _size180 ) = iprot.readMapBegin()
-          for _i184 in xrange(_size180):
+          for _i184 in range(_size180):
             _key185 = iprot.readString();
             _val186 = Datum()
             _val186.read(iprot)
@@ -2676,7 +2676,7 @@ class TableSplit(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2723,7 +2723,7 @@ class GetRequest(object):
         if ftype == TType.MAP:
           self.keys = {}
           (_ktype192, _vtype193, _size191 ) = iprot.readMapBegin()
-          for _i195 in xrange(_size191):
+          for _i195 in range(_size191):
             _key196 = iprot.readString();
             _val197 = Datum()
             _val197.read(iprot)
@@ -2735,7 +2735,7 @@ class GetRequest(object):
         if ftype == TType.LIST:
           self.attributes = []
           (_etype201, _size198) = iprot.readListBegin()
-          for _i202 in xrange(_size198):
+          for _i202 in range(_size198):
             _elem203 = iprot.readString();
             self.attributes.append(_elem203)
           iprot.readListEnd()
@@ -2786,7 +2786,7 @@ class GetRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2822,7 +2822,7 @@ class GetResult(object):
         if ftype == TType.MAP:
           self.item = {}
           (_ktype208, _vtype209, _size207 ) = iprot.readMapBegin()
-          for _i211 in xrange(_size207):
+          for _i211 in range(_size207):
             _key212 = iprot.readString();
             _val213 = Datum()
             _val213.read(iprot)
@@ -2862,7 +2862,7 @@ class GetResult(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2909,7 +2909,7 @@ class PutRequest(object):
         if ftype == TType.MAP:
           self.record = {}
           (_ktype217, _vtype218, _size216 ) = iprot.readMapBegin()
-          for _i220 in xrange(_size216):
+          for _i220 in range(_size216):
             _key221 = iprot.readString();
             _val222 = Datum()
             _val222.read(iprot)
@@ -2965,7 +2965,7 @@ class PutRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3030,7 +3030,7 @@ class PutResult(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3077,7 +3077,7 @@ class IncrementRequest(object):
         if ftype == TType.MAP:
           self.keys = {}
           (_ktype226, _vtype227, _size225 ) = iprot.readMapBegin()
-          for _i229 in xrange(_size225):
+          for _i229 in range(_size225):
             _key230 = iprot.readString();
             _val231 = Datum()
             _val231.read(iprot)
@@ -3089,7 +3089,7 @@ class IncrementRequest(object):
         if ftype == TType.MAP:
           self.amounts = {}
           (_ktype233, _vtype234, _size232 ) = iprot.readMapBegin()
-          for _i236 in xrange(_size232):
+          for _i236 in range(_size232):
             _key237 = iprot.readString();
             _val238 = Datum()
             _val238.read(iprot)
@@ -3143,7 +3143,7 @@ class IncrementRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3179,7 +3179,7 @@ class IncrementResult(object):
         if ftype == TType.MAP:
           self.amounts = {}
           (_ktype244, _vtype245, _size243 ) = iprot.readMapBegin()
-          for _i247 in xrange(_size243):
+          for _i247 in range(_size243):
             _key248 = iprot.readString();
             _val249 = Datum()
             _val249.read(iprot)
@@ -3219,7 +3219,7 @@ class IncrementResult(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3270,7 +3270,7 @@ class RemoveRequest(object):
         if ftype == TType.MAP:
           self.keys = {}
           (_ktype253, _vtype254, _size252 ) = iprot.readMapBegin()
-          for _i256 in xrange(_size252):
+          for _i256 in range(_size252):
             _key257 = iprot.readString();
             _val258 = Datum()
             _val258.read(iprot)
@@ -3282,7 +3282,7 @@ class RemoveRequest(object):
         if ftype == TType.LIST:
           self.attributes = []
           (_etype262, _size259) = iprot.readListBegin()
-          for _i263 in xrange(_size259):
+          for _i263 in range(_size259):
             _elem264 = iprot.readString();
             self.attributes.append(_elem264)
           iprot.readListEnd()
@@ -3344,7 +3344,7 @@ class RemoveRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3409,7 +3409,7 @@ class RemoveResult(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3517,7 +3517,7 @@ class Request(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3596,7 +3596,7 @@ class ScanAction(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3685,7 +3685,7 @@ class ScanRequest(object):
         if ftype == TType.MAP:
           self.startKey = {}
           (_ktype269, _vtype270, _size268 ) = iprot.readMapBegin()
-          for _i272 in xrange(_size268):
+          for _i272 in range(_size268):
             _key273 = iprot.readString();
             _val274 = Datum()
             _val274.read(iprot)
@@ -3697,7 +3697,7 @@ class ScanRequest(object):
         if ftype == TType.MAP:
           self.stopKey = {}
           (_ktype276, _vtype277, _size275 ) = iprot.readMapBegin()
-          for _i279 in xrange(_size275):
+          for _i279 in range(_size275):
             _key280 = iprot.readString();
             _val281 = Datum()
             _val281.read(iprot)
@@ -3709,7 +3709,7 @@ class ScanRequest(object):
         if ftype == TType.LIST:
           self.attributes = []
           (_etype285, _size282) = iprot.readListBegin()
-          for _i286 in xrange(_size282):
+          for _i286 in range(_size282):
             _elem287 = iprot.readString();
             self.attributes.append(_elem287)
           iprot.readListEnd()
@@ -3845,7 +3845,7 @@ class ScanRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3887,7 +3887,7 @@ class ScanResult(object):
         if ftype == TType.MAP:
           self.nextStartKey = {}
           (_ktype294, _vtype295, _size293 ) = iprot.readMapBegin()
-          for _i297 in xrange(_size293):
+          for _i297 in range(_size293):
             _key298 = iprot.readString();
             _val299 = Datum()
             _val299.read(iprot)
@@ -3899,10 +3899,10 @@ class ScanResult(object):
         if ftype == TType.LIST:
           self.records = []
           (_etype303, _size300) = iprot.readListBegin()
-          for _i304 in xrange(_size300):
+          for _i304 in range(_size300):
             _elem305 = {}
             (_ktype307, _vtype308, _size306 ) = iprot.readMapBegin()
-            for _i310 in xrange(_size306):
+            for _i310 in range(_size306):
               _key311 = iprot.readString();
               _val312 = Datum()
               _val312.read(iprot)
@@ -3966,7 +3966,7 @@ class ScanResult(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4045,7 +4045,7 @@ class BatchRequestItem(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4153,7 +4153,7 @@ class Result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4259,7 +4259,7 @@ class BatchResultItem(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4295,7 +4295,7 @@ class BatchRequest(object):
         if ftype == TType.LIST:
           self.items = []
           (_etype321, _size318) = iprot.readListBegin()
-          for _i322 in xrange(_size318):
+          for _i322 in range(_size318):
             _elem323 = BatchRequestItem()
             _elem323.read(iprot)
             self.items.append(_elem323)
@@ -4333,7 +4333,7 @@ class BatchRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4369,7 +4369,7 @@ class BatchResult(object):
         if ftype == TType.LIST:
           self.items = []
           (_etype328, _size325) = iprot.readListBegin()
-          for _i329 in xrange(_size325):
+          for _i329 in range(_size325):
             _elem330 = BatchResultItem()
             _elem330.read(iprot)
             self.items.append(_elem330)
@@ -4407,7 +4407,7 @@ class BatchResult(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4455,7 +4455,7 @@ class InternalMutationLogEntry(object):
         if ftype == TType.MAP:
           self.record = {}
           (_ktype333, _vtype334, _size332 ) = iprot.readMapBegin()
-          for _i336 in xrange(_size332):
+          for _i336 in range(_size332):
             _key337 = iprot.readString();
             _val338 = iprot.readString();
             self.record[_key337] = _val338
@@ -4476,7 +4476,7 @@ class InternalMutationLogEntry(object):
         if ftype == TType.MAP:
           self.amounts = {}
           (_ktype340, _vtype341, _size339 ) = iprot.readMapBegin()
-          for _i343 in xrange(_size339):
+          for _i343 in range(_size339):
             _key344 = iprot.readString();
             _val345 = iprot.readString();
             self.amounts[_key344] = _val345
@@ -4534,7 +4534,7 @@ class InternalMutationLogEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4585,7 +4585,7 @@ class MutationLogEntry(object):
         if ftype == TType.MAP:
           self.record = {}
           (_ktype351, _vtype352, _size350 ) = iprot.readMapBegin()
-          for _i354 in xrange(_size350):
+          for _i354 in range(_size350):
             _key355 = iprot.readString();
             _val356 = Datum()
             _val356.read(iprot)
@@ -4612,7 +4612,7 @@ class MutationLogEntry(object):
         if ftype == TType.MAP:
           self.amounts = {}
           (_ktype358, _vtype359, _size357 ) = iprot.readMapBegin()
-          for _i361 in xrange(_size357):
+          for _i361 in range(_size357):
             _key362 = iprot.readString();
             _val363 = Datum()
             _val363.read(iprot)
@@ -4676,7 +4676,7 @@ class MutationLogEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4721,7 +4721,7 @@ class RecordImage(object):
         if ftype == TType.MAP:
           self.record = {}
           (_ktype369, _vtype370, _size368 ) = iprot.readMapBegin()
-          for _i372 in xrange(_size368):
+          for _i372 in range(_size368):
             _key373 = iprot.readString();
             _val374 = Datum()
             _val374.read(iprot)
@@ -4781,7 +4781,7 @@ class RecordImage(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):

@@ -14,8 +14,6 @@ def datum(datavalue, datatype=None, thrift_protocol=ThriftProtocol.TBINARY):
       return Datum(value=Value(boolValue=datavalue), type=DataType.BOOL)
     elif isinstance(datavalue, int):
       return Datum(value=Value(int32Value=datavalue), type=DataType.INT32)
-    elif isinstance(datavalue, long):
-      return Datum(value=Value(int64Value=datavalue), type=DataType.INT64)
     elif isinstance(datavalue, float):
       return Datum(value=Value(doubleValue=datavalue), type=DataType.DOUBLE)
     elif isinstance(datavalue, str):
@@ -115,4 +113,4 @@ def value(dat, thrift_protocol=ThriftProtocol.TBINARY):
 
 
 def values(dat, thrift_protocol=ThriftProtocol.TBINARY):
-  return dict((k, value(dat[k], thrift_protocol)) for k in dat.iterkeys())
+  return dict((k, value(dat[k], thrift_protocol)) for k in dat.keys())

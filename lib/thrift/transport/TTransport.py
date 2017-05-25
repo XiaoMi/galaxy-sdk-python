@@ -17,7 +17,7 @@
 # under the License.
 #
 
-from cStringIO import StringIO
+from io import BytesIO as StringIO
 from struct import pack, unpack
 from thrift.Thrift import TException
 
@@ -52,7 +52,7 @@ class TTransportBase:
     pass
 
   def readAll(self, sz):
-    buff = ''
+    buff = b''
     have = 0
     while (have < sz):
       chunk = self.read(sz - have)
@@ -139,7 +139,7 @@ class TBufferedTransport(TTransportBase, CReadableTransport):
   def __init__(self, trans, rbuf_size=DEFAULT_BUFFER):
     self.__trans = trans
     self.__wbuf = StringIO()
-    self.__rbuf = StringIO("")
+    self.__rbuf = StringIO(b"")
     self.__rbuf_size = rbuf_size
 
   def isOpen(self):

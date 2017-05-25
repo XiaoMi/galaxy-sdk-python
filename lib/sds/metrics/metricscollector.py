@@ -1,4 +1,4 @@
-import Queue
+import queue
 import time
 from sds.admin.ttypes import ClientMetrics
 import threading
@@ -7,7 +7,7 @@ from sds.metrics.Common import UPLOAD_INTERVAL
 
 class MetricsCollector:
   def __init__(self, metric_admin_client):
-    self.queue = Queue.Queue(0)
+    self.queue = queue.Queue(0)
     self.metric_admin_client = metric_admin_client
     metric_upload_thread = MetricUploadThread(self.queue, self.metric_admin_client)
     metric_upload_thread.setDaemon(True)
@@ -39,7 +39,7 @@ class MetricUploadThread(threading.Thread):
           else:
             try:
               metricData = self.queue.get(True, (UPLOAD_INTERVAL - elapsed_time) / 1000)
-            except Queue.Empty as em:
+            except queue.Empty as em:
               break
             metrics_data_list.append(metricData)
         client_metrics.metricDataList = metrics_data_list
