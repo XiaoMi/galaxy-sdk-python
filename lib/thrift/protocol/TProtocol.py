@@ -363,7 +363,7 @@ class TProtocolBase:
     k_writer = getattr(self, ktype_name)
     v_writer = getattr(self, vtype_name)
     self.writeMapBegin(k_type, v_type, len(val))
-    for m_key, m_val in val.iteritems():
+    for m_key, m_val in val.items():
       if not k_is_container:
         k_writer(m_key)
       else:

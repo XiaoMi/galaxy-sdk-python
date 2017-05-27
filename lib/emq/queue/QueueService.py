@@ -9,7 +9,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import emq.common.EMQBaseService
-from ttypes import *
+from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -1114,7 +1114,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = createQueue_result()
     try:
       result.success = self._handler.createQueue(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("createQueue", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1128,7 +1128,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = deleteQueue_result()
     try:
       self._handler.deleteQueue(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("deleteQueue", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1142,7 +1142,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = purgeQueue_result()
     try:
       self._handler.purgeQueue(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("purgeQueue", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1156,7 +1156,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = setQueueAttribute_result()
     try:
       result.success = self._handler.setQueueAttribute(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("setQueueAttribute", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1170,7 +1170,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = setQueueQuota_result()
     try:
       result.success = self._handler.setQueueQuota(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("setQueueQuota", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1184,7 +1184,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = getQueueInfo_result()
     try:
       result.success = self._handler.getQueueInfo(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getQueueInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1198,7 +1198,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = listQueue_result()
     try:
       result.success = self._handler.listQueue(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("listQueue", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1212,7 +1212,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = setQueueRedrivePolicy_result()
     try:
       result.success = self._handler.setQueueRedrivePolicy(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("setQueueRedrivePolicy", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1226,7 +1226,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = removeQueueRedrivePolicy_result()
     try:
       self._handler.removeQueueRedrivePolicy(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("removeQueueRedrivePolicy", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1240,7 +1240,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = setPermission_result()
     try:
       self._handler.setPermission(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("setPermission", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1254,7 +1254,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = revokePermission_result()
     try:
       self._handler.revokePermission(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("revokePermission", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1268,7 +1268,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = queryPermission_result()
     try:
       result.success = self._handler.queryPermission(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("queryPermission", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1282,7 +1282,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = queryPermissionForId_result()
     try:
       result.success = self._handler.queryPermissionForId(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("queryPermissionForId", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1296,7 +1296,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = listPermissions_result()
     try:
       result.success = self._handler.listPermissions(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("listPermissions", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1310,7 +1310,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = createTag_result()
     try:
       result.success = self._handler.createTag(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("createTag", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1324,7 +1324,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = deleteTag_result()
     try:
       self._handler.deleteTag(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("deleteTag", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1338,7 +1338,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = getTagInfo_result()
     try:
       result.success = self._handler.getTagInfo(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getTagInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1352,7 +1352,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = listTag_result()
     try:
       result.success = self._handler.listTag(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("listTag", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1366,7 +1366,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = queryMetric_result()
     try:
       result.success = self._handler.queryMetric(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("queryMetric", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1380,7 +1380,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = queryPrivilegedQueue_result()
     try:
       result.success = self._handler.queryPrivilegedQueue(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("queryPrivilegedQueue", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1394,7 +1394,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = verifyEMQAdmin_result()
     try:
       result.success = self._handler.verifyEMQAdmin()
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("verifyEMQAdmin", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1408,7 +1408,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = copyQueue_result()
     try:
       self._handler.copyQueue(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("copyQueue", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1422,7 +1422,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = getQueueMeta_result()
     try:
       result.success = self._handler.getQueueMeta(args.queueName)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getQueueMeta", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -1489,7 +1489,7 @@ class createQueue_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1568,7 +1568,7 @@ class createQueue_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1634,7 +1634,7 @@ class deleteQueue_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1700,7 +1700,7 @@ class deleteQueue_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1766,7 +1766,7 @@ class purgeQueue_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1832,7 +1832,7 @@ class purgeQueue_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1898,7 +1898,7 @@ class setQueueAttribute_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1977,7 +1977,7 @@ class setQueueAttribute_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2043,7 +2043,7 @@ class setQueueQuota_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2122,7 +2122,7 @@ class setQueueQuota_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2188,7 +2188,7 @@ class getQueueInfo_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2267,7 +2267,7 @@ class getQueueInfo_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2333,7 +2333,7 @@ class listQueue_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2412,7 +2412,7 @@ class listQueue_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2478,7 +2478,7 @@ class setQueueRedrivePolicy_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2557,7 +2557,7 @@ class setQueueRedrivePolicy_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2623,7 +2623,7 @@ class removeQueueRedrivePolicy_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2689,7 +2689,7 @@ class removeQueueRedrivePolicy_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2755,7 +2755,7 @@ class setPermission_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2821,7 +2821,7 @@ class setPermission_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2887,7 +2887,7 @@ class revokePermission_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2953,7 +2953,7 @@ class revokePermission_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3019,7 +3019,7 @@ class queryPermission_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3098,7 +3098,7 @@ class queryPermission_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3164,7 +3164,7 @@ class queryPermissionForId_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3243,7 +3243,7 @@ class queryPermissionForId_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3309,7 +3309,7 @@ class listPermissions_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3388,7 +3388,7 @@ class listPermissions_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3454,7 +3454,7 @@ class createTag_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3533,7 +3533,7 @@ class createTag_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3599,7 +3599,7 @@ class deleteTag_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3665,7 +3665,7 @@ class deleteTag_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3731,7 +3731,7 @@ class getTagInfo_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3810,7 +3810,7 @@ class getTagInfo_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3876,7 +3876,7 @@ class listTag_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -3955,7 +3955,7 @@ class listTag_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4021,7 +4021,7 @@ class queryMetric_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4100,7 +4100,7 @@ class queryMetric_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4166,7 +4166,7 @@ class queryPrivilegedQueue_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4245,7 +4245,7 @@ class queryPrivilegedQueue_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4291,7 +4291,7 @@ class verifyEMQAdmin_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4370,7 +4370,7 @@ class verifyEMQAdmin_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4436,7 +4436,7 @@ class copyQueue_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4502,7 +4502,7 @@ class copyQueue_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4567,7 +4567,7 @@ class getQueueMeta_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -4646,7 +4646,7 @@ class getQueueMeta_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):

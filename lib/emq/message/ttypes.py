@@ -113,7 +113,7 @@ class MessageAttribute(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -196,7 +196,7 @@ class SendMessageRequest(object):
         if ftype == TType.MAP:
           self.messageAttributes = {}
           (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
-          for _i4 in xrange(_size0):
+          for _i4 in range(_size0):
             _key5 = iprot.readString();
             _val6 = MessageAttribute()
             _val6.read(iprot)
@@ -243,7 +243,7 @@ class SendMessageRequest(object):
     if self.messageAttributes is not None:
       oprot.writeFieldBegin('messageAttributes', TType.MAP, 5)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.messageAttributes))
-      for kiter7,viter8 in self.messageAttributes.items():
+      for kiter7,viter8 in list(self.messageAttributes.items()):
         oprot.writeString(kiter7)
         viter8.write(oprot)
       oprot.writeMapEnd()
@@ -280,7 +280,7 @@ class SendMessageRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -390,7 +390,7 @@ class SendMessageResponse(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -471,7 +471,7 @@ class SendMessageBatchRequestEntry(object):
         if ftype == TType.MAP:
           self.messageAttributes = {}
           (_ktype10, _vtype11, _size9 ) = iprot.readMapBegin()
-          for _i13 in xrange(_size9):
+          for _i13 in range(_size9):
             _key14 = iprot.readString();
             _val15 = MessageAttribute()
             _val15.read(iprot)
@@ -513,7 +513,7 @@ class SendMessageBatchRequestEntry(object):
     if self.messageAttributes is not None:
       oprot.writeFieldBegin('messageAttributes', TType.MAP, 5)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.messageAttributes))
-      for kiter16,viter17 in self.messageAttributes.items():
+      for kiter16,viter17 in list(self.messageAttributes.items()):
         oprot.writeString(kiter16)
         viter17.write(oprot)
       oprot.writeMapEnd()
@@ -545,7 +545,7 @@ class SendMessageBatchRequestEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -595,7 +595,7 @@ class SendMessageBatchRequest(object):
         if ftype == TType.LIST:
           self.sendMessageBatchRequestEntryList = []
           (_etype21, _size18) = iprot.readListBegin()
-          for _i22 in xrange(_size18):
+          for _i22 in range(_size18):
             _elem23 = SendMessageBatchRequestEntry()
             _elem23.read(iprot)
             self.sendMessageBatchRequestEntryList.append(_elem23)
@@ -652,7 +652,7 @@ class SendMessageBatchRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -778,7 +778,7 @@ class SendMessageBatchResponseEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -863,7 +863,7 @@ class MessageBatchErrorEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -904,7 +904,7 @@ class SendMessageBatchResponse(object):
         if ftype == TType.LIST:
           self.successful = []
           (_etype28, _size25) = iprot.readListBegin()
-          for _i29 in xrange(_size25):
+          for _i29 in range(_size25):
             _elem30 = SendMessageBatchResponseEntry()
             _elem30.read(iprot)
             self.successful.append(_elem30)
@@ -915,7 +915,7 @@ class SendMessageBatchResponse(object):
         if ftype == TType.LIST:
           self.failed = []
           (_etype34, _size31) = iprot.readListBegin()
-          for _i35 in xrange(_size31):
+          for _i35 in range(_size31):
             _elem36 = MessageBatchErrorEntry()
             _elem36.read(iprot)
             self.failed.append(_elem36)
@@ -961,7 +961,7 @@ class SendMessageBatchResponse(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1102,7 +1102,7 @@ class ReceiveMessageRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1190,7 +1190,7 @@ class ReceiveMessageResponse(object):
         if ftype == TType.MAP:
           self.attributes = {}
           (_ktype40, _vtype41, _size39 ) = iprot.readMapBegin()
-          for _i43 in xrange(_size39):
+          for _i43 in range(_size39):
             _key44 = iprot.readString();
             _val45 = iprot.readString();
             self.attributes[_key44] = _val45
@@ -1201,7 +1201,7 @@ class ReceiveMessageResponse(object):
         if ftype == TType.MAP:
           self.messageAttributes = {}
           (_ktype47, _vtype48, _size46 ) = iprot.readMapBegin()
-          for _i50 in xrange(_size46):
+          for _i50 in range(_size46):
             _key51 = iprot.readString();
             _val52 = MessageAttribute()
             _val52.read(iprot)
@@ -1234,7 +1234,7 @@ class ReceiveMessageResponse(object):
     if self.attributes is not None:
       oprot.writeFieldBegin('attributes', TType.MAP, 4)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.attributes))
-      for kiter53,viter54 in self.attributes.items():
+      for kiter53,viter54 in list(self.attributes.items()):
         oprot.writeString(kiter53)
         oprot.writeString(viter54)
       oprot.writeMapEnd()
@@ -1242,7 +1242,7 @@ class ReceiveMessageResponse(object):
     if self.messageAttributes is not None:
       oprot.writeFieldBegin('messageAttributes', TType.MAP, 5)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.messageAttributes))
-      for kiter55,viter56 in self.messageAttributes.items():
+      for kiter55,viter56 in list(self.messageAttributes.items()):
         oprot.writeString(kiter55)
         viter56.write(oprot)
       oprot.writeMapEnd()
@@ -1271,7 +1271,7 @@ class ReceiveMessageResponse(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1371,7 +1371,7 @@ class ChangeMessageVisibilityRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1455,7 +1455,7 @@ class ChangeMessageVisibilityBatchRequestEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1501,7 +1501,7 @@ class ChangeMessageVisibilityBatchRequest(object):
         if ftype == TType.LIST:
           self.changeMessageVisibilityRequestEntryList = []
           (_etype60, _size57) = iprot.readListBegin()
-          for _i61 in xrange(_size57):
+          for _i61 in range(_size57):
             _elem62 = ChangeMessageVisibilityBatchRequestEntry()
             _elem62.read(iprot)
             self.changeMessageVisibilityRequestEntryList.append(_elem62)
@@ -1548,7 +1548,7 @@ class ChangeMessageVisibilityBatchRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1590,7 +1590,7 @@ class ChangeMessageVisibilityBatchResponse(object):
         if ftype == TType.LIST:
           self.successful = []
           (_etype67, _size64) = iprot.readListBegin()
-          for _i68 in xrange(_size64):
+          for _i68 in range(_size64):
             _elem69 = iprot.readString();
             self.successful.append(_elem69)
           iprot.readListEnd()
@@ -1600,7 +1600,7 @@ class ChangeMessageVisibilityBatchResponse(object):
         if ftype == TType.LIST:
           self.failed = []
           (_etype73, _size70) = iprot.readListBegin()
-          for _i74 in xrange(_size70):
+          for _i74 in range(_size70):
             _elem75 = MessageBatchErrorEntry()
             _elem75.read(iprot)
             self.failed.append(_elem75)
@@ -1646,7 +1646,7 @@ class ChangeMessageVisibilityBatchResponse(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1730,7 +1730,7 @@ class DeleteMessageRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1798,7 +1798,7 @@ class DeleteMessageBatchRequestEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1844,7 +1844,7 @@ class DeleteMessageBatchRequest(object):
         if ftype == TType.LIST:
           self.deleteMessageBatchRequestEntryList = []
           (_etype81, _size78) = iprot.readListBegin()
-          for _i82 in xrange(_size78):
+          for _i82 in range(_size78):
             _elem83 = DeleteMessageBatchRequestEntry()
             _elem83.read(iprot)
             self.deleteMessageBatchRequestEntryList.append(_elem83)
@@ -1891,7 +1891,7 @@ class DeleteMessageBatchRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1933,7 +1933,7 @@ class DeleteMessageBatchResponse(object):
         if ftype == TType.LIST:
           self.successful = []
           (_etype88, _size85) = iprot.readListBegin()
-          for _i89 in xrange(_size85):
+          for _i89 in range(_size85):
             _elem90 = iprot.readString();
             self.successful.append(_elem90)
           iprot.readListEnd()
@@ -1943,7 +1943,7 @@ class DeleteMessageBatchResponse(object):
         if ftype == TType.LIST:
           self.failed = []
           (_etype94, _size91) = iprot.readListBegin()
-          for _i95 in xrange(_size91):
+          for _i95 in range(_size91):
             _elem96 = MessageBatchErrorEntry()
             _elem96.read(iprot)
             self.failed.append(_elem96)
@@ -1989,7 +1989,7 @@ class DeleteMessageBatchResponse(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2073,7 +2073,7 @@ class DeadMessageRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2141,7 +2141,7 @@ class DeadMessageBatchRequestEntry(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2187,7 +2187,7 @@ class DeadMessageBatchRequest(object):
         if ftype == TType.LIST:
           self.deadMessageBatchRequestEntryList = []
           (_etype102, _size99) = iprot.readListBegin()
-          for _i103 in xrange(_size99):
+          for _i103 in range(_size99):
             _elem104 = DeadMessageBatchRequestEntry()
             _elem104.read(iprot)
             self.deadMessageBatchRequestEntryList.append(_elem104)
@@ -2234,7 +2234,7 @@ class DeadMessageBatchRequest(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2276,7 +2276,7 @@ class DeadMessageBatchResponse(object):
         if ftype == TType.LIST:
           self.successful = []
           (_etype109, _size106) = iprot.readListBegin()
-          for _i110 in xrange(_size106):
+          for _i110 in range(_size106):
             _elem111 = iprot.readString();
             self.successful.append(_elem111)
           iprot.readListEnd()
@@ -2286,7 +2286,7 @@ class DeadMessageBatchResponse(object):
         if ftype == TType.LIST:
           self.failed = []
           (_etype115, _size112) = iprot.readListBegin()
-          for _i116 in xrange(_size112):
+          for _i116 in range(_size112):
             _elem117 = MessageBatchErrorEntry()
             _elem117.read(iprot)
             self.failed.append(_elem117)
@@ -2332,7 +2332,7 @@ class DeadMessageBatchResponse(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):

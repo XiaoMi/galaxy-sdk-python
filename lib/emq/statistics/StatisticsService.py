@@ -9,7 +9,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import emq.common.EMQBaseService
-from ttypes import *
+from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -512,7 +512,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = setUserQuota_result()
     try:
       self._handler.setUserQuota(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("setUserQuota", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -526,7 +526,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = getUserQuota_result()
     try:
       result.success = self._handler.getUserQuota(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getUserQuota", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -540,7 +540,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = getUserUsedQuota_result()
     try:
       result.success = self._handler.getUserUsedQuota(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getUserUsedQuota", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -554,7 +554,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = setUserInfo_result()
     try:
       self._handler.setUserInfo(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("setUserInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -568,7 +568,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = getUserInfo_result()
     try:
       result.success = self._handler.getUserInfo(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getUserInfo", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -582,7 +582,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = addQueueAlertPolicy_result()
     try:
       self._handler.addQueueAlertPolicy(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("addQueueAlertPolicy", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -596,7 +596,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = deleteQueueAlertPolicy_result()
     try:
       self._handler.deleteQueueAlertPolicy(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("deleteQueueAlertPolicy", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -610,7 +610,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = listQueueAlertPolicies_result()
     try:
       result.success = self._handler.listQueueAlertPolicies(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("listQueueAlertPolicies", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -624,7 +624,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = setQueueDailyStatisticsState_result()
     try:
       self._handler.setQueueDailyStatisticsState(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("setQueueDailyStatisticsState", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -638,7 +638,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = getQueueDailyStatisticsState_result()
     try:
       result.success = self._handler.getQueueDailyStatisticsState(args.request)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getQueueDailyStatisticsState", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -705,7 +705,7 @@ class setUserQuota_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -771,7 +771,7 @@ class setUserQuota_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -837,7 +837,7 @@ class getUserQuota_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -916,7 +916,7 @@ class getUserQuota_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -982,7 +982,7 @@ class getUserUsedQuota_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1061,7 +1061,7 @@ class getUserUsedQuota_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1127,7 +1127,7 @@ class setUserInfo_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1193,7 +1193,7 @@ class setUserInfo_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1259,7 +1259,7 @@ class getUserInfo_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1338,7 +1338,7 @@ class getUserInfo_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1404,7 +1404,7 @@ class addQueueAlertPolicy_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1470,7 +1470,7 @@ class addQueueAlertPolicy_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1536,7 +1536,7 @@ class deleteQueueAlertPolicy_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1602,7 +1602,7 @@ class deleteQueueAlertPolicy_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1668,7 +1668,7 @@ class listQueueAlertPolicies_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1747,7 +1747,7 @@ class listQueueAlertPolicies_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1813,7 +1813,7 @@ class setQueueDailyStatisticsState_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1879,7 +1879,7 @@ class setQueueDailyStatisticsState_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1945,7 +1945,7 @@ class getQueueDailyStatisticsState_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -2024,7 +2024,7 @@ class getQueueDailyStatisticsState_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):

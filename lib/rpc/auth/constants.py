@@ -8,7 +8,7 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-from ttypes import *
+from .ttypes import *
 
 SIGNATURE_SUPPORT = {
     1 : False,

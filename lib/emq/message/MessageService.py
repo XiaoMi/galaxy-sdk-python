@@ -9,7 +9,7 @@
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import emq.common.EMQBaseService
-from ttypes import *
+from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -469,7 +469,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = sendMessage_result()
     try:
       result.success = self._handler.sendMessage(args.sendMessageRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("sendMessage", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -483,7 +483,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = sendMessageBatch_result()
     try:
       result.success = self._handler.sendMessageBatch(args.sendMessageBatchRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("sendMessageBatch", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -497,7 +497,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = receiveMessage_result()
     try:
       result.success = self._handler.receiveMessage(args.receiveMessageRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("receiveMessage", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -511,7 +511,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = changeMessageVisibilitySeconds_result()
     try:
       self._handler.changeMessageVisibilitySeconds(args.changeMessageVisibilityRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("changeMessageVisibilitySeconds", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -525,7 +525,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = changeMessageVisibilitySecondsBatch_result()
     try:
       result.success = self._handler.changeMessageVisibilitySecondsBatch(args.changeMessageVisibilityBatchRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("changeMessageVisibilitySecondsBatch", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -539,7 +539,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = deleteMessage_result()
     try:
       self._handler.deleteMessage(args.deleteMessageRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("deleteMessage", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -553,7 +553,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = deleteMessageBatch_result()
     try:
       result.success = self._handler.deleteMessageBatch(args.deleteMessageBatchRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("deleteMessageBatch", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -567,7 +567,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = deadMessage_result()
     try:
       self._handler.deadMessage(args.deadMessageRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("deadMessage", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -581,7 +581,7 @@ class Processor(emq.common.EMQBaseService.Processor, Iface, TProcessor):
     result = deadMessageBatch_result()
     try:
       result.success = self._handler.deadMessageBatch(args.deadMessageBatchRequest)
-    except emq.common.ttypes.GalaxyEmqServiceException, e:
+    except emq.common.ttypes.GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("deadMessageBatch", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -648,7 +648,7 @@ class sendMessage_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -727,7 +727,7 @@ class sendMessage_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -793,7 +793,7 @@ class sendMessageBatch_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -872,7 +872,7 @@ class sendMessageBatch_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -938,7 +938,7 @@ class receiveMessage_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -976,7 +976,7 @@ class receiveMessage_result(object):
         if ftype == TType.LIST:
           self.success = []
           (_etype123, _size120) = iprot.readListBegin()
-          for _i124 in xrange(_size120):
+          for _i124 in range(_size120):
             _elem125 = ReceiveMessageResponse()
             _elem125.read(iprot)
             self.success.append(_elem125)
@@ -1025,7 +1025,7 @@ class receiveMessage_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1091,7 +1091,7 @@ class changeMessageVisibilitySeconds_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1157,7 +1157,7 @@ class changeMessageVisibilitySeconds_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1223,7 +1223,7 @@ class changeMessageVisibilitySecondsBatch_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1302,7 +1302,7 @@ class changeMessageVisibilitySecondsBatch_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1368,7 +1368,7 @@ class deleteMessage_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1434,7 +1434,7 @@ class deleteMessage_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1500,7 +1500,7 @@ class deleteMessageBatch_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1579,7 +1579,7 @@ class deleteMessageBatch_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1645,7 +1645,7 @@ class deadMessage_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1711,7 +1711,7 @@ class deadMessage_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1777,7 +1777,7 @@ class deadMessageBatch_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -1856,7 +1856,7 @@ class deadMessageBatch_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):

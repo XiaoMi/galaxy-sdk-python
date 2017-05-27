@@ -8,7 +8,7 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-from ttypes import *
+from .ttypes import *
 
 DEFAULT_CLIENT_TIMEOUT = 10000
 DEFAULT_MAX_CLIENT_TIMEOUT = 10000

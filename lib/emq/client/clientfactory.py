@@ -64,7 +64,7 @@ class RetryableClient:
       while retry < self.max_retry:
         try:
           return getattr(self.client, item)(*args)
-        except GalaxyEmqServiceException, ex:
+        except GalaxyEmqServiceException as ex:
           error_type = self.__get_error_retry_type(ex.errorCode, item)
           if error_type == 0 or (self.is_retry and error_type == 1):
             sec = ERROR_BACKOFF.get(ex.errorCode, 0) / 1000.0 * (1 << retry)
@@ -74,7 +74,7 @@ class RetryableClient:
           else:
             # print "won't retry, error code is:%s" % ex
             raise ex
-        except socket.timeout, se:
+        except socket.timeout as se:
           if self.is_retry and retry < self.max_retry:
             retry += 1
           else:

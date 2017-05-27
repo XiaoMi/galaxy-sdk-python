@@ -87,7 +87,7 @@ class RequestChecker(object):
       self.validate_queue_name(request.queueName)
       self.validate_not_none(request.messageBody, "messageBody")
       if request.messageAttributes is not None:
-        for attribute in request.messageAttributes.values():
+        for attribute in list(request.messageAttributes.values()):
           self.check_message_attribute(attribute, False)
       if request.delaySeconds is not None:
         self.validate_delaySeconds(request.delaySeconds)
@@ -170,7 +170,7 @@ class RequestChecker(object):
     elif isinstance(request, CopyQueueRequest):
       queueMeta = request.queueMeta
       self.validate_queue_name(queueMeta.queueName)
-    elif isinstance(request, basestring):
+    elif isinstance(request, str):
       self.validate_queue_name(request)
     else:
       self.validate_queue_name(request.queueName)
@@ -182,7 +182,7 @@ class RequestChecker(object):
     if send_entry.invisibilitySeconds is not None:
       self.validate_invisibilitySeconds(send_entry.invisibilitySeconds)
     if send_entry.messageAttributes is not None:
-      for attribute in send_entry.messageAttributes.values():
+      for attribute in list(send_entry.messageAttributes.values()):
         self.check_message_attribute(attribute, False)
 
   def check_message_attribute(self, attribute, allow_empty):
@@ -206,7 +206,7 @@ class RequestChecker(object):
     self.validate_changeInvisibilitySeconds(change_entry.invisibilitySeconds)
 
   def check_list_duplicate(self, l, name):
-    if len(l) != len({}.fromkeys(l).keys()):
+    if len(l) != len(list({}.fromkeys(l).keys())):
       raise GalaxyEmqServiceException(errMsg="Bad request, %s shouldn't be duplicate." % name)
 
   def validate_queue_name(self, queue_name, allow_slash=True, is_prefix=False, param_name="queue name"):
@@ -229,13 +229,13 @@ class RequestChecker(object):
       return True
     if c in string.punctuation:
       return True
-    if category(unicode(c)) == 'Sc':
+    if category(str(c)) == 'Sc':
       return True
-    if category(unicode(c)) == 'Mn':
+    if category(str(c)) == 'Mn':
       return True
-    if category(unicode(c)) == 'N1':
+    if category(str(c)) == 'N1':
       return True
-    if category(unicode(c)) == 'Mc':
+    if category(str(c)) == 'Mc':
       return False
     return False
 
@@ -263,7 +263,7 @@ class RequestChecker(object):
       self.validate_user_attribute(queue_attribute.userAttributes)
 
   def validate_user_attribute(self, attribute):
-    for key, value in attribute.items():
+    for key, value in list(attribute.items()):
       self.validate_not_empty(key, "user attribute name")
       self.validate_not_empty(value, "user attribute value for \"" + key + "\"")
 

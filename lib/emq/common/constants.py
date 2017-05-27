@@ -8,7 +8,7 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-from ttypes import *
+from .ttypes import *
 
 ERROR_BACKOFF = {
     15 : 1000,

@@ -8,7 +8,7 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-from ttypes import *
+from .ttypes import *
 
 GALAXY_EMQ_QUEUE_DELAY_SECONDS_DEFAULT = 0
 GALAXY_EMQ_QUEUE_DELAY_SECONDS_MINIMAL = 0

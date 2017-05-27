@@ -8,7 +8,7 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-from ttypes import *
+from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -140,7 +140,7 @@ class Processor(Iface, TProcessor):
     result = getServiceVersion_result()
     try:
       result.success = self._handler.getServiceVersion()
-    except GalaxyEmqServiceException, e:
+    except GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("getServiceVersion", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -154,7 +154,7 @@ class Processor(Iface, TProcessor):
     result = validClientVersion_result()
     try:
       self._handler.validClientVersion(args.clientVersion)
-    except GalaxyEmqServiceException, e:
+    except GalaxyEmqServiceException as e:
       result.e = e
     oprot.writeMessageBegin("validClientVersion", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -201,7 +201,7 @@ class getServiceVersion_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -280,7 +280,7 @@ class getServiceVersion_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -346,7 +346,7 @@ class validClientVersion_args(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -412,7 +412,7 @@ class validClientVersion_result(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in list(self.__dict__.items())]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
