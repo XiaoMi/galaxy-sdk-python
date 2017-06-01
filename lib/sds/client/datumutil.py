@@ -113,4 +113,4 @@ def value(dat, thrift_protocol=ThriftProtocol.TBINARY):
 
 
 def values(dat, thrift_protocol=ThriftProtocol.TBINARY):
-  return dict((k, value(dat[k], thrift_protocol)) for k in dat.keys())
+  return dict((k, value(dat[k], thrift_protocol)) for k in list(dat.keys()))

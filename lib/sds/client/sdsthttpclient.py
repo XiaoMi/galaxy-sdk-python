@@ -23,7 +23,7 @@ import http.client
 import os
 import socket
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from urllib.parse import urlparse
 import time
 import hashlib
@@ -145,7 +145,7 @@ class SdsTHttpClient(TTransportBase):
       user_agent = 'Python/THttpClient'
       script = os.path.basename(sys.argv[0])
       if script:
-        user_agent = '%s (%s)' % (user_agent, urllib.quote(script))
+        user_agent = '%s (%s)' % (user_agent, urllib.parse.quote(script))
       self.__http.putheader('User-Agent', user_agent)
 
     for key, val in self.__auth_headers(dict(headers.items() | self.__custom_headers.items())).items():

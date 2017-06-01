@@ -65,7 +65,7 @@ class DatumMapMeta(object):
         if ftype == TType.MAP:
           self.keyIdMap = {}
           (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
-          for _i4 in xrange(_size0):
+          for _i4 in range(_size0):
             _key5 = iprot.readI16();
             _val6 = iprot.readString();
             self.keyIdMap[_key5] = _val6
@@ -85,7 +85,7 @@ class DatumMapMeta(object):
     if self.keyIdMap is not None:
       oprot.writeFieldBegin('keyIdMap', TType.MAP, 1)
       oprot.writeMapBegin(TType.I16, TType.STRING, len(self.keyIdMap))
-      for kiter7,viter8 in self.keyIdMap.items():
+      for kiter7,viter8 in list(self.keyIdMap.items()):
         oprot.writeI16(kiter7)
         oprot.writeString(viter8)
       oprot.writeMapEnd()
@@ -104,7 +104,7 @@ class DatumMapMeta(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -145,7 +145,7 @@ class RCBasicMeta(object):
         if ftype == TType.LIST:
           self.keys = []
           (_etype12, _size9) = iprot.readListBegin()
-          for _i13 in xrange(_size9):
+          for _i13 in range(_size9):
             _elem14 = iprot.readString();
             self.keys.append(_elem14)
           iprot.readListEnd()
@@ -155,7 +155,7 @@ class RCBasicMeta(object):
         if ftype == TType.MAP:
           self.types = {}
           (_ktype16, _vtype17, _size15 ) = iprot.readMapBegin()
-          for _i19 in xrange(_size15):
+          for _i19 in range(_size15):
             _key20 = iprot.readString();
             _val21 = iprot.readI32();
             self.types[_key20] = _val21
@@ -182,7 +182,7 @@ class RCBasicMeta(object):
     if self.types is not None:
       oprot.writeFieldBegin('types', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.types))
-      for kiter23,viter24 in self.types.items():
+      for kiter23,viter24 in list(self.types.items()):
         oprot.writeString(kiter23)
         oprot.writeI32(viter24)
       oprot.writeMapEnd()
@@ -202,7 +202,7 @@ class RCBasicMeta(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -249,7 +249,7 @@ class RCBasicRowGroupHeader(object):
         if ftype == TType.LIST:
           self.offset = []
           (_etype28, _size25) = iprot.readListBegin()
-          for _i29 in xrange(_size25):
+          for _i29 in range(_size25):
             _elem30 = iprot.readI32();
             self.offset.append(_elem30)
           iprot.readListEnd()
@@ -291,7 +291,7 @@ class RCBasicRowGroupHeader(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -386,7 +386,7 @@ class SLFileMeta(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -429,7 +429,7 @@ class DatumMapRecord(object):
         if ftype == TType.MAP:
           self.data = {}
           (_ktype33, _vtype34, _size32 ) = iprot.readMapBegin()
-          for _i36 in xrange(_size32):
+          for _i36 in range(_size32):
             _key37 = iprot.readI16();
             _val38 = sds.table.ttypes.Datum()
             _val38.read(iprot)
@@ -441,7 +441,7 @@ class DatumMapRecord(object):
         if ftype == TType.MAP:
           self.keyIdMap = {}
           (_ktype40, _vtype41, _size39 ) = iprot.readMapBegin()
-          for _i43 in xrange(_size39):
+          for _i43 in range(_size39):
             _key44 = iprot.readI16();
             _val45 = iprot.readString();
             self.keyIdMap[_key44] = _val45
@@ -461,7 +461,7 @@ class DatumMapRecord(object):
     if self.data is not None:
       oprot.writeFieldBegin('data', TType.MAP, 1)
       oprot.writeMapBegin(TType.I16, TType.STRUCT, len(self.data))
-      for kiter46,viter47 in self.data.items():
+      for kiter46,viter47 in list(self.data.items()):
         oprot.writeI16(kiter46)
         viter47.write(oprot)
       oprot.writeMapEnd()
@@ -469,7 +469,7 @@ class DatumMapRecord(object):
     if self.keyIdMap is not None:
       oprot.writeFieldBegin('keyIdMap', TType.MAP, 2)
       oprot.writeMapBegin(TType.I16, TType.STRING, len(self.keyIdMap))
-      for kiter48,viter49 in self.keyIdMap.items():
+      for kiter48,viter49 in list(self.keyIdMap.items()):
         oprot.writeI16(kiter48)
         oprot.writeString(viter49)
       oprot.writeMapEnd()
@@ -489,7 +489,7 @@ class DatumMapRecord(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -527,7 +527,7 @@ class ValueList(object):
         if ftype == TType.LIST:
           self.values = []
           (_etype53, _size50) = iprot.readListBegin()
-          for _i54 in xrange(_size50):
+          for _i54 in range(_size50):
             _elem55 = sds.table.ttypes.Value()
             _elem55.read(iprot)
             self.values.append(_elem55)
@@ -565,7 +565,7 @@ class ValueList(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
@@ -603,7 +603,7 @@ class DatumMap(object):
         if ftype == TType.MAP:
           self.data = {}
           (_ktype58, _vtype59, _size57 ) = iprot.readMapBegin()
-          for _i61 in xrange(_size57):
+          for _i61 in range(_size57):
             _key62 = iprot.readString();
             _val63 = sds.table.ttypes.Datum()
             _val63.read(iprot)
@@ -624,7 +624,7 @@ class DatumMap(object):
     if self.data is not None:
       oprot.writeFieldBegin('data', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.data))
-      for kiter64,viter65 in self.data.items():
+      for kiter64,viter65 in list(self.data.items()):
         oprot.writeString(kiter64)
         viter65.write(oprot)
       oprot.writeMapEnd()
@@ -643,7 +643,7 @@ class DatumMap(object):
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
+      for key, value in self.__dict__.items()]
     return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
 
   def __eq__(self, other):
