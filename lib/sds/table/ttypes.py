@@ -218,15 +218,18 @@ class StreamViewType(object):
   """
   RECORD_IMAGE = 1
   MUTATE_LOG = 2
+  KEYS_ONLY = 3
 
   _VALUES_TO_NAMES = {
     1: "RECORD_IMAGE",
     2: "MUTATE_LOG",
+    3: "KEYS_ONLY",
   }
 
   _NAMES_TO_VALUES = {
     "RECORD_IMAGE": 1,
     "MUTATE_LOG": 2,
+    "KEYS_ONLY": 3,
   }
 
 class TableState(object):
@@ -4426,21 +4429,30 @@ class InternalMutationLogEntry(object):
    - type: mutation type
    - rowDeleted: is row deleted or not
    - amounts: increment amounts
+   - topicName: mq topic name
+   - streamType: stream type
+   - partitionNum: topic partition number
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.MAP, 'record', (TType.STRING,None,TType.STRING,None), None, ), # 1
+    (1, TType.MAP, 'record', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
     (2, TType.I32, 'type', None, None, ), # 2
     (3, TType.BOOL, 'rowDeleted', None, None, ), # 3
-    (4, TType.MAP, 'amounts', (TType.STRING,None,TType.STRING,None), None, ), # 4
+    (4, TType.MAP, 'amounts', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 4
+    (5, TType.STRING, 'topicName', None, None, ), # 5
+    (6, TType.I32, 'streamType', None, None, ), # 6
+    (7, TType.I32, 'partitionNum', None, None, ), # 7
   )
 
-  def __init__(self, record=None, type=None, rowDeleted=None, amounts=None,):
+  def __init__(self, record=None, type=None, rowDeleted=None, amounts=None, topicName=None, streamType=None, partitionNum=None,):
     self.record = record
     self.type = type
     self.rowDeleted = rowDeleted
     self.amounts = amounts
+    self.topicName = topicName
+    self.streamType = streamType
+    self.partitionNum = partitionNum
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -4457,7 +4469,8 @@ class InternalMutationLogEntry(object):
           (_ktype333, _vtype334, _size332 ) = iprot.readMapBegin()
           for _i336 in xrange(_size332):
             _key337 = iprot.readString();
-            _val338 = iprot.readString();
+            _val338 = Datum()
+            _val338.read(iprot)
             self.record[_key337] = _val338
           iprot.readMapEnd()
         else:
@@ -4478,9 +4491,25 @@ class InternalMutationLogEntry(object):
           (_ktype340, _vtype341, _size339 ) = iprot.readMapBegin()
           for _i343 in xrange(_size339):
             _key344 = iprot.readString();
-            _val345 = iprot.readString();
+            _val345 = Datum()
+            _val345.read(iprot)
             self.amounts[_key344] = _val345
           iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.topicName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.I32:
+          self.streamType = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.I32:
+          self.partitionNum = iprot.readI32();
         else:
           iprot.skip(ftype)
       else:
@@ -4495,10 +4524,10 @@ class InternalMutationLogEntry(object):
     oprot.writeStructBegin('InternalMutationLogEntry')
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
-      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.record))
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
       for kiter346,viter347 in self.record.items():
         oprot.writeString(kiter346)
-        oprot.writeString(viter347)
+        viter347.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.type is not None:
@@ -4511,11 +4540,23 @@ class InternalMutationLogEntry(object):
       oprot.writeFieldEnd()
     if self.amounts is not None:
       oprot.writeFieldBegin('amounts', TType.MAP, 4)
-      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.amounts))
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.amounts))
       for kiter348,viter349 in self.amounts.items():
         oprot.writeString(kiter348)
-        oprot.writeString(viter349)
+        viter349.write(oprot)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.topicName is not None:
+      oprot.writeFieldBegin('topicName', TType.STRING, 5)
+      oprot.writeString(self.topicName)
+      oprot.writeFieldEnd()
+    if self.streamType is not None:
+      oprot.writeFieldBegin('streamType', TType.I32, 6)
+      oprot.writeI32(self.streamType)
+      oprot.writeFieldEnd()
+    if self.partitionNum is not None:
+      oprot.writeFieldBegin('partitionNum', TType.I32, 7)
+      oprot.writeI32(self.partitionNum)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -4530,6 +4571,112 @@ class InternalMutationLogEntry(object):
     value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.rowDeleted)
     value = (value * 31) ^ hash(self.amounts)
+    value = (value * 31) ^ hash(self.topicName)
+    value = (value * 31) ^ hash(self.streamType)
+    value = (value * 31) ^ hash(self.partitionNum)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class InternalMutationLogGroup(object):
+  """
+  internal mutation log entries, use in TraceRegionServer coprocessor
+
+
+  Attributes:
+   - developerId: developerId
+   - originalTableName: sds tableName
+   - entries: mutation long entries
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'developerId', None, None, ), # 1
+    (2, TType.STRING, 'originalTableName', None, None, ), # 2
+    (3, TType.LIST, 'entries', (TType.STRUCT,(InternalMutationLogEntry, InternalMutationLogEntry.thrift_spec)), None, ), # 3
+  )
+
+  def __init__(self, developerId=None, originalTableName=None, entries=None,):
+    self.developerId = developerId
+    self.originalTableName = originalTableName
+    self.entries = entries
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.developerId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.originalTableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.LIST:
+          self.entries = []
+          (_etype353, _size350) = iprot.readListBegin()
+          for _i354 in xrange(_size350):
+            _elem355 = InternalMutationLogEntry()
+            _elem355.read(iprot)
+            self.entries.append(_elem355)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('InternalMutationLogGroup')
+    if self.developerId is not None:
+      oprot.writeFieldBegin('developerId', TType.STRING, 1)
+      oprot.writeString(self.developerId)
+      oprot.writeFieldEnd()
+    if self.originalTableName is not None:
+      oprot.writeFieldBegin('originalTableName', TType.STRING, 2)
+      oprot.writeString(self.originalTableName)
+      oprot.writeFieldEnd()
+    if self.entries is not None:
+      oprot.writeFieldBegin('entries', TType.LIST, 3)
+      oprot.writeListBegin(TType.STRUCT, len(self.entries))
+      for iter356 in self.entries:
+        iter356.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.developerId)
+    value = (value * 31) ^ hash(self.originalTableName)
+    value = (value * 31) ^ hash(self.entries)
     return value
 
   def __repr__(self):
@@ -4545,7 +4692,7 @@ class InternalMutationLogEntry(object):
 
 class MutationLogEntry(object):
   """
-  mutation log entry
+  mutation log entry,
 
 
   Attributes:
@@ -4554,6 +4701,7 @@ class MutationLogEntry(object):
    - rowDeleted: is row deleted or not
    - timestamp: mutation timestamp
    - amounts: increment amounts
+   - tableName: sds tableName
   """
 
   thrift_spec = (
@@ -4563,14 +4711,16 @@ class MutationLogEntry(object):
     (3, TType.BOOL, 'rowDeleted', None, None, ), # 3
     (4, TType.I64, 'timestamp', None, None, ), # 4
     (5, TType.MAP, 'amounts', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 5
+    (6, TType.STRING, 'tableName', None, None, ), # 6
   )
 
-  def __init__(self, record=None, type=None, rowDeleted=None, timestamp=None, amounts=None,):
+  def __init__(self, record=None, type=None, rowDeleted=None, timestamp=None, amounts=None, tableName=None,):
     self.record = record
     self.type = type
     self.rowDeleted = rowDeleted
     self.timestamp = timestamp
     self.amounts = amounts
+    self.tableName = tableName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -4584,12 +4734,12 @@ class MutationLogEntry(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype351, _vtype352, _size350 ) = iprot.readMapBegin()
-          for _i354 in xrange(_size350):
-            _key355 = iprot.readString();
-            _val356 = Datum()
-            _val356.read(iprot)
-            self.record[_key355] = _val356
+          (_ktype358, _vtype359, _size357 ) = iprot.readMapBegin()
+          for _i361 in xrange(_size357):
+            _key362 = iprot.readString();
+            _val363 = Datum()
+            _val363.read(iprot)
+            self.record[_key362] = _val363
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4611,13 +4761,18 @@ class MutationLogEntry(object):
       elif fid == 5:
         if ftype == TType.MAP:
           self.amounts = {}
-          (_ktype358, _vtype359, _size357 ) = iprot.readMapBegin()
-          for _i361 in xrange(_size357):
-            _key362 = iprot.readString();
-            _val363 = Datum()
-            _val363.read(iprot)
-            self.amounts[_key362] = _val363
+          (_ktype365, _vtype366, _size364 ) = iprot.readMapBegin()
+          for _i368 in xrange(_size364):
+            _key369 = iprot.readString();
+            _val370 = Datum()
+            _val370.read(iprot)
+            self.amounts[_key369] = _val370
           iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -4633,9 +4788,9 @@ class MutationLogEntry(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter364,viter365 in self.record.items():
-        oprot.writeString(kiter364)
-        viter365.write(oprot)
+      for kiter371,viter372 in self.record.items():
+        oprot.writeString(kiter371)
+        viter372.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.type is not None:
@@ -4653,10 +4808,14 @@ class MutationLogEntry(object):
     if self.amounts is not None:
       oprot.writeFieldBegin('amounts', TType.MAP, 5)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.amounts))
-      for kiter366,viter367 in self.amounts.items():
-        oprot.writeString(kiter366)
-        viter367.write(oprot)
+      for kiter373,viter374 in self.amounts.items():
+        oprot.writeString(kiter373)
+        viter374.write(oprot)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 6)
+      oprot.writeString(self.tableName)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -4672,6 +4831,7 @@ class MutationLogEntry(object):
     value = (value * 31) ^ hash(self.rowDeleted)
     value = (value * 31) ^ hash(self.timestamp)
     value = (value * 31) ^ hash(self.amounts)
+    value = (value * 31) ^ hash(self.tableName)
     return value
 
   def __repr__(self):
@@ -4694,6 +4854,7 @@ class RecordImage(object):
    - record: row key and attributes
    - rowDeleted: is row deleted or not
    - timestamp: record mutated timestamp
+   - tableName: sds tableName
   """
 
   thrift_spec = (
@@ -4701,12 +4862,14 @@ class RecordImage(object):
     (1, TType.MAP, 'record', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
     (2, TType.BOOL, 'rowDeleted', None, None, ), # 2
     (3, TType.I64, 'timestamp', None, None, ), # 3
+    (4, TType.STRING, 'tableName', None, None, ), # 4
   )
 
-  def __init__(self, record=None, rowDeleted=None, timestamp=None,):
+  def __init__(self, record=None, rowDeleted=None, timestamp=None, tableName=None,):
     self.record = record
     self.rowDeleted = rowDeleted
     self.timestamp = timestamp
+    self.tableName = tableName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -4720,12 +4883,12 @@ class RecordImage(object):
       if fid == 1:
         if ftype == TType.MAP:
           self.record = {}
-          (_ktype369, _vtype370, _size368 ) = iprot.readMapBegin()
-          for _i372 in xrange(_size368):
-            _key373 = iprot.readString();
-            _val374 = Datum()
-            _val374.read(iprot)
-            self.record[_key373] = _val374
+          (_ktype376, _vtype377, _size375 ) = iprot.readMapBegin()
+          for _i379 in xrange(_size375):
+            _key380 = iprot.readString();
+            _val381 = Datum()
+            _val381.read(iprot)
+            self.record[_key380] = _val381
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -4737,6 +4900,11 @@ class RecordImage(object):
       elif fid == 3:
         if ftype == TType.I64:
           self.timestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -4752,9 +4920,9 @@ class RecordImage(object):
     if self.record is not None:
       oprot.writeFieldBegin('record', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
-      for kiter375,viter376 in self.record.items():
-        oprot.writeString(kiter375)
-        viter376.write(oprot)
+      for kiter382,viter383 in self.record.items():
+        oprot.writeString(kiter382)
+        viter383.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.rowDeleted is not None:
@@ -4764,6 +4932,10 @@ class RecordImage(object):
     if self.timestamp is not None:
       oprot.writeFieldBegin('timestamp', TType.I64, 3)
       oprot.writeI64(self.timestamp)
+      oprot.writeFieldEnd()
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 4)
+      oprot.writeString(self.tableName)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -4777,6 +4949,109 @@ class RecordImage(object):
     value = (value * 31) ^ hash(self.record)
     value = (value * 31) ^ hash(self.rowDeleted)
     value = (value * 31) ^ hash(self.timestamp)
+    value = (value * 31) ^ hash(self.tableName)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class KeysOnlyEntry(object):
+  """
+  Attributes:
+   - record: row key
+   - timestamp: record mutated timestamp
+   - tableName: sds tableName
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.MAP, 'record', (TType.STRING,None,TType.STRUCT,(Datum, Datum.thrift_spec)), None, ), # 1
+    (2, TType.I64, 'timestamp', None, None, ), # 2
+    (3, TType.STRING, 'tableName', None, None, ), # 3
+  )
+
+  def __init__(self, record=None, timestamp=None, tableName=None,):
+    self.record = record
+    self.timestamp = timestamp
+    self.tableName = tableName
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.MAP:
+          self.record = {}
+          (_ktype385, _vtype386, _size384 ) = iprot.readMapBegin()
+          for _i388 in xrange(_size384):
+            _key389 = iprot.readString();
+            _val390 = Datum()
+            _val390.read(iprot)
+            self.record[_key389] = _val390
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.timestamp = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('KeysOnlyEntry')
+    if self.record is not None:
+      oprot.writeFieldBegin('record', TType.MAP, 1)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.record))
+      for kiter391,viter392 in self.record.items():
+        oprot.writeString(kiter391)
+        viter392.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.timestamp is not None:
+      oprot.writeFieldBegin('timestamp', TType.I64, 2)
+      oprot.writeI64(self.timestamp)
+      oprot.writeFieldEnd()
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 3)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.record)
+    value = (value * 31) ^ hash(self.timestamp)
+    value = (value * 31) ^ hash(self.tableName)
     return value
 
   def __repr__(self):

@@ -149,6 +149,18 @@ class Iface(sds.common.BaseService.Iface):
     """
     pass
 
+  def getIndexTableSplits(self, tableName, indexName, startKey, stopKey):
+    """
+    获取全局二级索引表的表分布信息，如用于MapReduce应用
+
+    Parameters:
+     - tableName
+     - indexName
+     - startKey
+     - stopKey
+    """
+    pass
+
   def queryMetric(self, query):
     """
     查询表统计指标
@@ -890,6 +902,47 @@ class Client(sds.common.BaseService.Client, Iface):
     if result.se is not None:
       raise result.se
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableSplits failed: unknown result");
+
+  def getIndexTableSplits(self, tableName, indexName, startKey, stopKey):
+    """
+    获取全局二级索引表的表分布信息，如用于MapReduce应用
+
+    Parameters:
+     - tableName
+     - indexName
+     - startKey
+     - stopKey
+    """
+    self.send_getIndexTableSplits(tableName, indexName, startKey, stopKey)
+    return self.recv_getIndexTableSplits()
+
+  def send_getIndexTableSplits(self, tableName, indexName, startKey, stopKey):
+    self._oprot.writeMessageBegin('getIndexTableSplits', TMessageType.CALL, self._seqid)
+    args = getIndexTableSplits_args()
+    args.tableName = tableName
+    args.indexName = indexName
+    args.startKey = startKey
+    args.stopKey = stopKey
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getIndexTableSplits(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getIndexTableSplits_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.se is not None:
+      raise result.se
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getIndexTableSplits failed: unknown result");
 
   def queryMetric(self, query):
     """
@@ -1859,6 +1912,7 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     self._processMap["getTableStatus"] = Processor.process_getTableStatus
     self._processMap["getTableState"] = Processor.process_getTableState
     self._processMap["getTableSplits"] = Processor.process_getTableSplits
+    self._processMap["getIndexTableSplits"] = Processor.process_getIndexTableSplits
     self._processMap["queryMetric"] = Processor.process_queryMetric
     self._processMap["queryMetrics"] = Processor.process_queryMetrics
     self._processMap["findAllAppInfo"] = Processor.process_findAllAppInfo
@@ -2094,6 +2148,20 @@ class Processor(sds.common.BaseService.Processor, Iface, TProcessor):
     except sds.errors.ttypes.ServiceException, se:
       result.se = se
     oprot.writeMessageBegin("getTableSplits", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getIndexTableSplits(self, seqid, iprot, oprot):
+    args = getIndexTableSplits_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getIndexTableSplits_result()
+    try:
+      result.success = self._handler.getIndexTableSplits(args.tableName, args.indexName, args.startKey, args.stopKey)
+    except sds.errors.ttypes.ServiceException, se:
+      result.se = se
+    oprot.writeMessageBegin("getIndexTableSplits", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -4505,6 +4573,219 @@ class getTableSplits_result(object):
   def __ne__(self, other):
     return not (self == other)
 
+class getIndexTableSplits_args(object):
+  """
+  Attributes:
+   - tableName
+   - indexName
+   - startKey
+   - stopKey
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'tableName', None, None, ), # 1
+    (2, TType.STRING, 'indexName', None, None, ), # 2
+    (3, TType.MAP, 'startKey', (TType.STRING,None,TType.STRUCT,(sds.table.ttypes.Datum, sds.table.ttypes.Datum.thrift_spec)), None, ), # 3
+    (4, TType.MAP, 'stopKey', (TType.STRING,None,TType.STRUCT,(sds.table.ttypes.Datum, sds.table.ttypes.Datum.thrift_spec)), None, ), # 4
+  )
+
+  def __init__(self, tableName=None, indexName=None, startKey=None, stopKey=None,):
+    self.tableName = tableName
+    self.indexName = indexName
+    self.startKey = startKey
+    self.stopKey = stopKey
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.tableName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.indexName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.MAP:
+          self.startKey = {}
+          (_ktype102, _vtype103, _size101 ) = iprot.readMapBegin()
+          for _i105 in xrange(_size101):
+            _key106 = iprot.readString();
+            _val107 = sds.table.ttypes.Datum()
+            _val107.read(iprot)
+            self.startKey[_key106] = _val107
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.MAP:
+          self.stopKey = {}
+          (_ktype109, _vtype110, _size108 ) = iprot.readMapBegin()
+          for _i112 in xrange(_size108):
+            _key113 = iprot.readString();
+            _val114 = sds.table.ttypes.Datum()
+            _val114.read(iprot)
+            self.stopKey[_key113] = _val114
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getIndexTableSplits_args')
+    if self.tableName is not None:
+      oprot.writeFieldBegin('tableName', TType.STRING, 1)
+      oprot.writeString(self.tableName)
+      oprot.writeFieldEnd()
+    if self.indexName is not None:
+      oprot.writeFieldBegin('indexName', TType.STRING, 2)
+      oprot.writeString(self.indexName)
+      oprot.writeFieldEnd()
+    if self.startKey is not None:
+      oprot.writeFieldBegin('startKey', TType.MAP, 3)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.startKey))
+      for kiter115,viter116 in self.startKey.items():
+        oprot.writeString(kiter115)
+        viter116.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.stopKey is not None:
+      oprot.writeFieldBegin('stopKey', TType.MAP, 4)
+      oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.stopKey))
+      for kiter117,viter118 in self.stopKey.items():
+        oprot.writeString(kiter117)
+        viter118.write(oprot)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tableName)
+    value = (value * 31) ^ hash(self.indexName)
+    value = (value * 31) ^ hash(self.startKey)
+    value = (value * 31) ^ hash(self.stopKey)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getIndexTableSplits_result(object):
+  """
+  Attributes:
+   - success
+   - se
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(sds.table.ttypes.TableSplit, sds.table.ttypes.TableSplit.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'se', (sds.errors.ttypes.ServiceException, sds.errors.ttypes.ServiceException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, se=None,):
+    self.success = success
+    self.se = se
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype122, _size119) = iprot.readListBegin()
+          for _i123 in xrange(_size119):
+            _elem124 = sds.table.ttypes.TableSplit()
+            _elem124.read(iprot)
+            self.success.append(_elem124)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.se = sds.errors.ttypes.ServiceException()
+          self.se.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getIndexTableSplits_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter125 in self.success:
+        iter125.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.se is not None:
+      oprot.writeFieldBegin('se', TType.STRUCT, 1)
+      self.se.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.se)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class queryMetric_args(object):
   """
   Attributes:
@@ -4676,11 +4957,11 @@ class queryMetrics_args(object):
       if fid == 1:
         if ftype == TType.LIST:
           self.queries = []
-          (_etype104, _size101) = iprot.readListBegin()
-          for _i105 in xrange(_size101):
-            _elem106 = MetricQueryRequest()
-            _elem106.read(iprot)
-            self.queries.append(_elem106)
+          (_etype129, _size126) = iprot.readListBegin()
+          for _i130 in xrange(_size126):
+            _elem131 = MetricQueryRequest()
+            _elem131.read(iprot)
+            self.queries.append(_elem131)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4697,8 +4978,8 @@ class queryMetrics_args(object):
     if self.queries is not None:
       oprot.writeFieldBegin('queries', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.queries))
-      for iter107 in self.queries:
-        iter107.write(oprot)
+      for iter132 in self.queries:
+        iter132.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -4752,11 +5033,11 @@ class queryMetrics_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype111, _size108) = iprot.readListBegin()
-          for _i112 in xrange(_size108):
-            _elem113 = TimeSeriesData()
-            _elem113.read(iprot)
-            self.success.append(_elem113)
+          (_etype136, _size133) = iprot.readListBegin()
+          for _i137 in xrange(_size133):
+            _elem138 = TimeSeriesData()
+            _elem138.read(iprot)
+            self.success.append(_elem138)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4779,8 +5060,8 @@ class queryMetrics_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter114 in self.success:
-        iter114.write(oprot)
+      for iter139 in self.success:
+        iter139.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -4885,11 +5166,11 @@ class findAllAppInfo_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype118, _size115) = iprot.readListBegin()
-          for _i119 in xrange(_size115):
-            _elem120 = AppInfo()
-            _elem120.read(iprot)
-            self.success.append(_elem120)
+          (_etype143, _size140) = iprot.readListBegin()
+          for _i144 in xrange(_size140):
+            _elem145 = AppInfo()
+            _elem145.read(iprot)
+            self.success.append(_elem145)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4912,8 +5193,8 @@ class findAllAppInfo_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter121 in self.success:
-        iter121.write(oprot)
+      for iter146 in self.success:
+        iter146.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -5888,10 +6169,10 @@ class listSubscribedPhone_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype125, _size122) = iprot.readListBegin()
-          for _i126 in xrange(_size122):
-            _elem127 = iprot.readString();
-            self.success.append(_elem127)
+          (_etype150, _size147) = iprot.readListBegin()
+          for _i151 in xrange(_size147):
+            _elem152 = iprot.readString();
+            self.success.append(_elem152)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -5914,8 +6195,8 @@ class listSubscribedPhone_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter128 in self.success:
-        oprot.writeString(iter128)
+      for iter153 in self.success:
+        oprot.writeString(iter153)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -6039,10 +6320,10 @@ class listSubscribedEmail_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype132, _size129) = iprot.readListBegin()
-          for _i133 in xrange(_size129):
-            _elem134 = iprot.readString();
-            self.success.append(_elem134)
+          (_etype157, _size154) = iprot.readListBegin()
+          for _i158 in xrange(_size154):
+            _elem159 = iprot.readString();
+            self.success.append(_elem159)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -6065,8 +6346,8 @@ class listSubscribedEmail_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter135 in self.success:
-        oprot.writeString(iter135)
+      for iter160 in self.success:
+        oprot.writeString(iter160)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -6216,11 +6497,11 @@ class getTableHistorySize_result(object):
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype137, _vtype138, _size136 ) = iprot.readMapBegin()
-          for _i140 in xrange(_size136):
-            _key141 = iprot.readI64();
-            _val142 = iprot.readI64();
-            self.success[_key141] = _val142
+          (_ktype162, _vtype163, _size161 ) = iprot.readMapBegin()
+          for _i165 in xrange(_size161):
+            _key166 = iprot.readI64();
+            _val167 = iprot.readI64();
+            self.success[_key166] = _val167
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -6243,9 +6524,9 @@ class getTableHistorySize_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.I64, TType.I64, len(self.success))
-      for kiter143,viter144 in self.success.items():
-        oprot.writeI64(kiter143)
-        oprot.writeI64(viter144)
+      for kiter168,viter169 in self.success.items():
+        oprot.writeI64(kiter168)
+        oprot.writeI64(viter169)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -7096,11 +7377,11 @@ class listAllSnapshots_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype148, _size145) = iprot.readListBegin()
-          for _i149 in xrange(_size145):
-            _elem150 = SnapshotTableView()
-            _elem150.read(iprot)
-            self.success.append(_elem150)
+          (_etype173, _size170) = iprot.readListBegin()
+          for _i174 in xrange(_size170):
+            _elem175 = SnapshotTableView()
+            _elem175.read(iprot)
+            self.success.append(_elem175)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -7123,8 +7404,8 @@ class listAllSnapshots_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter151 in self.success:
-        iter151.write(oprot)
+      for iter176 in self.success:
+        iter176.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:
@@ -8340,11 +8621,11 @@ class listAllDeletedTables_result(object):
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype155, _size152) = iprot.readListBegin()
-          for _i156 in xrange(_size152):
-            _elem157 = sds.table.ttypes.TableInfo()
-            _elem157.read(iprot)
-            self.success.append(_elem157)
+          (_etype180, _size177) = iprot.readListBegin()
+          for _i181 in xrange(_size177):
+            _elem182 = sds.table.ttypes.TableInfo()
+            _elem182.read(iprot)
+            self.success.append(_elem182)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -8367,8 +8648,8 @@ class listAllDeletedTables_result(object):
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter158 in self.success:
-        iter158.write(oprot)
+      for iter183 in self.success:
+        iter183.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.se is not None:

@@ -38,6 +38,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  TableStatus getTableStatus(string tableName)')
   print('  TableState getTableState(string tableName)')
   print('   getTableSplits(string tableName, Dictionary startKey, Dictionary stopKey)')
+  print('   getIndexTableSplits(string tableName, string indexName, Dictionary startKey, Dictionary stopKey)')
   print('  TimeSeriesData queryMetric(MetricQueryRequest query)')
   print('   queryMetrics( queries)')
   print('   findAllAppInfo()')
@@ -207,6 +208,12 @@ elif cmd == 'getTableSplits':
     print('getTableSplits requires 3 args')
     sys.exit(1)
   pp.pprint(client.getTableSplits(args[0],eval(args[1]),eval(args[2]),))
+
+elif cmd == 'getIndexTableSplits':
+  if len(args) != 4:
+    print('getIndexTableSplits requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.getIndexTableSplits(args[0],args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'queryMetric':
   if len(args) != 1:
