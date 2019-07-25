@@ -13,7 +13,7 @@ python setup.py install
 ```
 to install the lib.
 
-Do not use pip install! If you already installed by pip,plese pip uninstall first!
+Do not use pip install! If you already installed by pip,please pip uninstall first!
 
 ## Configuring Credential
 
