@@ -9,6 +9,9 @@ Requires Python >= 2.6. You can install using pip or easy_install:
 `pip install galaxy-sdk-python` 
 or `easy_install galaxy-sdk-python`
 
+Waring:SDS do not use `pip install galaxy-sdk-python` 
+or `easy_install galaxy-sdk-python`.use `python setup.py install`.If you has already `pip install galaxy-sdk-ptyhon`,`pip uninstall galaxy-sdk-python` first
+
 or download source codes from [https://github.com/XiaoMi/galaxy-sdk-python.git]() 
 and add the 'lib' dir to your python path.
 
