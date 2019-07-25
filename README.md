@@ -4,13 +4,16 @@ This is XiaoMi Galaxy SDK for python, which allows Python developers to write so
 
 ## Installing
 
-Requires Python >= 2.6. You can install using pip or easy_install:
+Requires Python >= 2.6. 
 
-`pip install galaxy-sdk-python` 
-or `easy_install galaxy-sdk-python`
+Download source codes from [https://github.com/XiaoMi/galaxy-sdk-python.git]() 
+and run 
+```
+python setup.py install
+```
+to install the lib.
 
-or download source codes from [https://github.com/XiaoMi/galaxy-sdk-python.git]() 
-and add the 'lib' dir to your python path.
+Do not use pip install! If you already installed by pip,plese pip uninstall first!
 
 ## Configuring Credential
 
